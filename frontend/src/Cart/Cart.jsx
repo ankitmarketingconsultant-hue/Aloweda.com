@@ -32,8 +32,18 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
   // Calculate totals - with safety checks
   const subtotal = safeCart.reduce((total, item) => {
     try {
-      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''))
-      return total + (price * (item.quantity || 1))
+      // Handle both number and string prices
+      let price = 0;
+      if (typeof item.price === 'number') {
+        price = item.price;
+      } else if (typeof item.price === 'string') {
+        // Remove currency symbols, commas, and spaces, keep only numbers and dots
+        const cleaned = item.price.replace(/[₹,\s]/g, '').replace(/[^0-9.]/g, '');
+        price = parseFloat(cleaned) || 0;
+      }
+      
+      console.log(`Item: ${item.name}, Price string: "${item.price}", Parsed: ${price}`);
+      return total + (price * (item.quantity || 1));
     } catch (error) {
       console.error('Error calculating price for item:', item, error);
       return total;
