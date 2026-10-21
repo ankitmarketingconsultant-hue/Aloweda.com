@@ -152,6 +152,20 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
     if (excelCoupons[couponCode]) {
       const combo = excelCoupons[couponCode]
       
+      // Check if cart has any COMBO products - coupons don't apply to combos
+      const hasComboProducts = safeCart.some(item => {
+        // Check if product name contains "COMBO" or category is "combo"
+        const nameHasCombo = item.name && item.name.toUpperCase().includes('COMBO');
+        const categoryIsCombo = item.category && item.category.toLowerCase() === 'combo';
+        return nameHasCombo || categoryIsCombo;
+      });
+      
+      if (hasComboProducts) {
+        setCouponError('This coupon cannot be applied to combo products. Please use single products only.')
+        setAppliedCoupon(null)
+        return
+      }
+      
       // Check if cart has required number of items
       if (totalItems < combo.requiredItems) {
         setCouponError(`Add ${combo.requiredItems - totalItems} more item${combo.requiredItems - totalItems > 1 ? 's' : ''} to use this combo offer`)
