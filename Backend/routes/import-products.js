@@ -126,8 +126,11 @@ const SAMPLE_PRODUCTS = [
   }
 ];
 
-// Public endpoint to import products (one-time use)
-router.post('/init', async (req, res) => {
+// Public endpoint to import products (one-time use) - supports both GET and POST
+router.post('/init', importProducts);
+router.get('/init', importProducts);
+
+async function importProducts(req, res) {
   try {
     // Check if products already exist
     const existingCount = await Bundle.countDocuments();
@@ -157,7 +160,7 @@ router.post('/init', async (req, res) => {
       error: error.message
     });
   }
-});
+}
 
 // Get import status
 router.get('/status', async (req, res) => {
