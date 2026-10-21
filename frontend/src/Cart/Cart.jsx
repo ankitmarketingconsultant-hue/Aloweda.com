@@ -37,12 +37,16 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       if (typeof item.price === 'number') {
         price = item.price;
       } else if (typeof item.price === 'string') {
-        // Remove currency symbols, commas, and spaces, keep only numbers and dots
-        const cleaned = item.price.replace(/[₹,\s]/g, '').replace(/[^0-9.]/g, '');
+        // Remove ALL non-numeric characters except the last dot (for decimals)
+        // This handles: "₹ 1,299", "Rs. 1,299.00", "₹1299", etc.
+        let cleaned = item.price
+          .replace(/[₹Rs.\s]/g, '')  // Remove rupee symbols, Rs, spaces
+          .replace(/,/g, '');          // Remove commas
+        
         price = parseFloat(cleaned) || 0;
       }
       
-      console.log(`Item: ${item.name}, Price string: "${item.price}", Parsed: ${price}`);
+      console.log(`Item: ${item.name}, Original price: "${item.price}", Parsed: ${price}`);
       return total + (price * (item.quantity || 1));
     } catch (error) {
       console.error('Error calculating price for item:', item, error);
@@ -136,17 +140,11 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       }
     }
     
-    // Other promotional coupons
-    const promoCoupons = {
-      'WELCOME10': { code: 'WELCOME10', discount: subtotal * 0.10, type: 'percentage', description: '10% off on first order' },
-      'SAVE50': { code: 'SAVE50', discount: 50, type: 'fixed', description: 'Flat ₹50 discount' },
-      'SAVE100': { code: 'SAVE100', discount: 100, type: 'fixed', description: 'Flat ₹100 discount' },
-      'FIRST20': { code: 'FIRST20', discount: subtotal * 0.20, type: 'percentage', description: '20% off for new users' }
-    }
+    // No promotional coupons - removed as per client request
 
     const couponCode = promoCode.toUpperCase()
     
-    // Check Excel combo coupons first
+    // Check Excel combo coupons
     if (excelCoupons[couponCode]) {
       const combo = excelCoupons[couponCode]
       
@@ -176,46 +174,9 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       return
     }
     
-    // Check promotional coupons
-    if (promoCoupons[couponCode]) {
-      setAppliedCoupon(promoCoupons[couponCode])
-      setCouponError('')
-      return
-    }
-    
-    // Try API call for database coupons (when backend is ready)
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
-      const response = await fetch(`${API_URL}/api/coupons/validate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: couponCode,
-          orderValue: subtotal,
-          cartItems: safeCart
-        })
-      })
-      
-      const data = await response.json()
-      
-      if (data.success) {
-        setAppliedCoupon({
-          code: data.data.code,
-          discount: data.data.discount,
-          type: 'api',
-          description: `Coupon applied`
-        })
-        setCouponError('')
-      } else {
-        setCouponError(data.message || 'Invalid coupon code')
-        setAppliedCoupon(null)
-      }
-    } catch (error) {
-      // API failed, show error
-      console.log('Coupon API not available:', error)
-      setCouponError('Invalid coupon code')
-      setAppliedCoupon(null)
-    }
+    // Invalid coupon code
+    setCouponError('Invalid coupon code')
+    setAppliedCoupon(null)
   }
 
   const handleRemoveCoupon = () => {
@@ -679,14 +640,11 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                         <span>Available Offers</span>
                       </div>
                       <div className="suggestions-grid">
-                        {/* Excel Combo Deals */}
+                        {/* Only Excel Combo Deals - No promotional coupons */}
                         {[
                           { code: 'B3A899', desc: 'Buy 3 at ₹899 - Combo Deal', color: '#28a745', items: 3 },
                           { code: 'B4A1199', desc: 'Buy 4 at ₹1199 - Combo Deal', color: '#17a2b8', items: 4 },
-                          { code: 'B2A699', desc: 'Buy 2 at ₹699 - Combo Deal', color: '#ffc107', items: 2 },
-                          { code: 'WELCOME10', desc: '10% off on first order', color: '#667eea' },
-                          { code: 'SAVE50', desc: 'Flat ₹50 discount', color: '#764ba2' },
-                          { code: 'SAVE100', desc: 'Flat ₹100 discount', color: '#f093fb' }
+                          { code: 'B2A699', desc: 'Buy 2 at ₹699 - Combo Deal', color: '#ffc107', items: 2 }
                         ].map(({ code, desc, color, items }) => (
                           <button
                             key={code}
