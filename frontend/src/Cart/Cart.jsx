@@ -37,12 +37,16 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       if (typeof item.price === 'number') {
         price = item.price;
       } else if (typeof item.price === 'string') {
-        // Remove ALL non-numeric characters except the last dot (for decimals)
-        // This handles: "₹ 1,299", "Rs. 1,299.00", "₹1299", etc.
-        let cleaned = item.price
-          .replace(/[₹Rs.\s]/g, '')  // Remove rupee symbols, Rs, spaces
-          .replace(/,/g, '');          // Remove commas
+        // Step 1: Remove currency symbols (₹, Rs, Rs.)
+        let cleaned = item.price.replace(/[₹]/g, '').replace(/Rs\.?/gi, '');
         
+        // Step 2: Remove spaces
+        cleaned = cleaned.trim();
+        
+        // Step 3: Remove commas (Indian format: 1,299)
+        cleaned = cleaned.replace(/,/g, '');
+        
+        // Step 4: Parse as float (handles decimal points correctly)
         price = parseFloat(cleaned) || 0;
       }
       
