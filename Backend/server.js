@@ -11,6 +11,7 @@ const reviewRoutes = require('./routes/review');
 const orderRoutes = require('./routes/order');
 const paymentRoutes = require('./routes/payment');
 const codRoutes = require('./routes/cod');
+const adminRoutes = require('./routes/admin');
 const protect = require('./middleware/auth');
 const User = require('./models/User');
 
@@ -75,6 +76,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/cod', codRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/api/profile', protect, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');

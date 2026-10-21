@@ -22,6 +22,13 @@ import About from './Pages/About'
 import Consultation from './Pages/Consultation'
 import TermsAndConditions from './Pages/TermsAndConditions'
 
+// Admin Panel Components
+import AdminLogin from './Admin/AdminLogin'
+import AdminDashboard from './Admin/AdminDashboard'
+import SalesAnalytics from './Admin/SalesAnalytics'
+import ProductsManagement from './Admin/ProductsManagement'
+import OrdersManagement from './Admin/OrdersManagement'
+
 // Import all products
 import SC1  from './SkinCareImg/SkinCare1.png'
 import SC2  from './SkinCareImg/SkinCare2.png'
@@ -639,6 +646,15 @@ function AppContent() {
             />
           } 
         />
+
+        {/* Admin Panel Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminDashboard />}>
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<SalesAnalytics />} />
+          <Route path="products" element={<ProductsManagement />} />
+          <Route path="orders" element={<OrdersManagement />} />
+        </Route>
 
         {/* Catch-all redirect to 404 */}
         <Route path="*" element={<NotFound />} />
