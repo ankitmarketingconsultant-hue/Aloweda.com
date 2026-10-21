@@ -12,6 +12,7 @@ const orderRoutes = require('./routes/order');
 const paymentRoutes = require('./routes/payment');
 const codRoutes = require('./routes/cod');
 const adminRoutes = require('./routes/admin');
+const importProductsRoutes = require('./routes/import-products');
 const protect = require('./middleware/auth');
 const User = require('./models/User');
 
@@ -77,6 +78,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/cod', codRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/import-products', importProductsRoutes);
 
 app.get('/api/profile', protect, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');
