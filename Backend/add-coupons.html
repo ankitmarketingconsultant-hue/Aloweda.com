@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Coupons - Aloweda Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .coupon-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .coupon-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #667eea;
+        }
+        
+        .coupon-card h4 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .coupon-card p {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .status.pending {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .log.show {
+            display: block;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎟️ Add Coupons</h1>
+        <p class="subtitle">Aloweda Admin Tool - Excel Coupon Import</p>
+        
+        <div class="alert alert-info">
+            <strong>📋 Instructions:</strong><br>
+            1. Enter your backend API URL (e.g., http://localhost:5000 or https://your-api.vercel.app)<br>
+            2. Login as admin to get your JWT token<br>
+            3. Paste the token below<br>
+            4. Click "Add All Coupons" button
+        </div>
+        
+        <div class="step">
+            <h3>Step 1: Configuration</h3>
+            <div class="form-group">
+                <label for="apiUrl">Backend API URL:</label>
+                <input 
+                    type="text" 
+                    id="apiUrl" 
+                    placeholder="http://localhost:5000 or https://your-api.vercel.app"
+                    value="http://localhost:5000"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="token">Admin JWT Token:</label>
+                <input 
+                    type="text" 
+                    id="token" 
+                    placeholder="Paste your admin token here (from localStorage after login)"
+                >
+                <small style="color: #666;">Get this from browser console: localStorage.getItem('token')</small>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3>Step 2: Coupons to Import</h3>
+            <div class="coupon-list" id="couponList">
+                <div class="coupon-card">
+                    <h4>BJA899</h4>
+                    <p>📦 Buy any 3 products at ₹899</p>
+                    <p>🎯 Combo Deal (Except existing combos)</p>
+                    <span class="status pending" id="status-0">Pending</span>
+                </div>
+                
+                <div class="coupon-card">
+                    <h4>B4A1199</h4>
+                    <p>📦 Buy any 4 products at ₹1199</p>
+                    <p>🎯 Combo Deal (Except existing combos)</p>
+                    <span class="status pending" id="status-1">Pending</span>
+                </div>
+                
+                <div class="coupon-card">
+                    <h4>B2A699</h4>
+                    <p>📦 Buy any 2 products at ₹699</p>
+                    <p>🎯 Combo Deal (Except existing combos)</p>
+                    <span class="status pending" id="status-2">Pending</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="addAllCoupons()">🚀 Add All Coupons</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+    
+    <script>
+        const coupons = [
+            {
+                code: 'BJA899',
+                description: 'Buy any 3 products at ₹899 - Combo Deal (Except existing combo products)',
+                type: 'fixed',
+                discount: 0,
+                minOrderValue: 0,
+                usageLimit: null,
+                perUserLimit: 10,
+                validFrom: new Date().toISOString(),
+                validTo: new Date('2025-12-31').toISOString(),
+                isActive: true,
+                source: 'Excel Import',
+                campaign: 'Combo Deals 2025'
+            },
+            {
+                code: 'B4A1199',
+                description: 'Buy any 4 products at ₹1199 - Combo Deal (Except existing combo products)',
+                type: 'fixed',
+                discount: 0,
+                minOrderValue: 0,
+                usageLimit: null,
+                perUserLimit: 10,
+                validFrom: new Date().toISOString(),
+                validTo: new Date('2025-12-31').toISOString(),
+                isActive: true,
+                source: 'Excel Import',
+                campaign: 'Combo Deals 2025'
+            },
+            {
+                code: 'B2A699',
+                description: 'Buy any 2 products at ₹699 - Combo Deal (Except existing combo products)',
+                type: 'fixed',
+                discount: 0,
+                minOrderValue: 0,
+                usageLimit: null,
+                perUserLimit: 10,
+                validFrom: new Date().toISOString(),
+                validTo: new Date('2025-12-31').toISOString(),
+                isActive: true,
+                source: 'Excel Import',
+                campaign: 'Combo Deals 2025'
+            }
+        ];
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.classList.add('show');
+            logDiv.innerHTML += message + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        async function addAllCoupons() {
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const token = document.getElementById('token').value.trim();
+            
+            if (!apiUrl) {
+                alert('❌ Please enter API URL');
+                return;
+            }
+            
+            if (!token) {
+                alert('❌ Please enter admin token');
+                return;
+            }
+            
+            document.getElementById('log').innerHTML = '';
+            log('🚀 Starting coupon import...\n');
+            
+            for (let i = 0; i < coupons.length; i++) {
+                const coupon = coupons[i];
+                const statusEl = document.getElementById(`status-${i}`);
+                
+                try {
+                    log(`⏳ Adding coupon: ${coupon.code}...`);
+                    statusEl.className = 'status pending';
+                    statusEl.textContent = 'Processing...';
+                    
+                    const response = await fetch(`${apiUrl}/api/coupons`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(coupon)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        log(`✅ Success: ${coupon.code} added!\n`);
+                        statusEl.className = 'status success';
+                        statusEl.textContent = '✅ Added';
+                    } else {
+                        log(`❌ Error: ${data.message || 'Unknown error'}\n`);
+                        statusEl.className = 'status error';
+                        statusEl.textContent = '❌ Failed';
+                    }
+                } catch (error) {
+                    log(`❌ Network Error: ${error.message}\n`);
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Error';
+                }
+                
+                // Small delay between requests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            log('\n🎉 Import process completed!');
+            alert('✅ Coupon import completed! Check the log for details.');
+        }
+    </script>
+</body>
+</html>

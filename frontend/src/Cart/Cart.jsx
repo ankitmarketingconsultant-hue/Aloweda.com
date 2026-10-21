@@ -104,20 +104,105 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
 
     setCouponError('')
     
-    // Simulate API call (replace with actual API when backend ready)
-    const validCoupons = {
-      'WELCOME10': { code: 'WELCOME10', discount: subtotal * 0.10, type: 'percentage' },
-      'SAVE50': { code: 'SAVE50', discount: 50, type: 'fixed' },
-      'SAVE100': { code: 'SAVE100', discount: 100, type: 'fixed' },
-      'FIRST20': { code: 'FIRST20', discount: subtotal * 0.20, type: 'percentage' }
+    // Excel Coupons: BJA899, B4A1199, B2A699 (Combo Deals)
+    const excelCoupons = {
+      'BJA899': { 
+        code: 'BJA899', 
+        requiredItems: 3,
+        finalPrice: 899,
+        description: 'Buy any 3 products at ₹899'
+      },
+      'B4A1199': { 
+        code: 'B4A1199', 
+        requiredItems: 4,
+        finalPrice: 1199,
+        description: 'Buy any 4 products at ₹1199'
+      },
+      'B2A699': { 
+        code: 'B2A699', 
+        requiredItems: 2,
+        finalPrice: 699,
+        description: 'Buy any 2 products at ₹699'
+      }
+    }
+    
+    // Other promotional coupons
+    const promoCoupons = {
+      'WELCOME10': { code: 'WELCOME10', discount: subtotal * 0.10, type: 'percentage', description: '10% off on first order' },
+      'SAVE50': { code: 'SAVE50', discount: 50, type: 'fixed', description: 'Flat ₹50 discount' },
+      'SAVE100': { code: 'SAVE100', discount: 100, type: 'fixed', description: 'Flat ₹100 discount' },
+      'FIRST20': { code: 'FIRST20', discount: subtotal * 0.20, type: 'percentage', description: '20% off for new users' }
     }
 
-    const coupon = validCoupons[promoCode.toUpperCase()]
+    const couponCode = promoCode.toUpperCase()
     
-    if (coupon) {
-      setAppliedCoupon(coupon)
+    // Check Excel combo coupons first
+    if (excelCoupons[couponCode]) {
+      const combo = excelCoupons[couponCode]
+      
+      // Check if cart has required number of items
+      if (totalItems < combo.requiredItems) {
+        setCouponError(`Add ${combo.requiredItems - totalItems} more item${combo.requiredItems - totalItems > 1 ? 's' : ''} to use this combo offer`)
+        setAppliedCoupon(null)
+        return
+      }
+      
+      if (totalItems > combo.requiredItems) {
+        setCouponError(`This combo is for exactly ${combo.requiredItems} items. You have ${totalItems} items.`)
+        setAppliedCoupon(null)
+        return
+      }
+      
+      // Calculate discount: current subtotal - combo final price
+      const comboDiscount = Math.max(0, subtotal - combo.finalPrice)
+      
+      setAppliedCoupon({
+        code: combo.code,
+        discount: comboDiscount,
+        type: 'combo',
+        description: combo.description
+      })
       setCouponError('')
-    } else {
+      return
+    }
+    
+    // Check promotional coupons
+    if (promoCoupons[couponCode]) {
+      setAppliedCoupon(promoCoupons[couponCode])
+      setCouponError('')
+      return
+    }
+    
+    // Try API call for database coupons (when backend is ready)
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${API_URL}/api/coupons/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponCode,
+          orderValue: subtotal,
+          cartItems: safeCart
+        })
+      })
+      
+      const data = await response.json()
+      
+      if (data.success) {
+        setAppliedCoupon({
+          code: data.data.code,
+          discount: data.data.discount,
+          type: 'api',
+          description: `Coupon applied`
+        })
+        setCouponError('')
+      } else {
+        setCouponError(data.message || 'Invalid coupon code')
+        setAppliedCoupon(null)
+      }
+    } catch (error) {
+      // API failed, show error
+      console.log('Coupon API not available:', error)
       setCouponError('Invalid coupon code')
       setAppliedCoupon(null)
     }
@@ -584,12 +669,15 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                         <span>Available Offers</span>
                       </div>
                       <div className="suggestions-grid">
+                        {/* Excel Combo Deals */}
                         {[
+                          { code: 'BJA899', desc: 'Buy 3 at ₹899 - Combo Deal', color: '#28a745', items: 3 },
+                          { code: 'B4A1199', desc: 'Buy 4 at ₹1199 - Combo Deal', color: '#17a2b8', items: 4 },
+                          { code: 'B2A699', desc: 'Buy 2 at ₹699 - Combo Deal', color: '#ffc107', items: 2 },
                           { code: 'WELCOME10', desc: '10% off on first order', color: '#667eea' },
                           { code: 'SAVE50', desc: 'Flat ₹50 discount', color: '#764ba2' },
-                          { code: 'SAVE100', desc: 'Flat ₹100 discount', color: '#f093fb' },
-                          { code: 'FIRST20', desc: '20% off for new users', color: '#4facfe' }
-                        ].map(({ code, desc, color }) => (
+                          { code: 'SAVE100', desc: 'Flat ₹100 discount', color: '#f093fb' }
+                        ].map(({ code, desc, color, items }) => (
                           <button
                             key={code}
                             onClick={() => {
@@ -598,9 +686,15 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                             }}
                             className="suggestion-card"
                             style={{ '--card-color': color }}
+                            title={items ? `Valid when you have exactly ${items} items` : ''}
                           >
                             <div className="suggestion-code">{code}</div>
                             <div className="suggestion-desc">{desc}</div>
+                            {items && totalItems !== items && (
+                              <div style={{fontSize: '10px', color: '#999', marginTop: '2px'}}>
+                                {totalItems < items ? `Need ${items - totalItems} more` : `Remove ${totalItems - items}`}
+                              </div>
+                            )}
                             <div className="suggestion-action">
                               <span>Apply</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
