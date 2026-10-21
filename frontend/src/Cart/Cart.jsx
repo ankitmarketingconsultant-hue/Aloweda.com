@@ -104,10 +104,10 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
 
     setCouponError('')
     
-    // Excel Coupons: BJA899, B4A1199, B2A699 (Combo Deals)
+    // Excel Coupons: B3A899, B4A1199, B2A699 (Combo Deals)
     const excelCoupons = {
-      'BJA899': { 
-        code: 'BJA899', 
+      'B3A899': { 
+        code: 'B3A899', 
         requiredItems: 3,
         finalPrice: 899,
         description: 'Buy any 3 products at ₹899'
@@ -671,7 +671,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                       <div className="suggestions-grid">
                         {/* Excel Combo Deals */}
                         {[
-                          { code: 'BJA899', desc: 'Buy 3 at ₹899 - Combo Deal', color: '#28a745', items: 3 },
+                          { code: 'B3A899', desc: 'Buy 3 at ₹899 - Combo Deal', color: '#28a745', items: 3 },
                           { code: 'B4A1199', desc: 'Buy 4 at ₹1199 - Combo Deal', color: '#17a2b8', items: 4 },
                           { code: 'B2A699', desc: 'Buy 2 at ₹699 - Combo Deal', color: '#ffc107', items: 2 },
                           { code: 'WELCOME10', desc: '10% off on first order', color: '#667eea' },
