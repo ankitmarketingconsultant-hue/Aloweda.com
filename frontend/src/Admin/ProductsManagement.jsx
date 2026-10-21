@@ -50,18 +50,36 @@ const ProductsManagement = () => {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/import-products/init`);
+      setError('');
+      
+      const response = await fetch(`${API_URL}/api/import-products/init`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       if (data.success) {
-        alert(`Success! ${data.count} products imported.`);
+        alert(`✅ Success! ${data.count} products imported.`);
         fetchProducts(); // Refresh the list
       } else {
-        alert(data.message || 'Import failed');
+        alert(`⚠️ ${data.message || 'Import failed'}`);
+        if (data.count > 0) {
+          // Products already exist, just refresh
+          fetchProducts();
+        }
       }
     } catch (err) {
       console.error('Import error:', err);
-      alert('Failed to import products');
+      alert(`❌ Error: ${err.message}\n\nTry refreshing the page and check if products are already imported.`);
+      // Try to fetch products anyway
+      fetchProducts();
     } finally {
       setLoading(false);
     }

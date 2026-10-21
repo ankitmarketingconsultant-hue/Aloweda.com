@@ -132,8 +132,11 @@ router.get('/init', importProducts);
 
 async function importProducts(req, res) {
   try {
+    console.log('Import products endpoint hit');
+    
     // Check if products already exist
     const existingCount = await Bundle.countDocuments();
+    console.log('Existing products count:', existingCount);
     
     if (existingCount > 0) {
       return res.json({
@@ -144,7 +147,9 @@ async function importProducts(req, res) {
     }
 
     // Import products
+    console.log('Importing', SAMPLE_PRODUCTS.length, 'products...');
     const result = await Bundle.insertMany(SAMPLE_PRODUCTS);
+    console.log('Import successful:', result.length, 'products added');
 
     res.json({
       success: true,
@@ -157,7 +162,8 @@ async function importProducts(req, res) {
     res.status(500).json({
       success: false,
       message: 'Failed to import products',
-      error: error.message
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 }
