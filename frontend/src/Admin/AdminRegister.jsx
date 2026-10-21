@@ -15,7 +15,6 @@ const AdminRegister = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Secret key for admin registration - CHANGE THIS IN PRODUCTION
   const ADMIN_SECRET_KEY = 'ALOWEDA_ADMIN_2024';
 
   const handleChange = (e) => {
@@ -29,7 +28,6 @@ const AdminRegister = () => {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -50,7 +48,6 @@ const AdminRegister = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       
-      // Register user
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -61,14 +58,14 @@ const AdminRegister = () => {
           email: formData.email,
           password: formData.password,
           phone: formData.phone,
-          role: 'admin' // Register as admin directly
+          role: 'admin'
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert('✅ Admin account created successfully! Please login now.');
+        alert('Admin account created successfully! Please login now.');
         navigate('/admin/login');
       } else {
         setError(data.message || 'Registration failed');
