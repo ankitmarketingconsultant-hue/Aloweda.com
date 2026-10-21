@@ -43,6 +43,30 @@ const ProductsManagement = () => {
     }
   };
 
+  const handleImportProducts = async () => {
+    if (!confirm('Import sample products to database? This will add 15 products.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/import-products/init`);
+      const data = await response.json();
+
+      if (data.success) {
+        alert(`Success! ${data.count} products imported.`);
+        fetchProducts(); // Refresh the list
+      } else {
+        alert(data.message || 'Import failed');
+      }
+    } catch (err) {
+      console.error('Import error:', err);
+      alert('Failed to import products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditClick = (product) => {
     setEditingProduct(product._id);
     setNewPrice(product.price || '');
@@ -156,9 +180,16 @@ const ProductsManagement = () => {
           <h2>Products Management</h2>
           <p>View and manage all products</p>
         </div>
-        <button className="refresh-btn" onClick={fetchProducts}>
-          🔄 Refresh
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {products.length === 0 && (
+            <button className="refresh-btn" onClick={handleImportProducts} style={{ background: '#10b981' }}>
+              📦 Import Sample Products
+            </button>
+          )}
+          <button className="refresh-btn" onClick={fetchProducts}>
+            🔄 Refresh
+          </button>
+        </div>
       </div>
 
       {error && (
