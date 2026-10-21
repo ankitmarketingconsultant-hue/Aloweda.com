@@ -9,8 +9,13 @@ export default defineConfig({
     cssMinify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'three': ['three', '@react-three/fiber', '@react-three/drei']
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('three') || id.includes('@react-three')) {
+              return 'three-vendor'
+            }
+            return 'vendor'
+          }
         }
       }
     },
