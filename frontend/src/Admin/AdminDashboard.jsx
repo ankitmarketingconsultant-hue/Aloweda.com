@@ -13,8 +13,10 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('userRole');
     const name = localStorage.getItem('userName');
+    const adminAccess = sessionStorage.getItem('adminAccess');
 
-    if (!token || role !== 'admin') {
+    // Require both token+admin role AND session access
+    if (!token || role !== 'admin' || adminAccess !== 'granted') {
       navigate('/admin/login');
       return;
     }
@@ -26,6 +28,7 @@ const AdminDashboard = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
+    sessionStorage.removeItem('adminAccess'); // Clear session access
     navigate('/admin/login');
   };
 
