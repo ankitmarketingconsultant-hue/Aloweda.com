@@ -658,6 +658,7 @@ function AppContent() {
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<SalesAnalytics />} />
           <Route path="products" element={<ProductsManagement />} />
+          <Route path="products/add" element={<AddProduct />} />
           <Route path="orders" element={<OrdersManagement />} />
         </Route>
 

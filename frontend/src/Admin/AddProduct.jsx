@@ -32,7 +32,7 @@ const AddProduct = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`${API_URL}/api/bundles`, {
+      const response = await fetch(`${API_URL}/api/admin/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,8 @@ const AddProduct = () => {
           price: parseFloat(formData.price),
           mrp: parseFloat(formData.mrp),
           stock: parseInt(formData.stock),
-          description: formData.description
+          description: formData.description,
+          isActive: true
         })
       });
 
@@ -52,15 +53,8 @@ const AddProduct = () => {
 
       if (response.ok) {
         alert('✅ Product added successfully!');
-        // Reset form
-        setFormData({
-          name: '',
-          category: 'cream',
-          price: '',
-          mrp: '',
-          stock: '100',
-          description: ''
-        });
+        // Navigate back to products page
+        navigate('/admin/products');
       } else {
         setError(data.message || 'Failed to add product');
       }

@@ -6,6 +6,42 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 const User = require('../models/User');
 
+// Create new product
+router.post('/products', auth, admin, async (req, res) => {
+  try {
+    const { name, category, price, mrp, stock, description } = req.body;
+    
+    if (!name || !category || !price || !mrp || !stock || !description) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required'
+      });
+    }
+
+    const product = await Product.create({
+      name,
+      category,
+      price: parseFloat(price),
+      mrp: parseFloat(mrp),
+      stock: parseInt(stock),
+      description,
+      isActive: true
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Product created successfully',
+      product
+    });
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create product'
+    });
+  }
+});
+
 // Get all bundles/products for admin
 router.get('/products', auth, admin, async (req, res) => {
   try {

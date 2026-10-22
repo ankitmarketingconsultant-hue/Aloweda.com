@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ProductsManagement.css';
 
 const ProductsManagement = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -199,8 +201,15 @@ const ProductsManagement = () => {
           <p>View and manage all products</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
+          <button 
+            className="refresh-btn" 
+            onClick={() => navigate('/admin/products/add')}
+            style={{ background: '#10b981' }}
+          >
+            ➕ Add New Product
+          </button>
           {products.length === 0 && (
-            <button className="refresh-btn" onClick={handleImportProducts} style={{ background: '#10b981' }}>
+            <button className="refresh-btn" onClick={handleImportProducts} style={{ background: '#3b82f6' }}>
               📦 Import Sample Products
             </button>
           )}
