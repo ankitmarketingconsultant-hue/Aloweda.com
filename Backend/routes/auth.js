@@ -36,15 +36,12 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     // Create new user with optional role (defaults to 'user' in schema)
+    // Password will be automatically hashed by pre-save hook in User model
     const userData = {
       name,
       email,
-      password: hashedPassword,
+      password, // Don't hash here - pre-save hook will do it!
     };
 
     // Add optional fields if provided
