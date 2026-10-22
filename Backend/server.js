@@ -58,12 +58,18 @@ app.use(express.json());
 // Health check — no DB needed
 app.get('/', (req, res) => res.send('Auth backend is running ✅'));
 
-// Connect DB before every API request
+// Connect DB lazily on first API request (skip health checks)
 app.use(async (req, res, next) => {
+  // Skip DB connection for health check routes
+  if (req.path === '/' || req.path === '/api/health') {
+    return next();
+  }
+  
   try {
     await connectDB();
     next();
   } catch (err) {
+    console.error('❌ DB Connection Error:', err.message);
     res.status(500).json({ message: 'Database connection failed', error: err.message });
   }
 });
