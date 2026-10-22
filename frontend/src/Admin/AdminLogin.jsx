@@ -1,31 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
-  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [accessGranted, setAccessGranted] = useState(false);
   const navigate = useNavigate();
-
-  // Secret access key - change this to your own secret
-  const SECRET_ACCESS_KEY = 'ALOWEDA_SECURE_2024';
-
-  useEffect(() => {
-    // Check if URL has secret access key
-    const accessKey = searchParams.get('key');
-    const storedAccess = sessionStorage.getItem('adminAccess');
-    
-    if (accessKey === SECRET_ACCESS_KEY || storedAccess === 'granted') {
-      setAccessGranted(true);
-      sessionStorage.setItem('adminAccess', 'granted');
-    } else {
-      setAccessGranted(false);
-    }
-  }, [searchParams]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -75,6 +57,7 @@ const AdminLogin = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('userRole', 'admin');
           localStorage.setItem('userName', userData.user.name);
+          sessionStorage.setItem('adminAccess', 'granted'); // Grant admin session access
           localStorage.setItem('loginAttempts', '0'); // Reset on success
           navigate('/admin/dashboard');
         } else {
@@ -97,76 +80,68 @@ const AdminLogin = () => {
     }
   };
 
-  // If no access granted, show access denied page
-  if (!accessGranted) {
-    return (
-      <div className="admin-login-container">
-        <div className="admin-login-box" style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>🔒</div>
-          <h1 style={{ color: '#ef4444', marginBottom: '12px' }}>Access Denied</h1>
-          <p style={{ color: '#6b7280', marginBottom: '24px' }}>
-            This area is restricted to authorized personnel only.
-          </p>
-          <p style={{ fontSize: '14px', color: '#9ca3af' }}>
-            If you are an administrator, please use the secure access link.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="admin-login-container">
       <div className="admin-login-box">
-        <div className="admin-login-header">
-          <h1>Admin Login</h1>
-          <p>Aloweda Administration Panel</p>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
+          <h2 style={{ color: '#6b7280', marginBottom: '8px' }}>Direct Admin Access</h2>
+          <p style={{ fontSize: '14px', color: '#9ca3af' }}>
+            Please use the main website login for admin access
+          </p>
+        </div>
+        
+        <div style={{ 
+          background: '#f3f4f6', 
+          padding: '20px', 
+          borderRadius: '8px',
+          marginBottom: '20px'
+        }}>
+          <p style={{ fontSize: '14px', color: '#374151', marginBottom: '12px' }}>
+            <strong>For Admin Login:</strong>
+          </p>
+          <ol style={{ 
+            fontSize: '14px', 
+            color: '#6b7280', 
+            paddingLeft: '20px',
+            margin: 0,
+            lineHeight: '1.8'
+          }}>
+            <li>Go to main website</li>
+            <li>Click "Login" in navigation</li>
+            <li>Enter admin email and password</li>
+            <li>You'll be automatically redirected here</li>
+          </ol>
         </div>
 
-        {error && (
-          <div className="admin-login-error">
-            <span>⚠️ {error}</span>
-          </div>
-        )}
+        <button
+          onClick={() => window.location.href = '/'}
+          style={{
+            width: '100%',
+            padding: '12px',
+            background: '#2d5f3f',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '15px',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}
+        >
+          Go to Main Website
+        </button>
 
-        <form onSubmit={handleLogin} className="admin-login-form">
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@aloweda.com"
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            className="admin-login-btn"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login to Dashboard'}
-          </button>
-        </form>
-
-        <div className="admin-login-footer">
-          <p>Secure admin access only</p>
+        <div style={{ 
+          marginTop: '24px', 
+          padding: '16px',
+          background: '#fef3c7',
+          borderRadius: '8px',
+          border: '1px solid #fbbf24'
+        }}>
+          <p style={{ fontSize: '13px', color: '#92400e', margin: 0 }}>
+            💡 <strong>Note:</strong> Direct admin panel access has been disabled for security. 
+            Admin users are automatically redirected from the main login page.
+          </p>
         </div>
       </div>
     </div>

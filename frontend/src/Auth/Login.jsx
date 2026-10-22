@@ -50,7 +50,20 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       storage.setToken(response.token)
       storage.setUser(response.user)
 
-      // Notify parent component
+      // Check if user is admin - redirect to admin panel
+      if (response.user && response.user.role === 'admin') {
+        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('userName', response.user.name);
+        sessionStorage.setItem('adminAccess', 'granted'); // Grant admin access
+        setSuccess('Admin login successful! Redirecting...');
+        
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard'; // Full page redirect for admin
+        }, 1000);
+        return; // Don't close modal, redirect instead
+      }
+
+      // Regular user - notify parent component
       if (onLoginSuccess) {
         onLoginSuccess(response.user)
       }
