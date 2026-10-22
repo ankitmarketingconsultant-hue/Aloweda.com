@@ -241,28 +241,59 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
     if (paymentMethod === 'cod') {
       // COD — call backend, send email, save to database
       try {
+        // Get userId from localStorage if logged in
+        const token = localStorage.getItem('token');
+        let userId = null;
+        
+        if (token) {
+          try {
+            const userRes = await fetch(`${API_URL}/api/profile`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const userData = await userRes.json();
+            if (userData.user) {
+              userId = userData.user._id || userData.user.id;
+            }
+          } catch (e) {
+            console.log('Guest checkout - no userId');
+          }
+        }
+
         const res = await fetch(`${API_URL}/api/cod/place-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             customerInfo: {
               name: checkoutForm.name,
-              email: checkoutForm.email || '',
+              email: checkoutForm.email || 'guest@aloweda.com',
               phone: checkoutForm.phone,
-              address: checkoutForm.address,
-              city: checkoutForm.city,
-              state: checkoutForm.state,
-              pincode: checkoutForm.pincode
+              address: {
+                street: checkoutForm.address,
+                city: checkoutForm.city,
+                state: checkoutForm.state,
+                pincode: checkoutForm.pincode,
+                country: 'India'
+              }
             },
-            items: orderItems,
+            items: orderItems.map(item => ({
+              productId: item.id || item.productId || 'PROD-' + Date.now(),
+              name: item.name,
+              price: parseFloat(item.price),
+              quantity: item.quantity || 1,
+              image: item.img || item.image || ''
+            })),
             pricing: {
-              subtotal: total,
-              discount: 0,
-              tax: 0,
+              subtotal: parseFloat(total),
+              bundleDiscount: 0,
+              couponDiscount: 0,
+              onlinePaymentDiscount: 0,
               shippingCharges: 0,
-              total: total
+              tax: 0,
+              total: parseFloat(total)
             },
-            userId: null // Guest checkout
+            userId: userId,
+            paymentMethod: 'COD',
+            orderStatus: 'Confirmed'
           }),
         })
         const data = await res.json()
@@ -274,6 +305,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
           setFormError(data.message || 'Something went wrong.')
         }
       } catch (err) {
+        console.error('COD Error:', err);
         setFormError('Network error. Please try again.')
       }
     } else {
