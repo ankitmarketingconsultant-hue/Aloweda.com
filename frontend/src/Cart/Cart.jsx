@@ -278,7 +278,15 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
             items: orderItems.map(item => ({
               productId: item.id || item.productId || 'PROD-' + Date.now(),
               name: item.name,
-              price: parseFloat(item.price),
+              price: (() => {
+                // Parse price from string to number
+                if (typeof item.price === 'number') return item.price;
+                if (typeof item.price === 'string') {
+                  let cleaned = item.price.replace(/[₹]/g, '').replace(/Rs\.?/gi, '').trim().replace(/,/g, '');
+                  return parseFloat(cleaned) || 0;
+                }
+                return 0;
+              })(),
               quantity: item.quantity || 1,
               image: item.img || item.image || ''
             })),
