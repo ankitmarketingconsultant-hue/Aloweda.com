@@ -239,15 +239,30 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
     }))
 
     if (paymentMethod === 'cod') {
-      // COD — call backend, send email
+      // COD — call backend, send email, save to database
       try {
         const res = await fetch(`${API_URL}/api/cod/place-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            customer: checkoutForm,
+            customerInfo: {
+              name: checkoutForm.name,
+              email: checkoutForm.email || '',
+              phone: checkoutForm.phone,
+              address: checkoutForm.address,
+              city: checkoutForm.city,
+              state: checkoutForm.state,
+              pincode: checkoutForm.pincode
+            },
             items: orderItems,
-            total: total.toFixed(2),
+            pricing: {
+              subtotal: total,
+              discount: 0,
+              tax: 0,
+              shippingCharges: 0,
+              total: total
+            },
+            userId: null // Guest checkout
           }),
         })
         const data = await res.json()
