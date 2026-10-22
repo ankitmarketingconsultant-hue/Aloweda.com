@@ -30,6 +30,7 @@ import AdminDashboard from './Admin/AdminDashboard'
 import SalesAnalytics from './Admin/SalesAnalytics'
 import ProductsManagement from './Admin/ProductsManagement'
 import OrdersManagement from './Admin/OrdersManagement'
+import AddProduct from './Admin/AddProduct'
 
 // Import all products
 import SC1  from './SkinCareImg/SkinCare1.png'
