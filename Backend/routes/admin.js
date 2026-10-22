@@ -2,17 +2,17 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const Bundle = require('../models/Bundle');
+const Product = require('../models/Product');
 const Order = require('../models/Order');
 const User = require('../models/User');
 
 // Get all bundles/products for admin
 router.get('/products', auth, admin, async (req, res) => {
   try {
-    const bundles = await Bundle.find().sort({ createdAt: -1 });
+    const products = await Product.find().sort({ createdAt: -1 });
     res.json({
       success: true,
-      products: bundles
+      products: products
     });
   } catch (error) {
     console.error('Error fetching products:', error);
@@ -35,13 +35,13 @@ router.put('/products/:id/price', auth, admin, async (req, res) => {
       });
     }
 
-    const bundle = await Bundle.findByIdAndUpdate(
+    const product = await Product.findByIdAndUpdate(
       req.params.id,
       { price },
       { new: true, runValidators: true }
     );
 
-    if (!bundle) {
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: 'Product not found'
@@ -51,7 +51,7 @@ router.put('/products/:id/price', auth, admin, async (req, res) => {
     res.json({
       success: true,
       message: 'Price updated successfully',
-      product: bundle
+      product: product
     });
   } catch (error) {
     console.error('Error updating price:', error);
@@ -74,13 +74,13 @@ router.put('/products/:id/stock', auth, admin, async (req, res) => {
       });
     }
 
-    const bundle = await Bundle.findByIdAndUpdate(
+    const product = await Product.findByIdAndUpdate(
       req.params.id,
       { stock },
       { new: true, runValidators: true }
     );
 
-    if (!bundle) {
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: 'Product not found'
@@ -90,7 +90,7 @@ router.put('/products/:id/stock', auth, admin, async (req, res) => {
     res.json({
       success: true,
       message: 'Stock updated successfully',
-      product: bundle
+      product: product
     });
   } catch (error) {
     console.error('Error updating stock:', error);
