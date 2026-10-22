@@ -69,6 +69,22 @@ app.use(async (req, res, next) => {
 });
 
 // ── Routes ────────────────────────────────────────────────────────────
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    const mongoUri = process.env.MONGO_URI ? 'configured' : 'missing';
+    res.json({ 
+      status: 'ok',
+      database: dbStatus,
+      mongoUri: mongoUri,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/bundles', bundleRoutes);
 app.use('/api/coupons', couponRoutes);
