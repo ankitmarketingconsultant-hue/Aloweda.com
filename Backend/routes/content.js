@@ -35,9 +35,10 @@ router.get('/', async (req, res) => {
           }
         ],
         contactInfo: {
-          phone: '+91 1234567890',
+          phone: '+91 98765 43210',
           email: 'info@aloweda.com',
-          whatsappNumber: '+91 1234567890'
+          address: '123 Business Street, City, State - 123456',
+          whatsappNumber: '919876543210'
         }
       });
     }
