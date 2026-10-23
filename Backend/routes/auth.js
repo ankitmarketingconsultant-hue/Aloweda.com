@@ -18,7 +18,7 @@ const generateToken = (userId) => {
 // @route   POST /api/auth/signup
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone, role } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -36,16 +36,19 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create new user
-    const user = await User.create({
+    // Create new user with optional role (defaults to 'user' in schema)
+    // Password will be automatically hashed by pre-save hook in User model
+    const userData = {
       name,
       email,
-      password: hashedPassword,
-    });
+      password, // Don't hash here - pre-save hook will do it!
+    };
+
+    // Add optional fields if provided
+    if (phone) userData.phone = phone;
+    if (role && (role === 'admin' || role === 'user')) userData.role = role;
+
+    const user = await User.create(userData);
 
     console.log('User created successfully:', user._id);
     console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
@@ -60,6 +63,7 @@ router.post('/signup', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -105,10 +109,62 @@ router.post('/login', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: 'Server error, please try again later' });
+  }
+});
+
+// @route   POST /api/auth/register (alias for signup)
+router.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, phone, role } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    if (password.length < 6) {
+      return res
+        .status(400)
+        .json({ message: 'Password must be at least 6 characters' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    // Create new user with optional role
+    const userData = {
+      name,
+      email,
+      password, // Will be hashed by pre-save hook in User model
+      role: role || 'user', // Default to 'user', allow 'admin' if specified
+    };
+
+    if (phone) userData.phone = phone;
+
+    const user = await User.create(userData);
+
+    const token = generateToken(user._id);
+
+    res.status(201).json({
+      message: 'Account created successfully',
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error('Register error:', error);
     res.status(500).json({ message: 'Server error, please try again later' });
   }
 });

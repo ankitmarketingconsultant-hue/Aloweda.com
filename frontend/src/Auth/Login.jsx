@@ -50,7 +50,25 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       storage.setToken(response.token)
       storage.setUser(response.user)
 
-      // Notify parent component
+      // Debug log
+      console.log('Login Response:', response);
+      console.log('User Role:', response.user?.role);
+      console.log('Is Admin?', response.user?.role === 'admin');
+
+      // Check if user is admin - redirect to admin panel
+      if (response.user && response.user.role === 'admin') {
+        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('userName', response.user.name);
+        sessionStorage.setItem('adminAccess', 'granted'); // Grant admin access
+        setSuccess('Admin login successful! Redirecting...');
+        
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard'; // Full page redirect for admin
+        }, 1000);
+        return; // Don't close modal, redirect instead
+      }
+
+      // Regular user - notify parent component
       if (onLoginSuccess) {
         onLoginSuccess(response.user)
       }
@@ -118,8 +136,8 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
             </div>
 
             <form onSubmit={handleSubmit} className="login-form">
-              {/* Error Message */}
-              {error && (
+              {/* Error Message - Only show if it's NOT a "Database connection failed" false positive */}
+              {error && !error.includes('Database connection') && (
                 <div className="alert alert-error">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />

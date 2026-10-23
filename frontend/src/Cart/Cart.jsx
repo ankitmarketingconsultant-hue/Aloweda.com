@@ -32,8 +32,26 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
   // Calculate totals - with safety checks
   const subtotal = safeCart.reduce((total, item) => {
     try {
-      const price = parseFloat(item.price.replace(/[^0-9.]/g, ''))
-      return total + (price * (item.quantity || 1))
+      // Handle both number and string prices
+      let price = 0;
+      if (typeof item.price === 'number') {
+        price = item.price;
+      } else if (typeof item.price === 'string') {
+        // Step 1: Remove currency symbols (₹, Rs, Rs.)
+        let cleaned = item.price.replace(/[₹]/g, '').replace(/Rs\.?/gi, '');
+        
+        // Step 2: Remove spaces
+        cleaned = cleaned.trim();
+        
+        // Step 3: Remove commas (Indian format: 1,299)
+        cleaned = cleaned.replace(/,/g, '');
+        
+        // Step 4: Parse as float (handles decimal points correctly)
+        price = parseFloat(cleaned) || 0;
+      }
+      
+      console.log(`Item: ${item.name}, Original price: "${item.price}", Parsed: ${price}`);
+      return total + (price * (item.quantity || 1));
     } catch (error) {
       console.error('Error calculating price for item:', item, error);
       return total;
@@ -104,23 +122,79 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
 
     setCouponError('')
     
-    // Simulate API call (replace with actual API when backend ready)
-    const validCoupons = {
-      'WELCOME10': { code: 'WELCOME10', discount: subtotal * 0.10, type: 'percentage' },
-      'SAVE50': { code: 'SAVE50', discount: 50, type: 'fixed' },
-      'SAVE100': { code: 'SAVE100', discount: 100, type: 'fixed' },
-      'FIRST20': { code: 'FIRST20', discount: subtotal * 0.20, type: 'percentage' }
+    // Excel Coupons: B3A899, B4A1199, B2A699 (Combo Deals)
+    const excelCoupons = {
+      'B3A899': { 
+        code: 'B3A899', 
+        requiredItems: 3,
+        finalPrice: 899,
+        description: 'Buy any 3 products at ₹899'
+      },
+      'B4A1199': { 
+        code: 'B4A1199', 
+        requiredItems: 4,
+        finalPrice: 1199,
+        description: 'Buy any 4 products at ₹1199'
+      },
+      'B2A699': { 
+        code: 'B2A699', 
+        requiredItems: 2,
+        finalPrice: 699,
+        description: 'Buy any 2 products at ₹699'
+      }
     }
-
-    const coupon = validCoupons[promoCode.toUpperCase()]
     
-    if (coupon) {
-      setAppliedCoupon(coupon)
+    // No promotional coupons - removed as per client request
+
+    const couponCode = promoCode.toUpperCase()
+    
+    // Check Excel combo coupons
+    if (excelCoupons[couponCode]) {
+      const combo = excelCoupons[couponCode]
+      
+      // Check if cart has any COMBO products - coupons don't apply to combos
+      const hasComboProducts = safeCart.some(item => {
+        // Check if product name contains "COMBO" or category is "combo"
+        const nameHasCombo = item.name && item.name.toUpperCase().includes('COMBO');
+        const categoryIsCombo = item.category && item.category.toLowerCase() === 'combo';
+        return nameHasCombo || categoryIsCombo;
+      });
+      
+      if (hasComboProducts) {
+        setCouponError('This coupon cannot be applied to combo products. Please use single products only.')
+        setAppliedCoupon(null)
+        return
+      }
+      
+      // Check if cart has required number of items
+      if (totalItems < combo.requiredItems) {
+        setCouponError(`Add ${combo.requiredItems - totalItems} more item${combo.requiredItems - totalItems > 1 ? 's' : ''} to use this combo offer`)
+        setAppliedCoupon(null)
+        return
+      }
+      
+      if (totalItems > combo.requiredItems) {
+        setCouponError(`This combo is for exactly ${combo.requiredItems} items. You have ${totalItems} items.`)
+        setAppliedCoupon(null)
+        return
+      }
+      
+      // Calculate discount: current subtotal - combo final price
+      const comboDiscount = Math.max(0, subtotal - combo.finalPrice)
+      
+      setAppliedCoupon({
+        code: combo.code,
+        discount: comboDiscount,
+        type: 'combo',
+        description: combo.description
+      })
       setCouponError('')
-    } else {
-      setCouponError('Invalid coupon code')
-      setAppliedCoupon(null)
+      return
     }
+    
+    // Invalid coupon code
+    setCouponError('Invalid coupon code')
+    setAppliedCoupon(null)
   }
 
   const handleRemoveCoupon = () => {
@@ -165,15 +239,69 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
     }))
 
     if (paymentMethod === 'cod') {
-      // COD — call backend, send email
+      // COD — call backend, send email, save to database
       try {
+        // Get userId from localStorage if logged in
+        const token = localStorage.getItem('token');
+        let userId = null;
+        
+        if (token) {
+          try {
+            const userRes = await fetch(`${API_URL}/api/profile`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const userData = await userRes.json();
+            if (userData.user) {
+              userId = userData.user._id || userData.user.id;
+            }
+          } catch (e) {
+            console.log('Guest checkout - no userId');
+          }
+        }
+
         const res = await fetch(`${API_URL}/api/cod/place-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            customer: checkoutForm,
-            items: orderItems,
-            total: total.toFixed(2),
+            customerInfo: {
+              name: checkoutForm.name,
+              email: checkoutForm.email || 'guest@aloweda.com',
+              phone: checkoutForm.phone,
+              address: {
+                street: checkoutForm.address,
+                city: checkoutForm.city,
+                state: checkoutForm.state,
+                pincode: checkoutForm.pincode,
+                country: 'India'
+              }
+            },
+            items: orderItems.map(item => ({
+              productId: item.id || item.productId || 'PROD-' + Date.now(),
+              name: item.name,
+              price: (() => {
+                // Parse price from string to number
+                if (typeof item.price === 'number') return item.price;
+                if (typeof item.price === 'string') {
+                  let cleaned = item.price.replace(/[₹]/g, '').replace(/Rs\.?/gi, '').trim().replace(/,/g, '');
+                  return parseFloat(cleaned) || 0;
+                }
+                return 0;
+              })(),
+              quantity: item.quantity || 1,
+              image: item.img || item.image || ''
+            })),
+            pricing: {
+              subtotal: parseFloat(total),
+              bundleDiscount: 0,
+              couponDiscount: 0,
+              onlinePaymentDiscount: 0,
+              shippingCharges: 0,
+              tax: 0,
+              total: parseFloat(total)
+            },
+            userId: userId,
+            paymentMethod: 'COD',
+            orderStatus: 'Confirmed'
           }),
         })
         const data = await res.json()
@@ -185,6 +313,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
           setFormError(data.message || 'Something went wrong.')
         }
       } catch (err) {
+        console.error('COD Error:', err);
         setFormError('Network error. Please try again.')
       }
     } else {
@@ -584,12 +713,12 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                         <span>Available Offers</span>
                       </div>
                       <div className="suggestions-grid">
+                        {/* Only Excel Combo Deals - No promotional coupons */}
                         {[
-                          { code: 'WELCOME10', desc: '10% off on first order', color: '#667eea' },
-                          { code: 'SAVE50', desc: 'Flat ₹50 discount', color: '#764ba2' },
-                          { code: 'SAVE100', desc: 'Flat ₹100 discount', color: '#f093fb' },
-                          { code: 'FIRST20', desc: '20% off for new users', color: '#4facfe' }
-                        ].map(({ code, desc, color }) => (
+                          { code: 'B3A899', desc: 'Buy 3 at ₹899 - Combo Deal', color: '#28a745', items: 3 },
+                          { code: 'B4A1199', desc: 'Buy 4 at ₹1199 - Combo Deal', color: '#17a2b8', items: 4 },
+                          { code: 'B2A699', desc: 'Buy 2 at ₹699 - Combo Deal', color: '#ffc107', items: 2 }
+                        ].map(({ code, desc, color, items }) => (
                           <button
                             key={code}
                             onClick={() => {
@@ -598,9 +727,15 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                             }}
                             className="suggestion-card"
                             style={{ '--card-color': color }}
+                            title={items ? `Valid when you have exactly ${items} items` : ''}
                           >
                             <div className="suggestion-code">{code}</div>
                             <div className="suggestion-desc">{desc}</div>
+                            {items && totalItems !== items && (
+                              <div style={{fontSize: '10px', color: '#999', marginTop: '2px'}}>
+                                {totalItems < items ? `Need ${items - totalItems} more` : `Remove ${totalItems - items}`}
+                              </div>
+                            )}
                             <div className="suggestion-action">
                               <span>Apply</span>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

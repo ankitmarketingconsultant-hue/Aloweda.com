@@ -11,6 +11,10 @@ const reviewRoutes = require('./routes/review');
 const orderRoutes = require('./routes/order');
 const paymentRoutes = require('./routes/payment');
 const codRoutes = require('./routes/cod');
+const adminRoutes = require('./routes/admin');
+const importProductsRoutes = require('./routes/import-products');
+const contentRoutes = require('./routes/content');
+const uploadRoutes = require('./routes/upload');
 const protect = require('./middleware/auth');
 const User = require('./models/User');
 
@@ -56,17 +60,39 @@ app.use(express.json());
 // Health check — no DB needed
 app.get('/', (req, res) => res.send('Auth backend is running ✅'));
 
-// Connect DB before every API request
+// Connect DB lazily on first API request (skip health checks)
 app.use(async (req, res, next) => {
+  // Skip DB connection for health check routes
+  if (req.path === '/' || req.path === '/api/health') {
+    return next();
+  }
+  
   try {
     await connectDB();
     next();
   } catch (err) {
+    console.error('❌ DB Connection Error:', err.message);
     res.status(500).json({ message: 'Database connection failed', error: err.message });
   }
 });
 
 // ── Routes ────────────────────────────────────────────────────────────
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    const mongoUri = process.env.MONGO_URI ? 'configured' : 'missing';
+    res.json({ 
+      status: 'ok',
+      database: dbStatus,
+      mongoUri: mongoUri,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/bundles', bundleRoutes);
 app.use('/api/coupons', couponRoutes);
@@ -75,6 +101,10 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/cod', codRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/import-products', importProductsRoutes);
+app.use('/api/content', contentRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/api/profile', protect, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');

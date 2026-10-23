@@ -311,7 +311,11 @@ function HeroSlider({ onNavigate }) {
 /* ─────────────── MARQUEE STRIP ─────────────── */
 
 function MarqueeStrip() {
+  const [isVisible, setIsVisible] = useState(true)
   const items = ['Free Shipping Above ₹999', 'Science-Backed Formulas', 'Clinically Proven Ingredients', 'Suitable for all skin types', 'No Parabens · No Sulphates', 'Made in India ✦']
+  
+  if (!isVisible) return null
+  
   return (
     <div className="marquee-strip">
       <div className="marquee-track">
@@ -319,6 +323,13 @@ function MarqueeStrip() {
           <span key={i} className="marquee-item">{item}</span>
         ))}
       </div>
+      <button 
+        className="marquee-close" 
+        onClick={() => setIsVisible(false)}
+        aria-label="Close announcement"
+      >
+        ✕
+      </button>
     </div>
   )
 }
