@@ -145,16 +145,14 @@ const VisualEditor = () => {
     );
   }
 
-  const websiteUrl = 'https://aloweda-smoky.vercel.app';
-
   return (
     <div className="visual-editor">
       {/* Top Control Bar */}
       <div className="control-bar">
         <div className="control-bar-left">
-          <h2>🎨 Visual Page Editor</h2>
+          <h2>🎨 Page Content Editor</h2>
           <span className="mode-indicator">
-            {editMode ? '✏️ Edit Mode (Click banners below)' : '👁️ Preview Mode'}
+            {editMode ? '✏️ Editing Homepage Banners' : '👁️ Preview Mode'}
           </span>
         </div>
         <div className="control-bar-right">
@@ -164,7 +162,7 @@ const VisualEditor = () => {
             rel="noopener noreferrer"
             className="preview-link-btn"
           >
-            🔗 Open Live Website
+            🔗 View Live Website
           </a>
           <button 
             className={`mode-toggle ${editMode ? 'active' : ''}`}
@@ -184,83 +182,80 @@ const VisualEditor = () => {
         </div>
       </div>
 
-      {/* Split View: Website Preview + Editor */}
-      <div className="split-view">
-        {/* Left Side: Website Preview */}
-        <div className="website-preview-panel">
-          <div className="preview-header">
-            <div>
-              <h3>🌐 Live Website Preview</h3>
-              <span className="preview-note">
-                {saving ? '🔄 Saving and refreshing...' : 'Changes will appear after saving'}
-              </span>
-            </div>
-            <button 
-              className="refresh-iframe-btn"
-              onClick={() => setIframeKey(prev => prev + 1)}
-              title="Refresh preview"
-            >
-              🔄 Refresh
-            </button>
+      {/* Full Width Editor */}
+      <div className="full-width-editor">
+        {/* Edit Mode Instructions */}
+        {editMode && (
+          <div className="edit-instructions">
+            <p>
+              💡 <strong>Click any banner below</strong> to edit its content → Click gallery to change image → Save changes
+            </p>
           </div>
-          <iframe 
-            key={iframeKey} // Forces reload when key changes
-            src={websiteUrl}
-            className="website-iframe"
-            title="Website Preview"
-          />
-        </div>
+        )}
 
-        {/* Right Side: Editable Banners */}
-        <div className="editor-panel-container">
-          {/* Edit Mode Instructions */}
-          {editMode && (
-            <div className="edit-instructions">
-              <p>
-                💡 <strong>How to edit:</strong> Click any banner card below → Edit in side panel → Click gallery to change image → Save changes → Website refreshes automatically
-              </p>
-            </div>
-          )}
-
-          {/* Homepage Banners Preview */}
-          <div className="banners-preview">
-            <h3 className="section-title">🖼️ Homepage Banners</h3>
-            <p className="section-subtitle">Click any banner to edit its content and image</p>
-            
-            {content.homepageBanners?.filter(b => b.enabled).map((banner, index) => (
-              <div 
-                key={index}
-                className={`banner-preview ${editMode ? 'editable' : ''} ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
-                onClick={() => handleBannerClick(index)}
+          {/* Homepage Banners Section */}
+          <div className="banners-section">
+            <div className="section-header">
+              <div>
+                <h3 className="section-title">🖼️ Homepage Banners</h3>
+                <p className="section-subtitle">These banners appear on your website homepage</p>
+              </div>
+              <button 
+                className="add-banner-btn"
+                onClick={() => {
+                  const newBanner = {
+                    title: 'New Banner',
+                    subtitle: 'Subtitle here',
+                    description: 'Description here',
+                    imageUrl: '/assets/FaceWash.png',
+                    buttonText: 'SHOP NOW',
+                    buttonLink: '/shop',
+                    order: content.homepageBanners.length + 1,
+                    enabled: true
+                  };
+                  setContent({
+                    ...content,
+                    homepageBanners: [...content.homepageBanners, newBanner]
+                  });
+                }}
               >
-                <div className="banner-content">
-                  <div className="banner-text">
-                    <h2>{banner.title || 'Banner Title'}</h2>
-                    <h3>{banner.subtitle || 'Subtitle'}</h3>
-                    <p>{banner.description || 'Description here...'}</p>
-                    <button className="banner-cta">{banner.buttonText || 'SHOP NOW'}</button>
+                ➕ Add New Banner
+              </button>
+            </div>
+
+            {/* Banners Grid */}
+            <div className="banners-grid">
+              {content.homepageBanners?.map((banner, index) => (
+                <div 
+                  key={index}
+                  className={`banner-card ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
+                  onClick={() => handleBannerClick(index)}
+                >
+                  <div className="banner-card-header">
+                    <div className="banner-number">#{index + 1}</div>
+                    <div className="banner-status">
+                      {banner.enabled ? '✅ Enabled' : '❌ Disabled'}
+                    </div>
                   </div>
-                  <div className="banner-image-container">
+                  <div className="banner-card-image">
                     {banner.imageUrl ? (
-                      <img 
-                        src={banner.imageUrl} 
-                        alt={banner.title}
-                        onError={(e) => {
-                          e.target.src = '/assets/placeholder.png';
-                        }}
-                      />
+                      <img src={banner.imageUrl} alt={banner.title} />
                     ) : (
-                      <div className="image-placeholder">No Image</div>
+                      <div className="no-image">No Image</div>
                     )}
                   </div>
-                </div>
-                {editMode && (
-                  <div className="edit-overlay">
-                    ✏️ Click to Edit Banner #{index + 1}
+                  <div className="banner-card-content">
+                    <h4>{banner.title || 'Untitled Banner'}</h4>
+                    <p>{banner.subtitle || 'No subtitle'}</p>
                   </div>
-                )}
-              </div>
-            ))}
+                  {editMode && (
+                    <div className="banner-card-footer">
+                      ✏️ Click to Edit
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
