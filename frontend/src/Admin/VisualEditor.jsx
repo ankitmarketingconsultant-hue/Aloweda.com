@@ -447,6 +447,66 @@ const VisualEditor = () => {
                           e.target.parentElement.innerHTML = '<div class="no-image">⚠️ Image not found</div>';
                         }}
                       />
+                    ) : index === 0 && slide.graphics && slide.graphics.length > 0 ? (
+                      // Special preview for "What's Aloweda?" with 4 animated videos
+                      <div style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '8px',
+                        padding: '16px',
+                        height: '100%'
+                      }}>
+                        {slide.graphics.slice(0, 4).map((graphic, gIdx) => (
+                          <div key={gIdx} style={{
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            borderRadius: '8px',
+                            padding: '8px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
+                            overflow: 'hidden'
+                          }}>
+                            {graphic.videoUrl ? (
+                              <video
+                                src={graphic.videoUrl}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                style={{
+                                  width: '60px',
+                                  height: '60px',
+                                  objectFit: 'contain',
+                                  marginBottom: '4px'
+                                }}
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div style={{
+                                fontSize: '32px',
+                                marginBottom: '4px'
+                              }}>
+                                {gIdx === 0 ? '🌿' : gIdx === 1 ? '💊' : gIdx === 2 ? '🧪' : '💡'}
+                              </div>
+                            )}
+                            <div style={{
+                              color: 'white',
+                              fontSize: '9px',
+                              fontWeight: '600',
+                              textAlign: 'center',
+                              lineHeight: '1.2'
+                            }}>
+                              {graphic.label || `Graphic ${gIdx + 1}`}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div className="no-image" style={{
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -459,18 +519,8 @@ const VisualEditor = () => {
                         textAlign: 'center',
                         height: '100%'
                       }}>
-                        {index === 0 ? (
-                          <>
-                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎨</div>
-                            <div style={{ fontSize: '13px', fontWeight: '600' }}>Special Layout</div>
-                            <div style={{ fontSize: '11px', opacity: '0.9', marginTop: '4px' }}>Uses custom graphics</div>
-                          </>
-                        ) : (
-                          <>
-                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📷</div>
-                            <div style={{ fontSize: '13px' }}>No Image</div>
-                          </>
-                        )}
+                        <div style={{ fontSize: '32px', marginBottom: '8px' }}>📷</div>
+                        <div style={{ fontSize: '13px' }}>No Image</div>
                       </div>
                     )}
                   </div>
