@@ -22,8 +22,17 @@ router.post('/place-order', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Customer details required' });
     }
 
+    // Generate unique orderId
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(-2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const orderId = `ALD${year}${month}${day}${random}`;
+
     // Create order in database
     const order = new Order({
+      orderId, // Manually set orderId
       userId: userId || null, // Optional - guest checkout allowed
       customerInfo,
       items,
