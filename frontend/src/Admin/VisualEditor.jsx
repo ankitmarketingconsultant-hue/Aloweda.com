@@ -138,6 +138,8 @@ const VisualEditor = () => {
     );
   }
 
+  const websiteUrl = 'https://aloweda-smoky.vercel.app';
+
   return (
     <div className="visual-editor">
       {/* Top Control Bar */}
@@ -145,10 +147,18 @@ const VisualEditor = () => {
         <div className="control-bar-left">
           <h2>🎨 Visual Page Editor</h2>
           <span className="mode-indicator">
-            {editMode ? '✏️ Edit Mode' : '👁️ Preview Mode'}
+            {editMode ? '✏️ Edit Mode (Click banners below)' : '👁️ Preview Mode'}
           </span>
         </div>
         <div className="control-bar-right">
+          <a 
+            href={websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="preview-link-btn"
+          >
+            🔗 Open Live Website
+          </a>
           <button 
             className={`mode-toggle ${editMode ? 'active' : ''}`}
             onClick={() => setEditMode(!editMode)}
@@ -167,63 +177,70 @@ const VisualEditor = () => {
         </div>
       </div>
 
-      {/* Edit Mode Instructions */}
-      {editMode && (
-        <div className="edit-instructions">
-          <p>💡 <strong>Click on any banner or text</strong> to edit it. Click image to change picture.</p>
-        </div>
-      )}
-
-      {/* Main Preview Area */}
-      <div className="preview-container">
-        {/* Announcement Bar Preview */}
-        {content.announcementBar?.enabled && content.announcementBar.messages?.[0] && (
-          <div 
-            className={`announcement-preview ${editMode ? 'editable' : ''}`}
-            style={{ backgroundColor: content.announcementBar.messages[0].bgColor }}
-            onClick={handleAnnouncementClick}
-          >
-            <p>{content.announcementBar.messages[0].text}</p>
-            {editMode && <div className="edit-overlay">✏️ Click to Edit Announcement</div>}
+      {/* Split View: Website Preview + Editor */}
+      <div className="split-view">
+        {/* Left Side: Website Preview */}
+        <div className="website-preview-panel">
+          <div className="preview-header">
+            <h3>🌐 Live Website Preview</h3>
+            <span className="preview-note">Changes will appear after saving</span>
           </div>
-        )}
+          <iframe 
+            src={websiteUrl}
+            className="website-iframe"
+            title="Website Preview"
+          />
+        </div>
 
-        {/* Homepage Banners Preview */}
-        <div className="banners-preview">
-          {content.homepageBanners?.filter(b => b.enabled).map((banner, index) => (
-            <div 
-              key={index}
-              className={`banner-preview ${editMode ? 'editable' : ''} ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
-              onClick={() => handleBannerClick(index)}
-            >
-              <div className="banner-content">
-                <div className="banner-text">
-                  <h2>{banner.title || 'Banner Title'}</h2>
-                  <h3>{banner.subtitle || 'Subtitle'}</h3>
-                  <p>{banner.description || 'Description here...'}</p>
-                  <button className="banner-cta">{banner.buttonText || 'SHOP NOW'}</button>
-                </div>
-                <div className="banner-image-container">
-                  {banner.imageUrl ? (
-                    <img 
-                      src={banner.imageUrl} 
-                      alt={banner.title}
-                      onError={(e) => {
-                        e.target.src = '/assets/placeholder.png';
-                      }}
-                    />
-                  ) : (
-                    <div className="image-placeholder">No Image</div>
-                  )}
-                </div>
-              </div>
-              {editMode && (
-                <div className="edit-overlay">
-                  ✏️ Click to Edit Banner #{index + 1}
-                </div>
-              )}
+        {/* Right Side: Editable Banners */}
+        <div className="editor-panel-container">
+          {/* Edit Mode Instructions */}
+          {editMode && (
+            <div className="edit-instructions">
+              <p>💡 <strong>Click on any banner below</strong> to edit it. Changes will show on website after saving.</p>
             </div>
-          ))}
+          )}
+
+          {/* Homepage Banners Preview */}
+          <div className="banners-preview">
+            <h3 className="section-title">🖼️ Homepage Banners</h3>
+            <p className="section-subtitle">Click any banner to edit its content and image</p>
+            
+            {content.homepageBanners?.filter(b => b.enabled).map((banner, index) => (
+              <div 
+                key={index}
+                className={`banner-preview ${editMode ? 'editable' : ''} ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
+                onClick={() => handleBannerClick(index)}
+              >
+                <div className="banner-content">
+                  <div className="banner-text">
+                    <h2>{banner.title || 'Banner Title'}</h2>
+                    <h3>{banner.subtitle || 'Subtitle'}</h3>
+                    <p>{banner.description || 'Description here...'}</p>
+                    <button className="banner-cta">{banner.buttonText || 'SHOP NOW'}</button>
+                  </div>
+                  <div className="banner-image-container">
+                    {banner.imageUrl ? (
+                      <img 
+                        src={banner.imageUrl} 
+                        alt={banner.title}
+                        onError={(e) => {
+                          e.target.src = '/assets/placeholder.png';
+                        }}
+                      />
+                    ) : (
+                      <div className="image-placeholder">No Image</div>
+                    )}
+                  </div>
+                </div>
+                {editMode && (
+                  <div className="edit-overlay">
+                    ✏️ Click to Edit Banner #{index + 1}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
