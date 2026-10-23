@@ -82,14 +82,6 @@ const AdminDashboard = () => {
             <span className="nav-icon">🎨</span>
             {isSidebarOpen && <span className="nav-label">Visual Editor</span>}
           </Link>
-
-          <Link 
-            to="/admin/content" 
-            className={`nav-item ${isActive('/admin/content') ? 'active' : ''}`}
-          >
-            <span className="nav-icon">📝</span>
-            {isSidebarOpen && <span className="nav-label">Content (Old)</span>}
-          </Link>
         </nav>
 
         <div className="sidebar-footer">

@@ -31,7 +31,6 @@ import SalesAnalytics from './Admin/SalesAnalytics'
 import ProductsManagement from './Admin/ProductsManagement'
 import OrdersManagement from './Admin/OrdersManagement'
 import AddProduct from './Admin/AddProduct'
-import ContentManagement from './Admin/ContentManagement'
 import VisualEditor from './Admin/VisualEditor'
 
 // Import all products
@@ -663,7 +662,6 @@ function AppContent() {
           <Route path="products/add" element={<AddProduct />} />
           <Route path="orders" element={<OrdersManagement />} />
           <Route path="visual-editor" element={<VisualEditor />} />
-          <Route path="content" element={<ContentManagement />} />
         </Route>
 
         {/* Catch-all redirect to 404 */}
