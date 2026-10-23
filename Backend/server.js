@@ -13,6 +13,7 @@ const paymentRoutes = require('./routes/payment');
 const codRoutes = require('./routes/cod');
 const adminRoutes = require('./routes/admin');
 const importProductsRoutes = require('./routes/import-products');
+const contentRoutes = require('./routes/content');
 const protect = require('./middleware/auth');
 const User = require('./models/User');
 
@@ -101,6 +102,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/cod', codRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/import-products', importProductsRoutes);
+app.use('/api/content', contentRoutes);
 
 app.get('/api/profile', protect, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');

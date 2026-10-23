@@ -31,6 +31,7 @@ import SalesAnalytics from './Admin/SalesAnalytics'
 import ProductsManagement from './Admin/ProductsManagement'
 import OrdersManagement from './Admin/OrdersManagement'
 import AddProduct from './Admin/AddProduct'
+import ContentManagement from './Admin/ContentManagement'
 
 // Import all products
 import SC1  from './SkinCareImg/SkinCare1.png'
@@ -660,6 +661,7 @@ function AppContent() {
           <Route path="products" element={<ProductsManagement />} />
           <Route path="products/add" element={<AddProduct />} />
           <Route path="orders" element={<OrdersManagement />} />
+          <Route path="content" element={<ContentManagement />} />
         </Route>
 
         {/* Catch-all redirect to 404 */}
