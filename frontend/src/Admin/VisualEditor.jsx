@@ -403,6 +403,17 @@ const VisualEditor = () => {
               <div>
                 <h3 className="section-title">🎬 Hero Slider</h3>
                 <p className="section-subtitle">Main slider at the top of homepage (Recommended: 5-7 slides)</p>
+                <p style={{ 
+                  fontSize: '13px', 
+                  color: '#f59e0b', 
+                  marginTop: '8px',
+                  background: '#fffbeb',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #fcd34d'
+                }}>
+                  ⚠️ <strong>Note:</strong> Slide #1 "What's Aloweda?" uses a special layout with 4 animated graphics on the homepage.
+                </p>
               </div>
               <button 
                 className="add-banner-btn"
