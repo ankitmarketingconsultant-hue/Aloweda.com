@@ -113,6 +113,35 @@ router.put('/banners', auth, admin, async (req, res) => {
   }
 });
 
+// @desc    Update hero slider
+// @route   PUT /api/content/hero-slider
+// @access  Admin
+router.put('/hero-slider', auth, admin, async (req, res) => {
+  try {
+    const { enabled, autoplay, interval, slides } = req.body;
+    
+    let content = await SiteContent.findOne();
+    if (!content) {
+      content = new SiteContent();
+    }
+    
+    content.heroSlider = { enabled, autoplay, interval, slides };
+    await content.save();
+    
+    res.json({
+      success: true,
+      message: 'Hero slider updated',
+      heroSlider: content.heroSlider
+    });
+  } catch (error) {
+    console.error('Error updating hero slider:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update hero slider'
+    });
+  }
+});
+
 // @desc    Update featured sections
 // @route   PUT /api/content/featured
 // @access  Admin

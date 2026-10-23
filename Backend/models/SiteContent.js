@@ -1,6 +1,35 @@
 const mongoose = require('mongoose');
 
 const siteContentSchema = new mongoose.Schema({
+  // Hero Slider (Top rotating carousel)
+  heroSlider: {
+    enabled: {
+      type: Boolean,
+      default: true
+    },
+    autoplay: {
+      type: Boolean,
+      default: true
+    },
+    interval: {
+      type: Number,
+      default: 5000 // 5 seconds
+    },
+    slides: [{
+      title: String,
+      subtitle: String,
+      description: String,
+      imageUrl: String,
+      buttonText: String,
+      buttonLink: String,
+      order: Number,
+      enabled: {
+        type: Boolean,
+        default: true
+      }
+    }]
+  },
+
   // Announcement Bar
   announcementBar: {
     enabled: {

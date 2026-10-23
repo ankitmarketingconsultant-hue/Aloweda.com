@@ -9,7 +9,7 @@ const VisualEditor = () => {
   const [showImageGallery, setShowImageGallery] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [saving, setSaving] = useState(false);
-  const [iframeKey, setIframeKey] = useState(0); // For forcing iframe reload
+  const [activeSection, setActiveSection] = useState('banners'); // 'banners' or 'hero'
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const websiteUrl = 'https://aloweda-smoky.vercel.app';
@@ -88,6 +88,12 @@ const VisualEditor = () => {
     }
   };
 
+  const handleSlideClick = (index) => {
+    if (editMode) {
+      setSelectedElement({ type: 'slide', index });
+    }
+  };
+
   const handleAnnouncementClick = () => {
     if (editMode) {
       setSelectedElement({ type: 'announcement' });
@@ -99,6 +105,20 @@ const VisualEditor = () => {
       const newBanners = [...content.homepageBanners];
       newBanners[selectedElement.index][field] = value;
       setContent({ ...content, homepageBanners: newBanners });
+    }
+  };
+
+  const updateSlideField = (field, value) => {
+    if (selectedElement?.type === 'slide') {
+      const newSlides = [...(content.heroSlider?.slides || [])];
+      newSlides[selectedElement.index][field] = value;
+      setContent({ 
+        ...content, 
+        heroSlider: {
+          ...content.heroSlider,
+          slides: newSlides
+        }
+      });
     }
   };
 
@@ -153,17 +173,43 @@ const VisualEditor = () => {
       });
       const data = await response.json();
       if (data.success) {
-        alert('✅ Changes saved successfully! Website will refresh in 2 seconds...');
-        
-        // Wait 2 seconds then refresh iframe to show changes
-        setTimeout(() => {
-          setIframeKey(prev => prev + 1); // This forces iframe to reload
-        }, 2000);
+        alert('✅ Banners saved successfully!');
       }
     } catch (err) {
       alert('❌ Failed to save changes');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveHeroSlider = async () => {
+    try {
+      setSaving(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/content/hero-slider`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(content.heroSlider)
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('✅ Hero slider saved successfully!');
+      }
+    } catch (err) {
+      alert('❌ Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveCurrentSection = () => {
+    if (activeSection === 'hero') {
+      saveHeroSlider();
+    } else {
+      saveBanners();
     }
   };
 
