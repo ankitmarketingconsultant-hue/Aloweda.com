@@ -528,27 +528,100 @@ const ContentManagement = () => {
 
                     <div>
                       <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: '500' }}>
-                        Image URL:
+                        Image:
                       </label>
-                      <input
-                        type="text"
-                        value={banner.imageUrl || ''}
-                        onChange={(e) => {
-                          const newBanners = [...content.homepageBanners];
-                          newBanners[index].imageUrl = e.target.value;
-                          setContent({ ...content, homepageBanners: newBanners });
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '10px',
-                          border: '1px solid #d1d5db',
-                          borderRadius: '6px',
-                          fontSize: '15px'
-                        }}
-                        placeholder="/assets/FaceWash.png"
-                      />
-                      <small style={{ color: '#6b7280', fontSize: '13px' }}>
-                        💡 Use existing image path or upload to /public/assets/
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'end' }}>
+                        <div style={{ flex: 1 }}>
+                          <input
+                            type="text"
+                            value={banner.imageUrl || ''}
+                            onChange={(e) => {
+                              const newBanners = [...content.homepageBanners];
+                              newBanners[index].imageUrl = e.target.value;
+                              setContent({ ...content, homepageBanners: newBanners });
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '6px',
+                              fontSize: '15px'
+                            }}
+                            placeholder="/uploads/your-image.jpg"
+                          />
+                        </div>
+                        <label
+                          style={{
+                            padding: '10px 16px',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            fontSize: '14px',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          📤 Upload
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
+
+                              const formData = new FormData();
+                              formData.append('image', file);
+
+                              try {
+                                const token = localStorage.getItem('token');
+                                const response = await fetch(`${API_URL}/api/upload/image`, {
+                                  method: 'POST',
+                                  headers: {
+                                    'Authorization': `Bearer ${token}`
+                                  },
+                                  body: formData
+                                });
+
+                                const data = await response.json();
+                                if (data.success) {
+                                  const newBanners = [...content.homepageBanners];
+                                  newBanners[index].imageUrl = data.imageUrl;
+                                  setContent({ ...content, homepageBanners: newBanners });
+                                  alert('✅ Image uploaded! URL: ' + data.imageUrl);
+                                } else {
+                                  alert('❌ Upload failed: ' + data.message);
+                                }
+                              } catch (err) {
+                                console.error('Upload error:', err);
+                                alert('❌ Upload failed');
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                      {banner.imageUrl && (
+                        <div style={{ marginTop: '8px' }}>
+                          <img
+                            src={banner.imageUrl}
+                            alt="Preview"
+                            style={{
+                              maxWidth: '200px',
+                              maxHeight: '150px',
+                              borderRadius: '8px',
+                              border: '1px solid #e5e7eb',
+                              objectFit: 'cover'
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      <small style={{ color: '#6b7280', fontSize: '13px', display: 'block', marginTop: '4px' }}>
+                        💡 Upload image or use existing: /assets/YourImage.png
                       </small>
                     </div>
                   </div>
