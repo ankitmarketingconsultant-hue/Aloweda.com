@@ -824,6 +824,108 @@ const VisualEditor = () => {
             {/* Hero Slide Editor */}
             {selectedElement.type === 'slide' && (
               <>
+                {/* Special Graphics Section for Slide #1 - MOVED TO TOP */}
+                {selectedElement.index === 0 && content.heroSlider.slides[0].graphics && (
+                  <div className="form-group" style={{ 
+                    background: '#f0f9ff', 
+                    padding: '16px', 
+                    borderRadius: '8px',
+                    border: '2px solid #3b82f6',
+                    marginBottom: '20px'
+                  }}>
+                    <label style={{ color: '#1e40af', marginBottom: '12px', display: 'block', fontSize: '15px' }}>
+                      <strong>🎨 What's Aloweda? Animated Graphics</strong>
+                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 'normal', marginTop: '4px' }}>
+                        These 4 animated videos show on the homepage
+                      </div>
+                    </label>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                      {[
+                        { video: AyurvedaVideo, label: 'Ayurveda', idx: 0 },
+                        { video: AllopathyVideo, label: 'Allopathy', idx: 1 },
+                        { video: SafeSyntheticsVideo, label: 'Safe Synthetics', idx: 2 },
+                        { video: KnowledgeInnovationVideo, label: 'Knowledge & Innovation', idx: 3 }
+                      ].map((item) => (
+                        <div key={item.idx} style={{
+                          background: 'white',
+                          padding: '12px',
+                          borderRadius: '6px',
+                          border: '1px solid #e5e7eb'
+                        }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginBottom: '8px'
+                          }}>
+                            <video
+                              src={item.video}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                objectFit: 'contain',
+                                borderRadius: '4px',
+                                background: '#f3f4f6'
+                              }}
+                            />
+                            <div style={{
+                              flex: 1,
+                              fontSize: '12px',
+                              fontWeight: '600',
+                              color: '#374151'
+                            }}>
+                              #{item.idx + 1}: {item.label}
+                            </div>
+                          </div>
+                          <input
+                            type="text"
+                            value={content.heroSlider.slides[0].graphics[item.idx]?.label || item.label}
+                            onChange={(e) => {
+                              const newGraphics = [...content.heroSlider.slides[0].graphics];
+                              if (!newGraphics[item.idx]) newGraphics[item.idx] = {};
+                              newGraphics[item.idx].label = e.target.value;
+                              updateSlideField('graphics', newGraphics);
+                            }}
+                            placeholder="Label"
+                            style={{
+                              width: '100%',
+                              padding: '6px 8px',
+                              fontSize: '12px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '4px',
+                              marginBottom: '4px'
+                            }}
+                          />
+                          <input
+                            type="text"
+                            value={content.heroSlider.slides[0].graphics[item.idx]?.videoUrl || ''}
+                            onChange={(e) => {
+                              const newGraphics = [...content.heroSlider.slides[0].graphics];
+                              if (!newGraphics[item.idx]) newGraphics[item.idx] = {};
+                              newGraphics[item.idx].videoUrl = e.target.value;
+                              updateSlideField('graphics', newGraphics);
+                            }}
+                            placeholder="Video path: /assets/Video.mp4"
+                            style={{
+                              width: '100%',
+                              padding: '6px 8px',
+                              fontSize: '11px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '4px',
+                              fontFamily: 'monospace'
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="form-group">
                   <label>Slide Title</label>
                   <input
@@ -853,101 +955,6 @@ const VisualEditor = () => {
                     rows="3"
                   />
                 </div>
-
-                {/* Special Graphics Section for Slide #1 */}
-                {selectedElement.index === 0 && content.heroSlider.slides[0].graphics && (
-                  <div className="form-group" style={{ 
-                    background: '#f0f9ff', 
-                    padding: '16px', 
-                    borderRadius: '8px',
-                    border: '2px solid #3b82f6'
-                  }}>
-                    <label style={{ color: '#1e40af', marginBottom: '12px', display: 'block' }}>
-                      <strong>🎨 What's Aloweda? Graphics (4 animated icons)</strong>
-                    </label>
-                    
-                    {content.heroSlider.slides[0].graphics.map((graphic, idx) => (
-                      <div key={idx} style={{
-                        background: 'white',
-                        padding: '12px',
-                        borderRadius: '6px',
-                        marginBottom: '8px',
-                        border: '1px solid #e5e7eb'
-                      }}>
-                        <div style={{ 
-                          fontWeight: '600', 
-                          fontSize: '13px', 
-                          marginBottom: '8px',
-                          color: '#374151'
-                        }}>
-                          #{idx + 1}: {graphic.label || 'Untitled'}
-                        </div>
-                        <input
-                          type="text"
-                          value={graphic.label || ''}
-                          onChange={(e) => {
-                            const newGraphics = [...content.heroSlider.slides[0].graphics];
-                            newGraphics[idx].label = e.target.value;
-                            updateSlideField('graphics', newGraphics);
-                          }}
-                          placeholder="Label (e.g., Ayurveda)"
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            fontSize: '13px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            marginBottom: '6px'
-                          }}
-                        />
-                        <input
-                          type="text"
-                          value={graphic.videoUrl || ''}
-                          onChange={(e) => {
-                            const newGraphics = [...content.heroSlider.slides[0].graphics];
-                            newGraphics[idx].videoUrl = e.target.value;
-                            updateSlideField('graphics', newGraphics);
-                          }}
-                          placeholder="Video URL (e.g., /assets/Ayurveda.mp4)"
-                          style={{
-                            width: '100%',
-                            padding: '8px',
-                            fontSize: '12px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px'
-                          }}
-                        />
-                      </div>
-                    ))}
-                    
-                    <button
-                      onClick={() => {
-                        const newGraphic = {
-                          label: 'New Graphic',
-                          videoUrl: '/assets/video.mp4',
-                          imageUrl: '',
-                          order: content.heroSlider.slides[0].graphics.length + 1
-                        };
-                        const newGraphics = [...content.heroSlider.slides[0].graphics, newGraphic];
-                        updateSlideField('graphics', newGraphics);
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        background: '#3b82f6',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        marginTop: '8px'
-                      }}
-                    >
-                      ➕ Add New Graphic
-                    </button>
-                  </div>
-                )}
 
                 <div className="form-group">
                   <label>Button Text</label>
