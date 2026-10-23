@@ -60,3 +60,9 @@ coverage/
 .tmp/
 .vercel
 .env*
+
+# Ignore old nested folder
+Aloweda/
+_DELETE_ME_OLD_FOLDER/
+*_OLD/
+*_BACKUP/
