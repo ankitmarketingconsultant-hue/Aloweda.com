@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import './VisualEditor.css';
 
+// Import animated videos for "What's Aloweda?" preview
+import AyurvedaVideo from '../assets/Ayurveda.mp4';
+import AllopathyVideo from '../assets/Allopathy.mp4';
+import SafeSyntheticsVideo from '../assets/SafeSynthetics.mp4';
+import KnowledgeInnovationVideo from '../assets/Knowledge&Innovation.mp4';
+
 const VisualEditor = () => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -453,11 +459,16 @@ const VisualEditor = () => {
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         display: 'grid',
                         gridTemplateColumns: '1fr 1fr',
-                        gap: '8px',
+                        gap: '10px',
                         padding: '16px',
                         height: '100%'
                       }}>
-                        {slide.graphics.slice(0, 4).map((graphic, gIdx) => (
+                        {[
+                          { video: AyurvedaVideo, label: 'Ayurveda' },
+                          { video: AllopathyVideo, label: 'Allopathy' },
+                          { video: SafeSyntheticsVideo, label: 'Safe Synthetics' },
+                          { video: KnowledgeInnovationVideo, label: 'Knowledge & Innovation' }
+                        ].map((item, gIdx) => (
                           <div key={gIdx} style={{
                             background: 'rgba(255, 255, 255, 0.15)',
                             borderRadius: '8px',
@@ -470,39 +481,28 @@ const VisualEditor = () => {
                             border: '1px solid rgba(255, 255, 255, 0.2)',
                             overflow: 'hidden'
                           }}>
-                            {graphic.videoUrl ? (
-                              <video
-                                src={graphic.videoUrl}
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                style={{
-                                  width: '60px',
-                                  height: '60px',
-                                  objectFit: 'contain',
-                                  marginBottom: '4px'
-                                }}
-                                onError={(e) => {
-                                  e.target.style.display = 'none';
-                                }}
-                              />
-                            ) : (
-                              <div style={{
-                                fontSize: '32px',
-                                marginBottom: '4px'
-                              }}>
-                                {gIdx === 0 ? '🌿' : gIdx === 1 ? '💊' : gIdx === 2 ? '🧪' : '💡'}
-                              </div>
-                            )}
+                            <video
+                              src={item.video}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              style={{
+                                width: '50px',
+                                height: '50px',
+                                objectFit: 'contain',
+                                marginBottom: '6px'
+                              }}
+                            />
                             <div style={{
                               color: 'white',
                               fontSize: '9px',
                               fontWeight: '600',
                               textAlign: 'center',
-                              lineHeight: '1.2'
+                              lineHeight: '1.2',
+                              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                             }}>
-                              {graphic.label || `Graphic ${gIdx + 1}`}
+                              {item.label}
                             </div>
                           </div>
                         ))}
