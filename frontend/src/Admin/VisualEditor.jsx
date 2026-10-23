@@ -14,6 +14,36 @@ const VisualEditor = () => {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const websiteUrl = 'https://aloweda-smoky.vercel.app';
 
+  // Helper function to get correct image URL
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return null;
+    
+    // If already absolute URL, return as is
+    if (imageUrl.startsWith('http')) return imageUrl;
+    
+    // If it's an uploaded image, use full website URL
+    if (imageUrl.startsWith('/uploads/')) {
+      return `https://aloweda-smoky.vercel.app${imageUrl}`;
+    }
+    
+    // For assets folder images, try to load from src/assets first
+    // If that fails, fallback to website URL
+    if (imageUrl.startsWith('/assets/')) {
+      // Try importing from src/assets
+      const assetName = imageUrl.replace('/assets/', '');
+      try {
+        // This will work for known assets
+        return new URL(`../assets/${assetName}`, import.meta.url).href;
+      } catch {
+        // Fallback to website URL
+        return `https://aloweda-smoky.vercel.app${imageUrl}`;
+      }
+    }
+    
+    // Default: use website URL
+    return `https://aloweda-smoky.vercel.app${imageUrl}`;
+  };
+
   useEffect(() => {
     fetchContent();
     fetchUploadedImages();
@@ -240,11 +270,12 @@ const VisualEditor = () => {
                 <div className="banner-card-image">
                   {banner.imageUrl ? (
                     <img 
-                      src={banner.imageUrl.startsWith('http') ? banner.imageUrl : `https://aloweda-smoky.vercel.app${banner.imageUrl}`}
+                      src={getImageUrl(banner.imageUrl)}
                       alt={banner.title || 'Banner'}
                       onError={(e) => {
+                        console.error('Image load error:', banner.imageUrl);
                         e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = '<div class="no-image">⚠️ Image not found</div>';
+                        e.target.parentElement.innerHTML = '<div class="no-image">⚠️ Image not found<br/><small style="font-size:10px">Check console</small></div>';
                       }}
                     />
                   ) : (
@@ -352,11 +383,7 @@ const VisualEditor = () => {
                   <div className="image-preview-section">
                     {content.homepageBanners[selectedElement.index].imageUrl && (
                       <img 
-                        src={
-                          content.homepageBanners[selectedElement.index].imageUrl.startsWith('http') 
-                            ? content.homepageBanners[selectedElement.index].imageUrl 
-                            : `https://aloweda-smoky.vercel.app${content.homepageBanners[selectedElement.index].imageUrl}`
-                        }
+                        src={getImageUrl(content.homepageBanners[selectedElement.index].imageUrl)}
                         alt="Preview"
                         className="current-image-preview"
                       />
