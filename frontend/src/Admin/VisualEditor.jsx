@@ -724,8 +724,34 @@ const VisualEditor = () => {
             <div className="section-header">
               <div>
                 <h3 className="section-title">📢 Announcement Bar</h3>
-                <p className="section-subtitle">Top bar message shown across website</p>
+                <p className="section-subtitle">Multiple rotating messages in top bar</p>
               </div>
+              <button
+                onClick={() => {
+                  const newMessages = [
+                    ...(content.announcementBar?.messages || []),
+                    { text: '✨ New Announcement', link: '/shop', bgColor: '#2d5f3f' }
+                  ];
+                  setContent({
+                    ...content,
+                    announcementBar: {
+                      ...content.announcementBar,
+                      messages: newMessages
+                    }
+                  });
+                }}
+                style={{
+                  padding: '8px 16px',
+                  background: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                + Add Message
+              </button>
             </div>
 
             <div className="announcement-editor">
@@ -746,50 +772,165 @@ const VisualEditor = () => {
                 </label>
               </div>
 
-              <div className="form-group">
-                <label>Announcement Text</label>
-                <input
-                  type="text"
-                  value={content.announcementBar?.text || ''}
-                  onChange={(e) => setContent({
-                    ...content,
-                    announcementBar: {
-                      ...content.announcementBar,
-                      text: e.target.value
-                    }
-                  })}
-                  placeholder="🔥 Free Shipping on Orders Above ₹999"
-                />
-              </div>
+              <h4 style={{ marginTop: '20px', marginBottom: '12px', fontSize: '16px', fontWeight: '600' }}>
+                Messages ({content.announcementBar?.messages?.length || 0})
+              </h4>
 
-              <div className="form-group">
-                <label>Link (optional)</label>
-                <input
-                  type="text"
-                  value={content.announcementBar?.link || ''}
-                  onChange={(e) => setContent({
-                    ...content,
-                    announcementBar: {
-                      ...content.announcementBar,
-                      link: e.target.value
-                    }
-                  })}
-                  placeholder="/shop"
-                />
-              </div>
-
-              <div className="preview-box">
-                <h4>Preview:</h4>
-                <div className="announcement-preview" style={{
-                  background: '#2563eb',
-                  color: 'white',
-                  padding: '12px',
+              {(content.announcementBar?.messages || []).length === 0 && (
+                <div style={{
+                  padding: '20px',
+                  background: '#f3f4f6',
+                  borderRadius: '8px',
                   textAlign: 'center',
-                  fontWeight: '500'
+                  color: '#6b7280'
                 }}>
-                  {content.announcementBar?.text || 'No announcement text'}
+                  No announcement messages. Click "+ Add Message" to create one.
                 </div>
-              </div>
+              )}
+
+              {(content.announcementBar?.messages || []).map((msg, index) => (
+                <div key={index} style={{
+                  background: '#f9fafb',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  marginBottom: '12px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '12px'
+                  }}>
+                    <h5 style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+                      Message #{index + 1}
+                    </h5>
+                    <button
+                      onClick={() => {
+                        if (confirm('Delete this announcement message?')) {
+                          const newMessages = content.announcementBar.messages.filter((_, i) => i !== index);
+                          setContent({
+                            ...content,
+                            announcementBar: {
+                              ...content.announcementBar,
+                              messages: newMessages
+                            }
+                          });
+                        }
+                      }}
+                      style={{
+                        padding: '6px 12px',
+                        background: '#ef4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: '500' }}>Text</label>
+                    <input
+                      type="text"
+                      value={msg.text || ''}
+                      onChange={(e) => {
+                        const newMessages = [...content.announcementBar.messages];
+                        newMessages[index].text = e.target.value;
+                        setContent({
+                          ...content,
+                          announcementBar: {
+                            ...content.announcementBar,
+                            messages: newMessages
+                          }
+                        });
+                      }}
+                      placeholder="🔥 Free Shipping on Orders Above ₹999"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '13px', fontWeight: '500' }}>Link (optional)</label>
+                    <input
+                      type="text"
+                      value={msg.link || ''}
+                      onChange={(e) => {
+                        const newMessages = [...content.announcementBar.messages];
+                        newMessages[index].link = e.target.value;
+                        setContent({
+                          ...content,
+                          announcementBar: {
+                            ...content.announcementBar,
+                            messages: newMessages
+                          }
+                        });
+                      }}
+                      placeholder="/shop"
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label style={{ fontSize: '13px', fontWeight: '500' }}>Background Color</label>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        type="color"
+                        value={msg.bgColor || '#2d5f3f'}
+                        onChange={(e) => {
+                          const newMessages = [...content.announcementBar.messages];
+                          newMessages[index].bgColor = e.target.value;
+                          setContent({
+                            ...content,
+                            announcementBar: {
+                              ...content.announcementBar,
+                              messages: newMessages
+                            }
+                          });
+                        }}
+                        style={{ width: '50px', height: '35px', cursor: 'pointer' }}
+                      />
+                      <input
+                        type="text"
+                        value={msg.bgColor || '#2d5f3f'}
+                        onChange={(e) => {
+                          const newMessages = [...content.announcementBar.messages];
+                          newMessages[index].bgColor = e.target.value;
+                          setContent({
+                            ...content,
+                            announcementBar: {
+                              ...content.announcementBar,
+                              messages: newMessages
+                            }
+                          });
+                        }}
+                        placeholder="#2d5f3f"
+                        style={{ flex: 1, fontFamily: 'monospace' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="preview-box" style={{ marginTop: '12px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', display: 'block', marginBottom: '6px' }}>
+                      Preview:
+                    </label>
+                    <div style={{
+                      background: msg.bgColor || '#2d5f3f',
+                      color: 'white',
+                      padding: '10px',
+                      textAlign: 'center',
+                      fontWeight: '500',
+                      borderRadius: '4px',
+                      fontSize: '13px'
+                    }}>
+                      {msg.text || 'No text'}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
