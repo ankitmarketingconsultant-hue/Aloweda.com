@@ -88,12 +88,6 @@ const VisualEditor = () => {
     }
   };
 
-  const handleBannerClick = (index) => {
-    if (editMode) {
-      setSelectedElement({ type: 'banner', index });
-    }
-  };
-
   const handleSlideClick = (index) => {
     if (editMode) {
       setSelectedElement({ type: 'slide', index });
@@ -103,14 +97,6 @@ const VisualEditor = () => {
   const handleAnnouncementClick = () => {
     if (editMode) {
       setSelectedElement({ type: 'announcement' });
-    }
-  };
-
-  const updateBannerField = (field, value) => {
-    if (selectedElement?.type === 'banner') {
-      const newBanners = [...content.homepageBanners];
-      newBanners[selectedElement.index][field] = value;
-      setContent({ ...content, homepageBanners: newBanners });
     }
   };
 
@@ -133,9 +119,7 @@ const VisualEditor = () => {
   };
 
   const selectImageFromGallery = (imageUrl) => {
-    if (selectedElement?.type === 'banner') {
-      updateBannerField('imageUrl', imageUrl);
-    } else if (selectedElement?.type === 'slide') {
+    if (selectedElement?.type === 'slide') {
       updateSlideField('imageUrl', imageUrl);
     }
     setShowImageGallery(false);
@@ -224,29 +208,6 @@ const VisualEditor = () => {
     }
   };
 
-  const saveBanners = async () => {
-    try {
-      setSaving(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/content/banners`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ banners: content.homepageBanners })
-      });
-      const data = await response.json();
-      if (data.success) {
-        alert('✅ Banners saved successfully!');
-      }
-    } catch (err) {
-      alert('❌ Failed to save changes');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const saveHeroSlider = async () => {
     try {
       setSaving(true);
@@ -273,8 +234,6 @@ const VisualEditor = () => {
   const saveCurrentSection = () => {
     if (activeSection === 'hero') {
       saveHeroSlider();
-    } else if (activeSection === 'banners') {
-      saveBanners();
     } else if (activeSection === 'announcement') {
       saveAnnouncement();
     } else if (activeSection === 'about') {
@@ -389,17 +348,6 @@ const VisualEditor = () => {
     }
   };
 
-  const deleteBanner = (index) => {
-    if (confirm('Delete this banner?')) {
-      const newBanners = content.homepageBanners.filter((_, i) => i !== index);
-      setContent({
-        ...content,
-        homepageBanners: newBanners
-      });
-      setSelectedElement(null);
-    }
-  };
-
   if (loading) {
     return (
       <div className="visual-editor">
@@ -452,12 +400,6 @@ const VisualEditor = () => {
           onClick={() => setActiveSection('hero')}
         >
           🎬 Hero Slider
-        </button>
-        <button 
-          className={`tab-btn ${activeSection === 'banners' ? 'active' : ''}`}
-          onClick={() => setActiveSection('banners')}
-        >
-          🖼️ Product Banners
         </button>
         <button 
           className={`tab-btn ${activeSection === 'announcement' ? 'active' : ''}`}
@@ -623,110 +565,6 @@ const VisualEditor = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteSlide(index);
-                        }}
-                        style={{
-                          background: '#ef4444',
-                          color: 'white',
-                          border: 'none',
-                          padding: '6px 12px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}
-                      >
-                        🗑️ Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Homepage Banners Section */}
-        {activeSection === 'banners' && (
-          <div className="banners-section">
-            <div className="section-header">
-              <div>
-                <h3 className="section-title">🖼️ Homepage Banners</h3>
-                <p className="section-subtitle">These banners appear on your website homepage</p>
-              </div>
-              <button 
-                className="add-banner-btn"
-                onClick={() => {
-                  const newBanner = {
-                    title: 'New Banner',
-                    subtitle: 'Subtitle here',
-                    description: 'Description here',
-                    imageUrl: '/assets/FaceWash.png',
-                    buttonText: 'SHOP NOW',
-                    buttonLink: '/shop',
-                    order: content.homepageBanners.length + 1,
-                    enabled: true
-                  };
-                  setContent({
-                    ...content,
-                    homepageBanners: [...content.homepageBanners, newBanner]
-                  });
-                }}
-              >
-                ➕ Add New Banner
-              </button>
-            </div>
-
-            {/* Banners Grid */}
-            <div className="banners-grid">
-              {content.homepageBanners?.map((banner, index) => (
-                <div 
-                  key={index}
-                  className={`banner-card ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
-                  onClick={() => handleBannerClick(index)}
-                >
-                  <div className="banner-card-header">
-                    <div className="banner-number">#{index + 1}</div>
-                    <div className="banner-status">
-                      {banner.enabled ? '✅ Enabled' : '❌ Disabled'}
-                    </div>
-                  </div>
-                  <div className="banner-card-image">
-                    {banner.imageUrl ? (
-                      <img 
-                        src={getImageUrl(banner.imageUrl)}
-                        alt={banner.title || 'Banner'}
-                        onError={(e) => {
-                          console.error('Image load error:', banner.imageUrl);
-                          e.target.style.display = 'none';
-                          e.target.parentElement.innerHTML = '<div class="no-image">⚠️ Image not found<br/><small style="font-size:10px">Check console</small></div>';
-                        }}
-                      />
-                    ) : (
-                      <div className="no-image">📷 No Image</div>
-                    )}
-                  </div>
-                  <div className="banner-card-content">
-                    <h4>{banner.title || 'Untitled Banner'}</h4>
-                    <p>{banner.subtitle || 'No subtitle'}</p>
-                    {banner.imageUrl && (
-                      <small style={{ 
-                        color: '#9ca3af', 
-                        fontSize: '11px', 
-                        display: 'block',
-                        marginTop: '8px',
-                        wordBreak: 'break-all'
-                      }}>
-                        📎 {banner.imageUrl}
-                      </small>
-                    )}
-                  </div>
-                  {editMode && (
-                    <div className="banner-card-footer" style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
-                      <span style={{ flex: 1 }}>✏️ Click to Edit</span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteBanner(index);
                         }}
                         style={{
                           background: '#ef4444',
@@ -1158,9 +996,7 @@ const VisualEditor = () => {
             <h3>
               {selectedElement.type === 'slide' 
                 ? 'Editing Slide #' + (selectedElement.index + 1)
-                : selectedElement.type === 'banner'
-                ? 'Editing Banner #' + (selectedElement.index + 1)
-                : 'Editing Announcement'}
+                : 'Editing Content'}
             </h3>
             <button 
               className="close-panel"
@@ -1424,121 +1260,6 @@ const VisualEditor = () => {
                   }}
                 >
                   🗑️ Delete Slide
-                </button>
-              </>
-            )}
-
-            {/* Banner Editor */}
-            {selectedElement.type === 'banner' && (
-              <>
-                <div className="form-group">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    value={content.homepageBanners[selectedElement.index].title || ''}
-                    onChange={(e) => updateBannerField('title', e.target.value)}
-                    placeholder="Face Wash"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Subtitle</label>
-                  <input
-                    type="text"
-                    value={content.homepageBanners[selectedElement.index].subtitle || ''}
-                    onChange={(e) => updateBannerField('subtitle', e.target.value)}
-                    placeholder="Gentle but serious cleansers"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Description</label>
-                  <textarea
-                    value={content.homepageBanners[selectedElement.index].description || ''}
-                    onChange={(e) => updateBannerField('description', e.target.value)}
-                    placeholder="Full description..."
-                    rows="4"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Button Text</label>
-                  <input
-                    type="text"
-                    value={content.homepageBanners[selectedElement.index].buttonText || ''}
-                    onChange={(e) => updateBannerField('buttonText', e.target.value)}
-                    placeholder="SHOP NOW"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Button Link</label>
-                  <input
-                    type="text"
-                    value={content.homepageBanners[selectedElement.index].buttonLink || ''}
-                    onChange={(e) => updateBannerField('buttonLink', e.target.value)}
-                    placeholder="/shop"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Banner Image</label>
-                  <div className="image-preview-section">
-                    {content.homepageBanners[selectedElement.index].imageUrl && (
-                      <img 
-                        src={getImageUrl(content.homepageBanners[selectedElement.index].imageUrl)}
-                        alt="Preview"
-                        className="current-image-preview"
-                      />
-                    )}
-                    <button 
-                      className="gallery-btn"
-                      onClick={openImageGallery}
-                    >
-                      🖼️ Choose from Gallery
-                    </button>
-                    <label className="upload-new-btn">
-                      📤 Upload New Image
-                      <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(e) => {
-                          if (e.target.files[0]) {
-                            uploadNewImage(e.target.files[0]);
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label>
-                    <input 
-                      type="checkbox"
-                      checked={content.homepageBanners[selectedElement.index].enabled || false}
-                      onChange={(e) => updateBannerField('enabled', e.target.checked)}
-                    />
-                    {' '}Enable this banner
-                  </label>
-                </div>
-
-                <button 
-                  className="delete-btn"
-                  onClick={() => deleteBanner(selectedElement.index)}
-                  style={{
-                    background: '#ef4444',
-                    color: 'white',
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    marginTop: '20px',
-                    width: '100%'
-                  }}
-                >
-                  🗑️ Delete Banner
                 </button>
               </>
             )}
