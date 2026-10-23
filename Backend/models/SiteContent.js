@@ -26,7 +26,14 @@ const siteContentSchema = new mongoose.Schema({
       enabled: {
         type: Boolean,
         default: true
-      }
+      },
+      // Special field for "What's Aloweda?" slide graphics
+      graphics: [{
+        label: String,      // "Ayurveda", "Allopathy", etc.
+        videoUrl: String,   // Path to video file
+        imageUrl: String,   // Fallback image
+        order: Number
+      }]
     }]
   },
 

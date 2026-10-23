@@ -804,6 +804,101 @@ const VisualEditor = () => {
                   />
                 </div>
 
+                {/* Special Graphics Section for Slide #1 */}
+                {selectedElement.index === 0 && content.heroSlider.slides[0].graphics && (
+                  <div className="form-group" style={{ 
+                    background: '#f0f9ff', 
+                    padding: '16px', 
+                    borderRadius: '8px',
+                    border: '2px solid #3b82f6'
+                  }}>
+                    <label style={{ color: '#1e40af', marginBottom: '12px', display: 'block' }}>
+                      <strong>🎨 What's Aloweda? Graphics (4 animated icons)</strong>
+                    </label>
+                    
+                    {content.heroSlider.slides[0].graphics.map((graphic, idx) => (
+                      <div key={idx} style={{
+                        background: 'white',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        marginBottom: '8px',
+                        border: '1px solid #e5e7eb'
+                      }}>
+                        <div style={{ 
+                          fontWeight: '600', 
+                          fontSize: '13px', 
+                          marginBottom: '8px',
+                          color: '#374151'
+                        }}>
+                          #{idx + 1}: {graphic.label || 'Untitled'}
+                        </div>
+                        <input
+                          type="text"
+                          value={graphic.label || ''}
+                          onChange={(e) => {
+                            const newGraphics = [...content.heroSlider.slides[0].graphics];
+                            newGraphics[idx].label = e.target.value;
+                            updateSlideField('graphics', newGraphics);
+                          }}
+                          placeholder="Label (e.g., Ayurveda)"
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            fontSize: '13px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '4px',
+                            marginBottom: '6px'
+                          }}
+                        />
+                        <input
+                          type="text"
+                          value={graphic.videoUrl || ''}
+                          onChange={(e) => {
+                            const newGraphics = [...content.heroSlider.slides[0].graphics];
+                            newGraphics[idx].videoUrl = e.target.value;
+                            updateSlideField('graphics', newGraphics);
+                          }}
+                          placeholder="Video URL (e.g., /assets/Ayurveda.mp4)"
+                          style={{
+                            width: '100%',
+                            padding: '8px',
+                            fontSize: '12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '4px'
+                          }}
+                        />
+                      </div>
+                    ))}
+                    
+                    <button
+                      onClick={() => {
+                        const newGraphic = {
+                          label: 'New Graphic',
+                          videoUrl: '/assets/video.mp4',
+                          imageUrl: '',
+                          order: content.heroSlider.slides[0].graphics.length + 1
+                        };
+                        const newGraphics = [...content.heroSlider.slides[0].graphics, newGraphic];
+                        updateSlideField('graphics', newGraphics);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        background: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        marginTop: '8px'
+                      }}
+                    >
+                      ➕ Add New Graphic
+                    </button>
+                  </div>
+                )}
+
                 <div className="form-group">
                   <label>Button Text</label>
                   <input
