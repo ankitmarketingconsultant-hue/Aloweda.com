@@ -240,7 +240,7 @@ const VisualEditor = () => {
                 <div className="banner-card-image">
                   {banner.imageUrl ? (
                     <img 
-                      src={banner.imageUrl} 
+                      src={banner.imageUrl.startsWith('http') ? banner.imageUrl : `https://aloweda-smoky.vercel.app${banner.imageUrl}`}
                       alt={banner.title || 'Banner'}
                       onError={(e) => {
                         e.target.style.display = 'none';
@@ -352,7 +352,11 @@ const VisualEditor = () => {
                   <div className="image-preview-section">
                     {content.homepageBanners[selectedElement.index].imageUrl && (
                       <img 
-                        src={content.homepageBanners[selectedElement.index].imageUrl}
+                        src={
+                          content.homepageBanners[selectedElement.index].imageUrl.startsWith('http') 
+                            ? content.homepageBanners[selectedElement.index].imageUrl 
+                            : `https://aloweda-smoky.vercel.app${content.homepageBanners[selectedElement.index].imageUrl}`
+                        }
                         alt="Preview"
                         className="current-image-preview"
                       />
