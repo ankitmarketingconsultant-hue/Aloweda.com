@@ -448,7 +448,30 @@ const VisualEditor = () => {
                         }}
                       />
                     ) : (
-                      <div className="no-image">📷 No Image</div>
+                      <div className="no-image" style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '20px',
+                        textAlign: 'center',
+                        height: '100%'
+                      }}>
+                        {index === 0 ? (
+                          <>
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎨</div>
+                            <div style={{ fontSize: '13px', fontWeight: '600' }}>Special Layout</div>
+                            <div style={{ fontSize: '11px', opacity: '0.9', marginTop: '4px' }}>Uses custom graphics</div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📷</div>
+                            <div style={{ fontSize: '13px' }}>No Image</div>
+                          </>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className="banner-card-content">
