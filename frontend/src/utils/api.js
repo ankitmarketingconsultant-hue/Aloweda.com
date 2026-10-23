@@ -15,14 +15,29 @@ async function apiCall(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+    
+    // Check if response has content
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // Handle non-JSON responses
+      const text = await response.text();
+      data = { message: text || 'No response data' };
+    }
 
     if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
+      throw new Error(data.message || `HTTP Error: ${response.status}`);
     }
 
     return data;
   } catch (error) {
+    // Better error handling
+    if (error.name === 'TypeError' || error.message.includes('fetch')) {
+      throw new Error('Network error - please check your connection');
+    }
     throw error;
   }
 }

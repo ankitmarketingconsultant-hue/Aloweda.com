@@ -6,6 +6,23 @@ export default defineConfig({
   plugins: [react()],
   assetsInclude: ['**/*.glb', '**/*.gltf'],
   build: {
-    cssMinify: 'esbuild' // Use esbuild instead of lightningcss for CSS minification
+    cssMinify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('three') || id.includes('@react-three')) {
+              return 'three-vendor'
+            }
+            return 'vendor'
+          }
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000
+  },
+  // Enable image optimization
+  optimizeDeps: {
+    include: ['three', '@react-three/fiber', '@react-three/drei']
   }
 })
