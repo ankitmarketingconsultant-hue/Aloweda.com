@@ -19,6 +19,7 @@ export default function About({ onNavigate, onLoginClick, cartCount }) {
       badge: 'Founder and CEO',
       bio: 'Dr. Ajay Patwardhan is a renowned dermatologist with over 15 years of experience in treating skin conditions and developing scientifically-backed skincare solutions. His expertise lies in combining modern dermatology with evidence-based formulations.',
       experience: '15+ Years',
+      patients: '10,000+',
       education: 'MD (Dermatology), MBBS',
       expertise: [
         'Acne & Pigmentation',
@@ -28,27 +29,6 @@ export default function About({ onNavigate, onLoginClick, cartCount }) {
         'Clinical Research Methodology'
       ],
       availability: 'Mon - Fri, 10 AM - 6 PM',
-      languages: 'English, Hindi'
-    },
-    {
-      id: 2,
-      name: 'Dr. Chitra Phadnis',
-      title: 'Skincare Expert',
-      specialization: '40+ Years Experience',
-      image: drAjayImage, // Replace with actual image
-      badge: 'Skincare Expert',
-      bio: 'Dr. Chitra Phadnis is an experienced skincare expert with over 40 years of clinical practice. She has treated more than 5000+ patients and specializes in holistic skincare solutions.',
-      experience: '40+ Years',
-      patients: '5,000+',
-      education: 'Skincare Specialist',
-      expertise: [
-        'Holistic Skincare',
-        'Skin Health Management',
-        'Traditional Treatments',
-        'Patient Care',
-        'Wellness Solutions'
-      ],
-      availability: 'Mon - Fri, 10 AM - 5 PM',
       languages: 'English, Hindi'
     }
   ];
