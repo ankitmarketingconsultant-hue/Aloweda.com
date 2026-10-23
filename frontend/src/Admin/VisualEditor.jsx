@@ -193,69 +193,68 @@ const VisualEditor = () => {
           </div>
         )}
 
-          {/* Homepage Banners Section */}
-          <div className="banners-section">
-            <div className="section-header">
-              <div>
-                <h3 className="section-title">🖼️ Homepage Banners</h3>
-                <p className="section-subtitle">These banners appear on your website homepage</p>
-              </div>
-              <button 
-                className="add-banner-btn"
-                onClick={() => {
-                  const newBanner = {
-                    title: 'New Banner',
-                    subtitle: 'Subtitle here',
-                    description: 'Description here',
-                    imageUrl: '/assets/FaceWash.png',
-                    buttonText: 'SHOP NOW',
-                    buttonLink: '/shop',
-                    order: content.homepageBanners.length + 1,
-                    enabled: true
-                  };
-                  setContent({
-                    ...content,
-                    homepageBanners: [...content.homepageBanners, newBanner]
-                  });
-                }}
-              >
-                ➕ Add New Banner
-              </button>
+        {/* Homepage Banners Section */}
+        <div className="banners-section">
+          <div className="section-header">
+            <div>
+              <h3 className="section-title">🖼️ Homepage Banners</h3>
+              <p className="section-subtitle">These banners appear on your website homepage</p>
             </div>
+            <button 
+              className="add-banner-btn"
+              onClick={() => {
+                const newBanner = {
+                  title: 'New Banner',
+                  subtitle: 'Subtitle here',
+                  description: 'Description here',
+                  imageUrl: '/assets/FaceWash.png',
+                  buttonText: 'SHOP NOW',
+                  buttonLink: '/shop',
+                  order: content.homepageBanners.length + 1,
+                  enabled: true
+                };
+                setContent({
+                  ...content,
+                  homepageBanners: [...content.homepageBanners, newBanner]
+                });
+              }}
+            >
+              ➕ Add New Banner
+            </button>
+          </div>
 
-            {/* Banners Grid */}
-            <div className="banners-grid">
-              {content.homepageBanners?.map((banner, index) => (
-                <div 
-                  key={index}
-                  className={`banner-card ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
-                  onClick={() => handleBannerClick(index)}
-                >
-                  <div className="banner-card-header">
-                    <div className="banner-number">#{index + 1}</div>
-                    <div className="banner-status">
-                      {banner.enabled ? '✅ Enabled' : '❌ Disabled'}
-                    </div>
+          {/* Banners Grid */}
+          <div className="banners-grid">
+            {content.homepageBanners?.map((banner, index) => (
+              <div 
+                key={index}
+                className={`banner-card ${selectedElement?.type === 'banner' && selectedElement.index === index ? 'selected' : ''}`}
+                onClick={() => handleBannerClick(index)}
+              >
+                <div className="banner-card-header">
+                  <div className="banner-number">#{index + 1}</div>
+                  <div className="banner-status">
+                    {banner.enabled ? '✅ Enabled' : '❌ Disabled'}
                   </div>
-                  <div className="banner-card-image">
-                    {banner.imageUrl ? (
-                      <img src={banner.imageUrl} alt={banner.title} />
-                    ) : (
-                      <div className="no-image">No Image</div>
-                    )}
-                  </div>
-                  <div className="banner-card-content">
-                    <h4>{banner.title || 'Untitled Banner'}</h4>
-                    <p>{banner.subtitle || 'No subtitle'}</p>
-                  </div>
-                  {editMode && (
-                    <div className="banner-card-footer">
-                      ✏️ Click to Edit
-                    </div>
+                </div>
+                <div className="banner-card-image">
+                  {banner.imageUrl ? (
+                    <img src={banner.imageUrl} alt={banner.title} />
+                  ) : (
+                    <div className="no-image">No Image</div>
                   )}
                 </div>
-              ))}
-            </div>
+                <div className="banner-card-content">
+                  <h4>{banner.title || 'Untitled Banner'}</h4>
+                  <p>{banner.subtitle || 'No subtitle'}</p>
+                </div>
+                {editMode && (
+                  <div className="banner-card-footer">
+                    ✏️ Click to Edit
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -266,9 +265,8 @@ const VisualEditor = () => {
           <div className="edit-panel-header">
             <h3>
               {selectedElement.type === 'banner' 
-                ? `✏️ Editing Banner #${selectedElement.index + 1}`
-                : '✏️ Editing Announcement'
-              }
+                ? 'Editing Banner #' + (selectedElement.index + 1)
+                : 'Editing Announcement'}
             </h3>
             <button 
               className="close-panel"
