@@ -9,8 +9,10 @@ const VisualEditor = () => {
   const [showImageGallery, setShowImageGallery] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0); // For forcing iframe reload
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const websiteUrl = 'https://aloweda-smoky.vercel.app';
 
   useEffect(() => {
     fetchContent();
@@ -121,7 +123,12 @@ const VisualEditor = () => {
       });
       const data = await response.json();
       if (data.success) {
-        alert('✅ Changes saved successfully!');
+        alert('✅ Changes saved successfully! Website will refresh in 2 seconds...');
+        
+        // Wait 2 seconds then refresh iframe to show changes
+        setTimeout(() => {
+          setIframeKey(prev => prev + 1); // This forces iframe to reload
+        }, 2000);
       }
     } catch (err) {
       alert('❌ Failed to save changes');
@@ -182,10 +189,22 @@ const VisualEditor = () => {
         {/* Left Side: Website Preview */}
         <div className="website-preview-panel">
           <div className="preview-header">
-            <h3>🌐 Live Website Preview</h3>
-            <span className="preview-note">Changes will appear after saving</span>
+            <div>
+              <h3>🌐 Live Website Preview</h3>
+              <span className="preview-note">
+                {saving ? '🔄 Saving and refreshing...' : 'Changes will appear after saving'}
+              </span>
+            </div>
+            <button 
+              className="refresh-iframe-btn"
+              onClick={() => setIframeKey(prev => prev + 1)}
+              title="Refresh preview"
+            >
+              🔄 Refresh
+            </button>
           </div>
           <iframe 
+            key={iframeKey} // Forces reload when key changes
             src={websiteUrl}
             className="website-iframe"
             title="Website Preview"
@@ -197,7 +216,9 @@ const VisualEditor = () => {
           {/* Edit Mode Instructions */}
           {editMode && (
             <div className="edit-instructions">
-              <p>💡 <strong>Click on any banner below</strong> to edit it. Changes will show on website after saving.</p>
+              <p>
+                💡 <strong>How to edit:</strong> Click any banner card below → Edit in side panel → Click gallery to change image → Save changes → Website refreshes automatically
+              </p>
             </div>
           )}
 

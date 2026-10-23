@@ -132,6 +132,12 @@
   align-items: center;
 }
 
+.preview-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .preview-header h3 {
   margin: 0;
   color: white;
@@ -142,6 +148,23 @@
 .preview-note {
   color: #9ca3af;
   font-size: 13px;
+}
+
+.refresh-iframe-btn {
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.refresh-iframe-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
 }
 
 .website-iframe {
