@@ -236,8 +236,6 @@ const VisualEditor = () => {
       saveHeroSlider();
     } else if (activeSection === 'announcement') {
       saveAnnouncement();
-    } else if (activeSection === 'about') {
-      saveAbout();
     } else if (activeSection === 'contact') {
       saveContactInfo();
     }
@@ -261,29 +259,6 @@ const VisualEditor = () => {
       }
     } catch (err) {
       alert('❌ Failed to save announcement');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const saveAbout = async () => {
-    try {
-      setSaving(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/content/about`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(content.aboutSection)
-      });
-      const data = await response.json();
-      if (data.success) {
-        alert('✅ About section saved successfully!');
-      }
-    } catch (err) {
-      alert('❌ Failed to save about section');
     } finally {
       setSaving(false);
     }
@@ -406,12 +381,6 @@ const VisualEditor = () => {
           onClick={() => setActiveSection('announcement')}
         >
           📢 Announcement Bar
-        </button>
-        <button 
-          className={`tab-btn ${activeSection === 'about' ? 'active' : ''}`}
-          onClick={() => setActiveSection('about')}
-        >
-          ℹ️ About Section
         </button>
         <button 
           className={`tab-btn ${activeSection === 'contact' ? 'active' : ''}`}
@@ -800,69 +769,6 @@ const VisualEditor = () => {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* About Section */}
-        {activeSection === 'about' && (
-          <div className="about-section">
-            <div className="section-header">
-              <div>
-                <h3 className="section-title">ℹ️ About Section</h3>
-                <p className="section-subtitle">Company introduction shown on homepage</p>
-              </div>
-            </div>
-
-            <div className="about-editor">
-              <div className="form-group">
-                <label>Section Title</label>
-                <input
-                  type="text"
-                  value={content.aboutSection?.title || ''}
-                  onChange={(e) => setContent({
-                    ...content,
-                    aboutSection: {
-                      ...content.aboutSection,
-                      title: e.target.value
-                    }
-                  })}
-                  placeholder="About Aloweda"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Description</label>
-                <textarea
-                  value={content.aboutSection?.description || ''}
-                  onChange={(e) => setContent({
-                    ...content,
-                    aboutSection: {
-                      ...content.aboutSection,
-                      description: e.target.value
-                    }
-                  })}
-                  placeholder="Tell your brand story..."
-                  rows="6"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  <input 
-                    type="checkbox"
-                    checked={content.aboutSection?.enabled || false}
-                    onChange={(e) => setContent({
-                      ...content,
-                      aboutSection: {
-                        ...content.aboutSection,
-                        enabled: e.target.checked
-                      }
-                    })}
-                  />
-                  {' '}Show About Section on Homepage
-                </label>
-              </div>
             </div>
           </div>
         )}
