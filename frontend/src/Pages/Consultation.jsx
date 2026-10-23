@@ -20,9 +20,9 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
       image: drAjayImage,
       bio: 'Dr. Patwardhan has pioneered innovative skincare products that blend Ayurveda with modern Allopathy.',
       experience: '35+ Years',
-      patients: '1,000+',
+      patients: '10,000+',
       education: 'MD (Dermatology), MBBS',
-      achievements: '1000+ Successful Treatments · Published Research · Clinical Excellence Award',
+      achievements: '10,000+ Successful Treatments · Published Research · Clinical Excellence Award',
       expertise: [
         'Acne & Pigmentation',
         'Anti-Aging & Aesthetics',
@@ -30,28 +30,6 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
         'Clinical Research'
       ],
       availability: 'Mon–Fri, 10 AM–6 PM',
-      languages: 'English, Hindi, Marathi'
-    },
-    {
-      id: 2,
-      name: 'Dr. Chitra Phadnis',
-      title: 'Senior Skincare Consultant',
-      badge: 'Expert Consultant',
-      specialization: '40+ Years Clinical Excellence',
-      credentials: 'Certified Skincare Specialist',
-      image: drAjayImage, // Replace with actual image
-      bio: 'With four decades of distinguished practice, Dr. Phadnis brings unparalleled wisdom to skincare, combining time-tested methodologies with modern insights.',
-      experience: '40+ Years',
-      patients: '5,000+',
-      education: 'Advanced Skincare Specialist',
-      achievements: '5000+ Lives Transformed · Pioneer in Holistic Skincare · Lifetime Achievement',
-      expertise: [
-        'Holistic Skin Wellness',
-        'Skin Health Management',
-        'Integrative Protocols',
-        'Patient-Centered Care'
-      ],
-      availability: 'Mon–Fri, 10 AM–5 PM',
       languages: 'English, Hindi, Marathi'
     }
   ];
