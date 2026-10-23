@@ -445,8 +445,26 @@ const VisualEditor = () => {
                     <p>{slide.subtitle || 'No subtitle'}</p>
                   </div>
                   {editMode && (
-                    <div className="banner-card-footer">
-                      ✏️ Click to Edit
+                    <div className="banner-card-footer" style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+                      <span style={{ flex: 1 }}>✏️ Click to Edit</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteSlide(index);
+                        }}
+                        style={{
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          padding: '6px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '600'
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
                     </div>
                   )}
                 </div>
@@ -531,8 +549,26 @@ const VisualEditor = () => {
                     )}
                   </div>
                   {editMode && (
-                    <div className="banner-card-footer">
-                      ✏️ Click to Edit
+                    <div className="banner-card-footer" style={{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>
+                      <span style={{ flex: 1 }}>✏️ Click to Edit</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteBanner(index);
+                        }}
+                        style={{
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          padding: '6px 12px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: '600'
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
                     </div>
                   )}
                 </div>
