@@ -279,6 +279,8 @@ const VisualEditor = () => {
       saveAnnouncement();
     } else if (activeSection === 'about') {
       saveAbout();
+    } else if (activeSection === 'contact') {
+      saveContactInfo();
     }
   };
 
@@ -323,6 +325,29 @@ const VisualEditor = () => {
       }
     } catch (err) {
       alert('❌ Failed to save about section');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveContactInfo = async () => {
+    try {
+      setSaving(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/content/contact`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(content.contactInfo)
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('✅ Contact info saved successfully!');
+      }
+    } catch (err) {
+      alert('❌ Failed to save contact info');
     } finally {
       setSaving(false);
     }
@@ -445,6 +470,12 @@ const VisualEditor = () => {
           onClick={() => setActiveSection('about')}
         >
           ℹ️ About Section
+        </button>
+        <button 
+          className={`tab-btn ${activeSection === 'contact' ? 'active' : ''}`}
+          onClick={() => setActiveSection('contact')}
+        >
+          📞 Contact Info
         </button>
       </div>
 
@@ -993,6 +1024,127 @@ const VisualEditor = () => {
                   />
                   {' '}Show About Section on Homepage
                 </label>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Contact Info Section */}
+        {activeSection === 'contact' && (
+          <div className="contact-section">
+            <div className="section-header">
+              <div>
+                <h3 className="section-title">📞 Contact Information</h3>
+                <p className="section-subtitle">Phone, email, address, and WhatsApp details</p>
+              </div>
+            </div>
+
+            <div className="contact-editor">
+              <div className="form-group">
+                <label>📱 Phone Number</label>
+                <input
+                  type="tel"
+                  value={content.contactInfo?.phone || ''}
+                  onChange={(e) => setContent({
+                    ...content,
+                    contactInfo: {
+                      ...content.contactInfo,
+                      phone: e.target.value
+                    }
+                  })}
+                  placeholder="+91 98765 43210"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>📧 Email Address</label>
+                <input
+                  type="email"
+                  value={content.contactInfo?.email || ''}
+                  onChange={(e) => setContent({
+                    ...content,
+                    contactInfo: {
+                      ...content.contactInfo,
+                      email: e.target.value
+                    }
+                  })}
+                  placeholder="contact@aloweda.com"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>📍 Business Address</label>
+                <textarea
+                  value={content.contactInfo?.address || ''}
+                  onChange={(e) => setContent({
+                    ...content,
+                    contactInfo: {
+                      ...content.contactInfo,
+                      address: e.target.value
+                    }
+                  })}
+                  placeholder="123 Business Street, City, State - 123456"
+                  rows="3"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>💬 WhatsApp Number (with country code)</label>
+                <input
+                  type="tel"
+                  value={content.contactInfo?.whatsappNumber || ''}
+                  onChange={(e) => setContent({
+                    ...content,
+                    contactInfo: {
+                      ...content.contactInfo,
+                      whatsappNumber: e.target.value
+                    }
+                  })}
+                  placeholder="919876543210"
+                />
+                <small style={{ color: '#6b7280', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                  Format: Country code + number (no spaces or special characters)
+                </small>
+              </div>
+
+              <div className="preview-box">
+                <h4>Preview:</h4>
+                <div style={{
+                  padding: '16px',
+                  background: '#f9fafb',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  {content.contactInfo?.phone && (
+                    <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>📱</span>
+                      <span>{content.contactInfo.phone}</span>
+                    </div>
+                  )}
+                  {content.contactInfo?.email && (
+                    <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>📧</span>
+                      <span>{content.contactInfo.email}</span>
+                    </div>
+                  )}
+                  {content.contactInfo?.address && (
+                    <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>📍</span>
+                      <span>{content.contactInfo.address}</span>
+                    </div>
+                  )}
+                  {content.contactInfo?.whatsappNumber && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>💬</span>
+                      <span>{content.contactInfo.whatsappNumber}</span>
+                    </div>
+                  )}
+                  {!content.contactInfo?.phone && !content.contactInfo?.email && !content.contactInfo?.address && !content.contactInfo?.whatsappNumber && (
+                    <div style={{ color: '#9ca3af', textAlign: 'center' }}>
+                      No contact information added yet
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
