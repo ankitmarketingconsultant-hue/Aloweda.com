@@ -163,8 +163,8 @@ const OrdersManagement = () => {
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
-      order.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerInfo?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order._id?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
@@ -279,15 +279,15 @@ const OrdersManagement = () => {
                 <div className="order-info-grid">
                   <div className="info-item">
                     <span className="info-label">Customer:</span>
-                    <span className="info-value">{order.user?.name || 'N/A'}</span>
+                    <span className="info-value">{order.customerInfo?.name || 'N/A'}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">Email:</span>
-                    <span className="info-value">{order.user?.email || 'N/A'}</span>
+                    <span className="info-value">{order.customerInfo?.email || 'N/A'}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">Phone:</span>
-                    <span className="info-value">{order.user?.phone || 'N/A'}</span>
+                    <span className="info-value">{order.customerInfo?.phone || 'N/A'}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">Total Amount:</span>

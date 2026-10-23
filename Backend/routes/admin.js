@@ -141,7 +141,7 @@ router.put('/products/:id/stock', auth, admin, async (req, res) => {
 router.get('/orders', auth, admin, async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate('user', 'name email phone')
+      .populate('userId', 'name email phone')
       .sort({ createdAt: -1 });
     
     res.json({
