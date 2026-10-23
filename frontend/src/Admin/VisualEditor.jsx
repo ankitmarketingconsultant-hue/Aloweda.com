@@ -167,6 +167,63 @@ const VisualEditor = () => {
     }
   };
 
+  const uploadGraphicVideo = async (file, graphicIndex) => {
+    const formData = new FormData();
+    formData.append('image', file); // Backend uses 'image' field for all uploads
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/upload/image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Update the graphic's videoUrl
+        const newGraphics = [...content.heroSlider.slides[0].graphics];
+        if (!newGraphics[graphicIndex]) newGraphics[graphicIndex] = {};
+        newGraphics[graphicIndex].videoUrl = data.imageUrl;
+        
+        const updatedContent = { ...content };
+        updatedContent.heroSlider.slides[0].graphics = newGraphics;
+        setContent(updatedContent);
+        
+        // Save to backend
+        await saveHeroSlider();
+        alert('✅ Video uploaded successfully!');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('❌ Video upload failed');
+    }
+  };
+
+  const deleteGraphic = async (graphicIndex) => {
+    if (!confirm('Are you sure you want to remove this graphic video?')) return;
+    
+    try {
+      const newGraphics = [...content.heroSlider.slides[0].graphics];
+      if (newGraphics[graphicIndex]) {
+        newGraphics[graphicIndex].videoUrl = '';
+      }
+      
+      const updatedContent = { ...content };
+      updatedContent.heroSlider.slides[0].graphics = newGraphics;
+      setContent(updatedContent);
+      
+      // Save to backend
+      await saveHeroSlider();
+      alert('✅ Graphic video removed!');
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('❌ Failed to remove graphic');
+    }
+  };
+
   const saveBanners = async () => {
     try {
       setSaving(true);
@@ -882,6 +939,7 @@ const VisualEditor = () => {
                               #{item.idx + 1}: {item.label}
                             </div>
                           </div>
+                          
                           <input
                             type="text"
                             value={content.heroSlider.slides[0].graphics[item.idx]?.label || item.label}
@@ -898,26 +956,65 @@ const VisualEditor = () => {
                               fontSize: '12px',
                               border: '1px solid #d1d5db',
                               borderRadius: '4px',
-                              marginBottom: '4px'
+                              marginBottom: '6px'
                             }}
                           />
+                          
+                          <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
+                            <label style={{
+                              flex: 1,
+                              padding: '6px 8px',
+                              fontSize: '11px',
+                              background: '#3b82f6',
+                              color: 'white',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              textAlign: 'center',
+                              fontWeight: '500'
+                            }}>
+                              📤 Upload
+                              <input
+                                type="file"
+                                accept="video/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => {
+                                  if (e.target.files[0]) {
+                                    uploadGraphicVideo(e.target.files[0], item.idx);
+                                  }
+                                }}
+                              />
+                            </label>
+                            <button
+                              onClick={() => deleteGraphic(item.idx)}
+                              style={{
+                                padding: '6px 12px',
+                                fontSize: '11px',
+                                background: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '500'
+                              }}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                          
                           <input
                             type="text"
                             value={content.heroSlider.slides[0].graphics[item.idx]?.videoUrl || ''}
-                            onChange={(e) => {
-                              const newGraphics = [...content.heroSlider.slides[0].graphics];
-                              if (!newGraphics[item.idx]) newGraphics[item.idx] = {};
-                              newGraphics[item.idx].videoUrl = e.target.value;
-                              updateSlideField('graphics', newGraphics);
-                            }}
-                            placeholder="Video path: /assets/Video.mp4"
+                            readOnly
+                            placeholder="Video path will appear here"
                             style={{
                               width: '100%',
                               padding: '6px 8px',
-                              fontSize: '11px',
+                              fontSize: '10px',
                               border: '1px solid #d1d5db',
                               borderRadius: '4px',
-                              fontFamily: 'monospace'
+                              fontFamily: 'monospace',
+                              background: '#f9fafb',
+                              color: '#6b7280'
                             }}
                           />
                         </div>

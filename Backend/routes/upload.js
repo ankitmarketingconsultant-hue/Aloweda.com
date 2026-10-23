@@ -26,26 +26,35 @@ const storage = multer.diskStorage({
   }
 });
 
-// File filter - only allow images
+// File filter - allow images and videos
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedTypes = [
+    'image/jpeg', 
+    'image/jpg', 
+    'image/png', 
+    'image/gif', 
+    'image/webp',
+    'video/mp4',
+    'video/webm',
+    'video/ogg'
+  ];
   
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.'), false);
+    cb(new Error('Invalid file type. Only images (JPEG, PNG, GIF, WebP) and videos (MP4, WebM, OGG) are allowed.'), false);
   }
 };
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 50 * 1024 * 1024 // 50MB limit (increased for videos)
   },
   fileFilter: fileFilter
 });
 
-// @desc    Upload single image
+// @desc    Upload single image or video
 // @route   POST /api/upload/image
 // @access  Admin
 router.post('/image', auth, admin, upload.single('image'), (req, res) => {
@@ -57,12 +66,12 @@ router.post('/image', auth, admin, upload.single('image'), (req, res) => {
       });
     }
 
-    // Return the URL path to access the image
+    // Return the URL path to access the file
     const imageUrl = `/uploads/${req.file.filename}`;
 
     res.json({
       success: true,
-      message: 'Image uploaded successfully',
+      message: 'File uploaded successfully',
       imageUrl: imageUrl,
       filename: req.file.filename
     });
@@ -70,7 +79,7 @@ router.post('/image', auth, admin, upload.single('image'), (req, res) => {
     console.error('Upload error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to upload image',
+      message: 'Failed to upload file',
       error: error.message
     });
   }
@@ -150,7 +159,7 @@ router.get('/images', auth, admin, (req, res) => {
     const images = files
       .filter(file => {
         const ext = path.extname(file).toLowerCase();
-        return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext);
+        return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.mp4', '.webm', '.ogg'].includes(ext);
       })
       .map(file => ({
         filename: file,
