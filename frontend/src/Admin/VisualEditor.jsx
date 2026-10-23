@@ -239,14 +239,32 @@ const VisualEditor = () => {
                 </div>
                 <div className="banner-card-image">
                   {banner.imageUrl ? (
-                    <img src={banner.imageUrl} alt={banner.title} />
+                    <img 
+                      src={banner.imageUrl} 
+                      alt={banner.title || 'Banner'}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = '<div class="no-image">⚠️ Image not found</div>';
+                      }}
+                    />
                   ) : (
-                    <div className="no-image">No Image</div>
+                    <div className="no-image">📷 No Image</div>
                   )}
                 </div>
                 <div className="banner-card-content">
                   <h4>{banner.title || 'Untitled Banner'}</h4>
                   <p>{banner.subtitle || 'No subtitle'}</p>
+                  {banner.imageUrl && (
+                    <small style={{ 
+                      color: '#9ca3af', 
+                      fontSize: '11px', 
+                      display: 'block',
+                      marginTop: '8px',
+                      wordBreak: 'break-all'
+                    }}>
+                      📎 {banner.imageUrl}
+                    </small>
+                  )}
                 </div>
                 {editMode && (
                   <div className="banner-card-footer">
