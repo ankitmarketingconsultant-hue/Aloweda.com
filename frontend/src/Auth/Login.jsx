@@ -50,6 +50,11 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       storage.setToken(response.token)
       storage.setUser(response.user)
 
+      // Debug log
+      console.log('Login Response:', response);
+      console.log('User Role:', response.user?.role);
+      console.log('Is Admin?', response.user?.role === 'admin');
+
       // Check if user is admin - redirect to admin panel
       if (response.user && response.user.role === 'admin') {
         localStorage.setItem('userRole', 'admin');
