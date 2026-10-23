@@ -366,11 +366,88 @@ const ContentManagement = () => {
                   padding: '20px', 
                   border: '2px solid #e5e7eb', 
                   borderRadius: '12px',
-                  background: banner.enabled ? '#f9fafb' : '#fee'
+                  background: banner.enabled ? '#f9fafb' : '#fee',
+                  position: 'relative'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h4 style={{ fontSize: '16px', fontWeight: '600' }}>Banner #{index + 1}</h4>
+                  {/* Order Badge */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '16px',
+                    left: '16px',
+                    background: index === 0 ? '#10b981' : '#3b82f6',
+                    color: 'white',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: '700',
+                    fontSize: '16px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}>
+                    {index + 1}
+                  </div>
+                  
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', marginLeft: '48px' }}>
+                    <div>
+                      <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '4px' }}>
+                        Banner #{index + 1}
+                        {banner.title && <span style={{ color: '#6b7280', fontWeight: '400' }}> - {banner.title}</span>}
+                      </h4>
+                      <small style={{ color: '#6b7280', fontSize: '13px' }}>
+                        Position: {index === 0 ? '🔝 First (Top Banner)' : index === 1 ? '📍 Second (Middle)' : `📍 ${index + 1}th Banner`}
+                      </small>
+                    </div>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      {/* Move Up Button */}
+                      {index > 0 && (
+                        <button
+                          onClick={() => {
+                            const newBanners = [...content.homepageBanners];
+                            [newBanners[index - 1], newBanners[index]] = [newBanners[index], newBanners[index - 1]];
+                            setContent({ ...content, homepageBanners: newBanners });
+                          }}
+                          style={{
+                            padding: '6px 10px',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '600'
+                          }}
+                          title="Move Up"
+                        >
+                          ⬆️
+                        </button>
+                      )}
+                      
+                      {/* Move Down Button */}
+                      {index < content.homepageBanners.length - 1 && (
+                        <button
+                          onClick={() => {
+                            const newBanners = [...content.homepageBanners];
+                            [newBanners[index], newBanners[index + 1]] = [newBanners[index + 1], newBanners[index]];
+                            setContent({ ...content, homepageBanners: newBanners });
+                          }}
+                          style={{
+                            padding: '6px 10px',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '600'
+                          }}
+                          title="Move Down"
+                        >
+                          ⬇️
+                        </button>
+                      )}
+                      
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
                         <input
                           type="checkbox"
