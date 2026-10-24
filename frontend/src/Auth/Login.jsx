@@ -59,7 +59,6 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       if (response.user && response.user.role === 'admin') {
         localStorage.setItem('userRole', 'admin');
         localStorage.setItem('userName', response.user.name);
-        sessionStorage.setItem('adminAccess', 'granted'); // Grant admin access
         setSuccess('Admin login successful! Redirecting...');
         
         setTimeout(() => {
