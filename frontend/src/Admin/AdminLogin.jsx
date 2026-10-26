@@ -57,7 +57,6 @@ const AdminLogin = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('userRole', 'admin');
           localStorage.setItem('userName', userData.user.name);
-          sessionStorage.setItem('adminAccess', 'granted'); // Grant admin session access
           localStorage.setItem('loginAttempts', '0'); // Reset on success
           navigate('/admin/dashboard');
         } else {

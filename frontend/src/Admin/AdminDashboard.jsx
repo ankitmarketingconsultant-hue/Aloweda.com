@@ -24,9 +24,12 @@ const AdminDashboard = () => {
   }, [navigate]);
 
   const handleLogout = () => {
+    // Clear all authentication keys
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userName');
+    localStorage.removeItem('aloweda_token');
+    localStorage.removeItem('aloweda_user');
     navigate('/admin/login');
   };
 

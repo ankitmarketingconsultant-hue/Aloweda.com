@@ -49,6 +49,11 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       // Save token and user data
       storage.setToken(response.token)
       storage.setUser(response.user)
+      
+      // Also set in standard localStorage keys for admin dashboard compatibility
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('userRole', response.user.role);
+      localStorage.setItem('userName', response.user.name);
 
       // Debug log
       console.log('Login Response:', response);
@@ -57,8 +62,6 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
 
       // Check if user is admin - redirect to admin panel
       if (response.user && response.user.role === 'admin') {
-        localStorage.setItem('userRole', 'admin');
-        localStorage.setItem('userName', response.user.name);
         setSuccess('Admin login successful! Redirecting...');
         
         setTimeout(() => {
