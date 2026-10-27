@@ -439,34 +439,11 @@ function AppContent() {
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
-  // Fetch and sync product stock from API
+  // Fetch and sync product stock from API - DISABLED
+  // Products will use default stock values
   useEffect(() => {
-    const fetchProductStock = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/admin/products`)
-        const data = await response.json()
-        if (data.success && data.products) {
-          setProducts(prevProducts => 
-            prevProducts.map(product => {
-              const apiProduct = data.products.find(p => 
-                p.name.toLowerCase().includes(product.name.toLowerCase().substring(0, 20)) ||
-                product.name.toLowerCase().includes(p.name.toLowerCase().substring(0, 20))
-              )
-              // Only update if API product found, otherwise keep default (in stock)
-              return apiProduct ? { ...product, stock: apiProduct.stock } : { ...product, stock: 100 }
-            })
-          )
-        }
-      } catch (error) {
-        console.log('Using default products - all in stock')
-        // Fallback: set all products to in stock
-        setProducts(prevProducts => prevProducts.map(p => ({ ...p, stock: 100 })))
-      }
-    }
-
-    fetchProductStock()
-    const interval = setInterval(fetchProductStock, 30000) // Refresh every 30s
-    return () => clearInterval(interval)
+    // Initialize all products with default stock = 100 (in stock)
+    setProducts(prevProducts => prevProducts.map(p => ({ ...p, stock: p.stock || 100 })))
   }, [])
 
   // Save cart to localStorage whenever it changes
