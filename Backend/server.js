@@ -95,7 +95,7 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/bundles', bundleRoutes);
-app.use('/api/coupons', couponRoutes);
+app.use('/api/coupon', couponRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/orders', orderRoutes);
