@@ -1834,3 +1834,39 @@
     align-items: center;
   }
 }
+
+/* Stock Alert */
+.stock-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.stock-alert svg {
+  flex-shrink: 0;
+}
+
+.stock-alert.low-stock {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.out-of-stock-btn {
+  background: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+
+.out-of-stock-btn:hover {
+  background: #9ca3af !important;
+  transform: none !important;
+}
