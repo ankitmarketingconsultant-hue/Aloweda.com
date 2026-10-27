@@ -670,7 +670,7 @@ function AppContent() {
         {/* Product Detail Route */}
         <Route 
           path="/product/:productId" 
-          element={<ProductDetailWrapper onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} onAddToCart={addToCart} cartCount={cartCount} />} 
+          element={<ProductDetailWrapper products={products} onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} onAddToCart={addToCart} cartCount={cartCount} />} 
         />
 
         {/* Shop Routes */}
@@ -816,18 +816,21 @@ function AppContent() {
 }
 
 // Wrapper component for Product Detail to handle URL params
-function ProductDetailWrapper({ onNavigate, onLoginClick, onAddToCart, cartCount }) {
+function ProductDetailWrapper({ onNavigate, onLoginClick, onAddToCart, cartCount, products }) {
   const { productId } = useParams()
-  const product = ALL_PRODUCTS.find(p => p.id === parseInt(productId))
+  // Use products state (with updated stock) instead of ALL_PRODUCTS
+  const product = products.find(p => p.id === parseInt(productId))
   
   if (!product) {
     return <Navigate to="/" replace />
   }
 
   // Get related products from same category
-  const relatedProducts = ALL_PRODUCTS
+  const relatedProducts = products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4)
+  
+  console.log('ProductDetail - Product stock:', product.name, 'stock:', product.stock)
   
   return (
     <ProductDetail 
