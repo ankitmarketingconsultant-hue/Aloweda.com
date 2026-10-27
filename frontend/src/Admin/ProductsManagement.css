@@ -211,17 +211,22 @@
 
 .stock-badge {
   display: inline-block;
-  padding: 4px 12px;
+  padding: 6px 14px;
   background: #d1fae5;
   color: #065f46;
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: 16px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .stock-badge.out-of-stock {
-  background: #fee;
-  color: #c00;
+  background: #fee2e2;
+  color: #991b1b;
+  position: relative;
+}
+
+.stock-badge.out-of-stock::before {
+  content: '⚠️ ';
 }
 
 .action-buttons {

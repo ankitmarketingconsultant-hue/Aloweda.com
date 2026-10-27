@@ -310,7 +310,7 @@ const ProductsManagement = () => {
                       />
                     ) : (
                       <span className={`stock-badge ${(product.stock || 0) === 0 ? 'out-of-stock' : ''}`}>
-                        {product.stock || 0} units
+                        {(product.stock || 0) === 0 ? 'OUT OF STOCK' : `${product.stock} units`}
                       </span>
                     )}
                   </td>
