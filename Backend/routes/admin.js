@@ -389,4 +389,116 @@ router.get('/users', auth, admin, async (req, res) => {
   }
 });
 
+// Get comprehensive user analytics
+router.get('/users/analytics', auth, admin, async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    
+    // Total users count
+    const totalUsers = users.length;
+    
+    // Admin vs regular users
+    const adminUsers = users.filter(u => u.role === 'admin').length;
+    const regularUsers = users.filter(u => u.role === 'user').length;
+    
+    // Users registered today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const usersToday = users.filter(u => {
+      const signupDate = new Date(u.signupDate || u.createdAt);
+      return signupDate >= today;
+    }).length;
+    
+    // Users registered this week
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const usersThisWeek = users.filter(u => {
+      const signupDate = new Date(u.signupDate || u.createdAt);
+      return signupDate >= weekAgo;
+    }).length;
+    
+    // Users registered this month
+    const monthAgo = new Date();
+    monthAgo.setDate(monthAgo.getDate() - 30);
+    const usersThisMonth = users.filter(u => {
+      const signupDate = new Date(u.signupDate || u.createdAt);
+      return signupDate >= monthAgo;
+    }).length;
+    
+    // Active users (logged in last 7 days)
+    const activeUsers = users.filter(u => {
+      if (!u.lastLogin) return false;
+      const lastLogin = new Date(u.lastLogin);
+      return lastLogin >= weekAgo;
+    }).length;
+    
+    // Daily signup trend (last 30 days)
+    const dailySignups = {};
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateKey = date.toISOString().split('T')[0];
+      dailySignups[dateKey] = 0;
+    }
+    
+    users.forEach(user => {
+      const signupDate = new Date(user.signupDate || user.createdAt);
+      const dateKey = signupDate.toISOString().split('T')[0];
+      if (dailySignups.hasOwnProperty(dateKey)) {
+        dailySignups[dateKey]++;
+      }
+    });
+    
+    // Top active users by login count
+    const topActiveUsers = users
+      .filter(u => u.loginCount > 0)
+      .sort((a, b) => (b.loginCount || 0) - (a.loginCount || 0))
+      .slice(0, 10)
+      .map(u => ({
+        id: u._id,
+        name: u.name,
+        email: u.email,
+        loginCount: u.loginCount || 0,
+        lastLogin: u.lastLogin,
+        signupDate: u.signupDate || u.createdAt
+      }));
+    
+    // User list with activity details
+    const userList = users.map(u => ({
+      id: u._id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      role: u.role,
+      signupDate: u.signupDate || u.createdAt,
+      lastLogin: u.lastLogin,
+      loginCount: u.loginCount || 0,
+      loginHistory: u.loginHistory || [],
+      recentLogins: (u.loginHistory || []).slice(-5).reverse() // Last 5 logins
+    }));
+    
+    res.json({
+      success: true,
+      analytics: {
+        totalUsers,
+        adminUsers,
+        regularUsers,
+        usersToday,
+        usersThisWeek,
+        usersThisMonth,
+        activeUsers,
+        dailySignups,
+        topActiveUsers
+      },
+      users: userList
+    });
+  } catch (error) {
+    console.error('Error fetching user analytics:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch user analytics'
+    });
+  }
+});
+
 module.exports = router;

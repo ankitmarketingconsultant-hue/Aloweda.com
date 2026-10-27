@@ -42,6 +42,7 @@ router.post('/signup', async (req, res) => {
       name,
       email,
       password, // Don't hash here - pre-save hook will do it!
+      signupDate: new Date() // Track signup date
     };
 
     // Add optional fields if provided
@@ -99,6 +100,25 @@ router.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
+
+    // Track login activity
+    const loginEntry = {
+      timestamp: new Date(),
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('user-agent') || 'Unknown'
+    };
+
+    // Update user login history (keep last 50 logins)
+    user.loginHistory = user.loginHistory || [];
+    user.loginHistory.push(loginEntry);
+    if (user.loginHistory.length > 50) {
+      user.loginHistory = user.loginHistory.slice(-50); // Keep only last 50
+    }
+
+    user.lastLogin = new Date();
+    user.loginCount = (user.loginCount || 0) + 1;
+
+    await user.save();
 
     const token = generateToken(user._id);
 

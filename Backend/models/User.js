@@ -37,6 +37,26 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: 'India'
     }
+  },
+  // Login Activity Tracking
+  loginHistory: [{
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    ipAddress: String,
+    userAgent: String
+  }],
+  lastLogin: {
+    type: Date
+  },
+  loginCount: {
+    type: Number,
+    default: 0
+  },
+  signupDate: {
+    type: Date,
+    default: Date.now
   }
 }, {
   timestamps: true
