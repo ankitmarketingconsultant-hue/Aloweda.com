@@ -6,6 +6,35 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 const User = require('../models/User');
 
+// ============================================
+// PUBLIC ENDPOINT - No Auth Required
+// ============================================
+
+// Get all products with stock status (public endpoint for website)
+router.get('/products/public', async (req, res) => {
+  try {
+    const products = await Product.find({ isActive: true })
+      .select('name category price mrp stock description')
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      products: products
+    });
+  } catch (error) {
+    console.error('Error fetching public products:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch products',
+      error: error.message 
+    });
+  }
+});
+
+// ============================================
+// PROTECTED ENDPOINTS - Auth + Admin Required
+// ============================================
+
 // Create new product
 router.post('/products', auth, admin, async (req, res) => {
   try {

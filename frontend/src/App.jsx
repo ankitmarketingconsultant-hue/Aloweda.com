@@ -443,10 +443,13 @@ function AppContent() {
   useEffect(() => {
     const fetchAndMergeProducts = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/admin/products`)
+        // Use public endpoint to fetch products with stock status
+        const response = await fetch(`${API_URL}/api/admin/products/public`)
         const data = await response.json()
         
         if (data.success && data.products && data.products.length > 0) {
+          console.log('✓ Fetched', data.products.length, 'products from database')
+          
           // Update products state with stock from database
           setProducts(prevProducts => 
             prevProducts.map(product => {
