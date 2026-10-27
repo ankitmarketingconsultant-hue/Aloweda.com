@@ -450,20 +450,35 @@ function AppContent() {
         if (data.success && data.products && data.products.length > 0) {
           console.log('📦 Syncing stock from database:', data.products.length, 'products')
           
+          // Log all database products with their stock
+          console.log('Database products:', data.products.map(p => ({ 
+            name: p.name, 
+            stock: p.stock,
+            outOfStock: p.stock === 0 
+          })))
+          
           // Create a map of database products for faster lookup
           const dbProductMap = new Map()
           data.products.forEach(dbProduct => {
             const normalizedName = dbProduct.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
             dbProductMap.set(normalizedName, dbProduct)
+            console.log('Mapped:', normalizedName, '→ stock:', dbProduct.stock)
           })
           
           // Update products state with stock from database
           setProducts(prevProducts => {
+            console.log('Frontend products count:', prevProducts.length)
+            
             const updated = prevProducts.map(product => {
               const normalizedProductName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+              console.log('Checking:', product.name, '→ normalized:', normalizedProductName.substring(0, 30))
               
               // Try exact match first
               let dbProduct = dbProductMap.get(normalizedProductName)
+              
+              if (dbProduct) {
+                console.log('✅ EXACT MATCH:', product.name, '→ stock:', dbProduct.stock)
+              }
               
               // If no exact match, try partial matching
               if (!dbProduct) {
@@ -472,7 +487,7 @@ function AppContent() {
                   if (normalizedProductName.length >= 15 && dbName.length >= 15) {
                     if (normalizedProductName.includes(dbName) || dbName.includes(normalizedProductName)) {
                       dbProduct = dbProd
-                      console.log('✓ Partial match:', product.name, '→', dbProd.name)
+                      console.log('✅ PARTIAL MATCH:', product.name, '→', dbProd.name, '→ stock:', dbProd.stock)
                       break
                     }
                   }
@@ -482,7 +497,7 @@ function AppContent() {
                   const dbStart = dbName.substring(0, 20)
                   if (prodStart === dbStart && prodStart.length >= 15) {
                     dbProduct = dbProd
-                    console.log('✓ Prefix match:', product.name, '→', dbProd.name)
+                    console.log('✅ PREFIX MATCH:', product.name, '→', dbProd.name, '→ stock:', dbProd.stock)
                     break
                   }
                 }
@@ -490,19 +505,26 @@ function AppContent() {
               
               // If match found, sync stock from database
               if (dbProduct) {
-                return { 
+                const updatedProduct = { 
                   ...product, 
                   stock: dbProduct.stock,
                   _dbId: dbProduct._id // Store database ID for reference
                 }
+                console.log('📦 Updated product:', product.id, product.name.substring(0, 40), 'stock:', updatedProduct.stock)
+                return updatedProduct
               }
               
               // No match found - keep existing stock or default to 100
+              console.log('❌ NO MATCH for:', product.name)
               return { ...product, stock: product.stock ?? 100 }
             })
             
             const matchedCount = updated.filter(p => p._dbId).length
             console.log(`✅ Synced ${matchedCount}/${prevProducts.length} products with database`)
+            
+            // Log products with stock = 0
+            const oosProducts = updated.filter(p => p.stock === 0)
+            console.log('🔴 OUT OF STOCK products:', oosProducts.map(p => ({ id: p.id, name: p.name, stock: p.stock })))
             
             return updated
           })
