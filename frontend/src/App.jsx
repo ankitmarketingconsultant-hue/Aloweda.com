@@ -34,6 +34,7 @@ import AddProduct from './Admin/AddProduct'
 import VisualEditor from './Admin/VisualEditor'
 import UsersManagement from './Admin/UsersManagement'
 import MarketingAnalytics from './Admin/MarketingAnalytics'
+import CouponManagement from './Admin/CouponManagement'
 
 // Import all products
 import SC1  from './SkinCareImg/SkinCare1.png'
@@ -665,6 +666,7 @@ function AppContent() {
           <Route path="orders" element={<OrdersManagement />} />
           <Route path="users" element={<UsersManagement />} />
           <Route path="marketing" element={<MarketingAnalytics />} />
+          <Route path="coupons" element={<CouponManagement />} />
           <Route path="visual-editor" element={<VisualEditor />} />
         </Route>
 
