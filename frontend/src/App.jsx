@@ -447,8 +447,11 @@ function AppContent() {
         const response = await fetch(`${API_URL}/api/admin/products/public`)
         const data = await response.json()
         
+        console.log('🔍 API Response:', data)
+        
         if (data.success && data.products && data.products.length > 0) {
           console.log('✓ Fetched', data.products.length, 'products from database')
+          console.log('📦 Database products:', data.products.map(p => ({ name: p.name, stock: p.stock })))
           
           // Update products state with stock from database
           setProducts(prevProducts => 
@@ -459,28 +462,40 @@ function AppContent() {
                 const dbName = p.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
                 
                 // Strategy 1: Exact match
-                if (prodName === dbName) return true
+                if (prodName === dbName) {
+                  console.log('✓ Strategy 1 (Exact):', product.name)
+                  return true
+                }
                 
                 // Strategy 2: One contains the other (longer match)
-                if (prodName.includes(dbName) || dbName.includes(prodName)) return true
+                if (prodName.includes(dbName) || dbName.includes(prodName)) {
+                  console.log('✓ Strategy 2 (Contains):', product.name)
+                  return true
+                }
                 
                 // Strategy 3: Check first 30 characters for partial match
                 const prodStart = prodName.substring(0, 30)
                 const dbStart = dbName.substring(0, 30)
-                if (prodStart === dbStart) return true
+                if (prodStart === dbStart && prodStart.length > 10) {
+                  console.log('✓ Strategy 3 (Prefix):', product.name)
+                  return true
+                }
                 
-                // Strategy 4: Extract key words and match (at least 3 words in common)
+                // Strategy 4: Extract key words and match (at least 2 words in common for better matching)
                 const prodWords = prodName.split(/\s+/).filter(w => w.length > 3)
                 const dbWords = dbName.split(/\s+/).filter(w => w.length > 3)
                 const commonWords = prodWords.filter(w => dbWords.includes(w))
-                if (commonWords.length >= 3) return true
+                if (commonWords.length >= 2) {
+                  console.log('✓ Strategy 4 (Words):', product.name, 'common:', commonWords)
+                  return true
+                }
                 
                 return false
               })
               
               // If match found, use database stock and update stock field
               if (dbProduct) {
-                console.log('✓ Matched:', product.name, '→', dbProduct.name, 'stock:', dbProduct.stock)
+                console.log('✅ MATCHED:', product.name, '→', dbProduct.name, '| Stock:', dbProduct.stock)
                 // Return product with database stock (0 means out of stock)
                 return { 
                   ...product, 
@@ -492,13 +507,13 @@ function AppContent() {
               }
               
               // No match found - default to in stock
-              console.log('⚠ No match for:', product.name)
+              console.log('❌ NO MATCH:', product.name)
               return { ...product, stock: 100, inStock: true, outOfStock: false }
             })
           )
         } else {
           // No DB products, set all to in stock
-          console.log('No database products found, using defaults')
+          console.log('⚠️ No database products found, using defaults')
           setProducts(prevProducts => prevProducts.map(p => ({ 
             ...p, 
             stock: 100, 
@@ -507,7 +522,7 @@ function AppContent() {
           })))
         }
       } catch (error) {
-        console.error('Failed to fetch products:', error)
+        console.error('❌ Failed to fetch products:', error)
         // Fallback: all in stock
         setProducts(prevProducts => prevProducts.map(p => ({ 
           ...p, 
