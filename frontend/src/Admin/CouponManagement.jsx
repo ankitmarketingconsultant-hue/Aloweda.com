@@ -32,7 +32,9 @@ const CouponManagement = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      if (data.success) setCoupons(data.coupons);
+      if (data.success) {
+        setCoupons(data.data || []); // Backend returns 'data', not 'coupons'
+      }
     } catch (error) {
       console.error('Error:', error);
     } finally {
