@@ -11,6 +11,13 @@ const UsersManagement = () => {
 
   useEffect(() => {
     fetchUserAnalytics();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchUserAnalytics();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchUserAnalytics = async () => {
