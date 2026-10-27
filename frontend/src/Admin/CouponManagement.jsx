@@ -23,6 +23,13 @@ const CouponManagement = () => {
 
   useEffect(() => {
     fetchCoupons();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchCoupons();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchCoupons = async () => {
@@ -164,9 +171,14 @@ const CouponManagement = () => {
           <h2>🎫 Coupon Management</h2>
           <p className="coupon-subtitle">Create and manage discount coupons</p>
         </div>
-        <button className="create-coupon-btn" onClick={() => { resetForm(); setShowModal(true); }}>
-          ➕ Create Coupon
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="refresh-btn" onClick={fetchCoupons} title="Refresh">
+            🔄 Refresh
+          </button>
+          <button className="create-coupon-btn" onClick={() => { resetForm(); setShowModal(true); }}>
+            ➕ Create Coupon
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

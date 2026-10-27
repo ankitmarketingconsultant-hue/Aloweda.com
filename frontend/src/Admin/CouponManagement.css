@@ -42,6 +42,23 @@
   transform: translateY(-2px);
 }
 
+.refresh-btn {
+  padding: 12px 20px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.refresh-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
 /* Stats */
 .coupon-stats {
   display: grid;
