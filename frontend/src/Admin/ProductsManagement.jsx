@@ -177,6 +177,46 @@ const ProductsManagement = () => {
     }
   };
 
+  const handleToggleStock = async (product) => {
+    const newStockValue = (product.stock || 0) > 0 ? 0 : 100;
+    const action = newStockValue === 0 ? 'OUT OF STOCK' : 'IN STOCK';
+    
+    if (!confirm(`Mark "${product.name}" as ${action}?`)) {
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`${API_URL}/api/admin/products/${product._id}/stock`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ stock: newStockValue }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        setProducts(products.map(p => 
+          p._id === product._id ? { ...p, stock: newStockValue } : p
+        ));
+        fetchProducts(); // Refresh to update stats
+      } else {
+        alert(data.message || 'Failed to toggle stock status');
+      }
+    } catch (err) {
+      console.error('Error toggling stock:', err);
+      alert('Failed to toggle stock status');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const filteredProducts = products.filter(product =>
     product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -260,7 +300,7 @@ const ProductsManagement = () => {
               <th>Product Name</th>
               <th>Category</th>
               <th>Price (₹)</th>
-              <th>Stock</th>
+              <th>Stock Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -300,19 +340,20 @@ const ProductsManagement = () => {
                     )}
                   </td>
                   <td>
-                    {editingProduct === product._id ? (
-                      <input
-                        type="number"
-                        className="stock-input"
-                        value={newStock}
-                        onChange={(e) => setNewStock(e.target.value)}
-                        min="0"
-                      />
-                    ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <label className="stock-toggle">
+                        <input
+                          type="checkbox"
+                          checked={(product.stock || 0) > 0}
+                          onChange={() => handleToggleStock(product)}
+                          disabled={updating}
+                        />
+                        <span className="toggle-slider"></span>
+                      </label>
                       <span className={`stock-badge ${(product.stock || 0) === 0 ? 'out-of-stock' : ''}`}>
-                        {(product.stock || 0) === 0 ? 'OUT OF STOCK' : `${product.stock} units`}
+                        {(product.stock || 0) === 0 ? '⚠️ OUT OF STOCK' : `✅ IN STOCK (${product.stock})`}
                       </span>
-                    )}
+                    </div>
                   </td>
                   <td>
                     {editingProduct === product._id ? (
@@ -344,7 +385,7 @@ const ProductsManagement = () => {
                         className="edit-btn"
                         onClick={() => handleEditClick(product)}
                       >
-                        ✏️ Edit
+                        ✏️ Edit Details
                       </button>
                     )}
                   </td>

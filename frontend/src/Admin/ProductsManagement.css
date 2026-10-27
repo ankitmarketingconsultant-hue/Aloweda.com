@@ -222,11 +222,59 @@
 .stock-badge.out-of-stock {
   background: #fee2e2;
   color: #991b1b;
-  position: relative;
 }
 
-.stock-badge.out-of-stock::before {
-  content: '⚠️ ';
+/* Toggle Switch */
+.stock-toggle {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.stock-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ef4444;
+  border-radius: 28px;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.stock-toggle input:checked + .toggle-slider {
+  background-color: #10b981;
+}
+
+.stock-toggle input:checked + .toggle-slider:before {
+  transform: translateX(24px);
+}
+
+.stock-toggle input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .action-buttons {
