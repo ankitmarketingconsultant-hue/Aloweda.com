@@ -439,11 +439,86 @@ function AppContent() {
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
-  // Fetch and sync product stock from API - DISABLED
-  // Products will use default stock values
+  // Fetch products from database and merge with hardcoded data
   useEffect(() => {
-    // Initialize all products with default stock = 100 (in stock)
-    setProducts(prevProducts => prevProducts.map(p => ({ ...p, stock: p.stock || 100 })))
+    const fetchAndMergeProducts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/admin/products`)
+        const data = await response.json()
+        
+        if (data.success && data.products && data.products.length > 0) {
+          // Update products state with stock from database
+          setProducts(prevProducts => 
+            prevProducts.map(product => {
+              // Improved matching logic with multiple strategies
+              const dbProduct = data.products.find(p => {
+                const prodName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+                const dbName = p.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+                
+                // Strategy 1: Exact match
+                if (prodName === dbName) return true
+                
+                // Strategy 2: One contains the other (longer match)
+                if (prodName.includes(dbName) || dbName.includes(prodName)) return true
+                
+                // Strategy 3: Check first 30 characters for partial match
+                const prodStart = prodName.substring(0, 30)
+                const dbStart = dbName.substring(0, 30)
+                if (prodStart === dbStart) return true
+                
+                // Strategy 4: Extract key words and match (at least 3 words in common)
+                const prodWords = prodName.split(/\s+/).filter(w => w.length > 3)
+                const dbWords = dbName.split(/\s+/).filter(w => w.length > 3)
+                const commonWords = prodWords.filter(w => dbWords.includes(w))
+                if (commonWords.length >= 3) return true
+                
+                return false
+              })
+              
+              // If match found, use database stock and update stock field
+              if (dbProduct) {
+                console.log('✓ Matched:', product.name, '→', dbProduct.name, 'stock:', dbProduct.stock)
+                // Return product with database stock (0 means out of stock)
+                return { 
+                  ...product, 
+                  stock: dbProduct.stock,
+                  inStock: dbProduct.stock > 0,
+                  outOfStock: dbProduct.stock === 0,
+                  _id: dbProduct._id // Store database ID for reference
+                }
+              }
+              
+              // No match found - default to in stock
+              console.log('⚠ No match for:', product.name)
+              return { ...product, stock: 100, inStock: true, outOfStock: false }
+            })
+          )
+        } else {
+          // No DB products, set all to in stock
+          console.log('No database products found, using defaults')
+          setProducts(prevProducts => prevProducts.map(p => ({ 
+            ...p, 
+            stock: 100, 
+            inStock: true, 
+            outOfStock: false 
+          })))
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
+        // Fallback: all in stock
+        setProducts(prevProducts => prevProducts.map(p => ({ 
+          ...p, 
+          stock: 100, 
+          inStock: true, 
+          outOfStock: false 
+        })))
+      }
+    }
+
+    fetchAndMergeProducts()
+    // Refresh every 10 seconds to get latest stock
+    const interval = setInterval(fetchAndMergeProducts, 10000)
+    return () => clearInterval(interval)
   }, [])
 
   // Save cart to localStorage whenever it changes
