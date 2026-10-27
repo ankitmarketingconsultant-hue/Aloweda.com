@@ -205,7 +205,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
 
   const handleCheckout = async () => {
     // Check for out of stock items
-    const outOfStockItems = safeCart.filter(item => item.stock === 0 || item.stock === undefined);
+    const outOfStockItems = safeCart.filter(item => item.stock === 0);
     
     if (outOfStockItems.length > 0) {
       const itemNames = outOfStockItems.map(item => `• ${item.name}`).join('\n');
@@ -443,10 +443,10 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
             {/* Cart Items */}
             <div className="cart-items">
               {safeCart.map((item) => (
-                <div key={item.id} className={`cart-item ${(item.stock === 0 || item.stock === undefined) ? 'out-of-stock-item' : ''}`}>
+                <div key={item.id} className={`cart-item ${item.stock === 0 ? 'out-of-stock-item' : ''}`}>
                   <div className="cart-item__image">
                     <img src={item.img} alt={item.name} />
-                    {(item.stock === 0 || item.stock === undefined) && (
+                    {item.stock === 0 && (
                       <div className="out-of-stock-overlay">
                         <span>OUT OF STOCK</span>
                       </div>
@@ -456,7 +456,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                   <div className="cart-item__details">
                     <h3 className="cart-item__name">
                       {item.name}
-                      {(item.stock === 0 || item.stock === undefined) && (
+                      {item.stock === 0 && (
                         <span className="oos-badge">⚠️ OUT OF STOCK</span>
                       )}
                     </h3>

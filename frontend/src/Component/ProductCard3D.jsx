@@ -64,7 +64,7 @@ export default function ProductCard3D({
           )}
           
           {/* Out of Stock Badge */}
-          {(product.stock === 0 || product.stock === undefined) && (
+          {product.stock === 0 && (
             <div className="product-oos-badge">
               <span>OUT OF STOCK</span>
             </div>
