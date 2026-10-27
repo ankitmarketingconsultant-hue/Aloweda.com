@@ -217,7 +217,7 @@ exports.validateCoupon = async (req, res) => {
     }
     
     // Calculate discount
-    const discountResult = coupon.calculateDiscount(orderValue);
+    const discountResult = coupon.calculateDiscount(orderValue, cartItems);
     
     if (discountResult.discount === 0) {
       return res.status(400).json({
@@ -226,16 +226,26 @@ exports.validateCoupon = async (req, res) => {
       });
     }
     
+    const responseData = {
+      couponId: coupon._id,
+      code: coupon.code,
+      discount: discountResult.discount,
+      finalAmount: orderValue - discountResult.discount,
+      savings: discountResult.discount,
+      message: discountResult.message
+    };
+    
+    // Add bundle-specific info
+    if (coupon.isBundle) {
+      responseData.isBundle = true;
+      responseData.bundleQuantity = coupon.bundleQuantity;
+      responseData.bundlePrice = coupon.bundlePrice;
+    }
+    
     res.json({
       success: true,
-      message: 'Coupon applied successfully',
-      data: {
-        couponId: coupon._id,
-        code: coupon.code,
-        discount: discountResult.discount,
-        finalAmount: orderValue - discountResult.discount,
-        savings: discountResult.discount
-      }
+      message: discountResult.message || 'Coupon applied successfully',
+      data: responseData
     });
   } catch (error) {
     res.status(500).json({

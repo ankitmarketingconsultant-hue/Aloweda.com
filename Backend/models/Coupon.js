@@ -20,8 +20,30 @@ const couponSchema = new mongoose.Schema({
   },
   discount: {
     type: Number,
-    required: true,
-    min: 0
+    required: function() {
+      return !this.isBundle; // Not required if it's a bundle
+    },
+    min: 0,
+    default: 0
+  },
+  // Bundle-specific fields
+  isBundle: {
+    type: Boolean,
+    default: false
+  },
+  bundleQuantity: {
+    type: Number,
+    min: 1,
+    required: function() {
+      return this.isBundle;
+    }
+  },
+  bundlePrice: {
+    type: Number,
+    min: 0,
+    required: function() {
+      return this.isBundle;
+    }
   },
   minOrderValue: {
     type: Number,
@@ -96,7 +118,29 @@ couponSchema.methods.isValid = function() {
 };
 
 // Method to calculate discount
-couponSchema.methods.calculateDiscount = function(orderValue) {
+couponSchema.methods.calculateDiscount = function(orderValue, cartItems = []) {
+  // Handle bundle coupons
+  if (this.isBundle) {
+    const cartQuantity = cartItems.length || 0;
+    
+    if (cartQuantity < this.bundleQuantity) {
+      return {
+        discount: 0,
+        message: `Add ${this.bundleQuantity - cartQuantity} more item(s) to use this bundle deal`
+      };
+    }
+    
+    // Calculate discount: original total - bundle price
+    const discount = Math.max(0, orderValue - this.bundlePrice);
+    
+    return {
+      discount: Math.round(discount),
+      finalPrice: this.bundlePrice,
+      message: `Bundle deal applied: ${this.bundleQuantity} items for ₹${this.bundlePrice}`
+    };
+  }
+  
+  // Handle regular discount coupons
   if (orderValue < this.minOrderValue) {
     return {
       discount: 0,

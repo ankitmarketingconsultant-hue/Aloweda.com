@@ -16,7 +16,10 @@ const CouponManagement = () => {
     usageLimit: '',
     validFrom: new Date().toISOString().split('T')[0],
     validTo: '',
-    isActive: true
+    isActive: true,
+    isBundle: false,
+    bundleQuantity: '',
+    bundlePrice: ''
   });
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -124,7 +127,10 @@ const CouponManagement = () => {
       usageLimit: coupon.usageLimit || '',
       validFrom: new Date(coupon.validFrom).toISOString().split('T')[0],
       validTo: new Date(coupon.validTo).toISOString().split('T')[0],
-      isActive: coupon.isActive
+      isActive: coupon.isActive,
+      isBundle: coupon.isBundle || false,
+      bundleQuantity: coupon.bundleQuantity || '',
+      bundlePrice: coupon.bundlePrice || ''
     });
     setShowModal(true);
   };
@@ -141,7 +147,10 @@ const CouponManagement = () => {
       usageLimit: '',
       validFrom: new Date().toISOString().split('T')[0],
       validTo: '',
-      isActive: true
+      isActive: true,
+      isBundle: false,
+      bundleQuantity: '',
+      bundlePrice: ''
     });
   };
 
@@ -215,7 +224,10 @@ const CouponManagement = () => {
             </div>
 
             <div className="coupon-discount">
-              {coupon.type === 'percentage' ? `${coupon.discount}% OFF` : `₹${coupon.discount} OFF`}
+              {coupon.isBundle 
+                ? `${coupon.bundleQuantity} items @ ₹${coupon.bundlePrice}`
+                : coupon.type === 'percentage' ? `${coupon.discount}% OFF` : `₹${coupon.discount} OFF`
+              }
             </div>
 
             {coupon.description && <p className="coupon-description">{coupon.description}</p>}
@@ -301,48 +313,95 @@ const CouponManagement = () => {
                 />
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Discount {formData.type === 'percentage' ? '(%)' : '(₹)'} *</label>
+              {/* Bundle Toggle */}
+              <div className="form-group checkbox-group">
+                <label>
                   <input
-                    type="number"
-                    value={formData.discount}
-                    onChange={(e) => setFormData({...formData, discount: e.target.value})}
-                    placeholder={formData.type === 'percentage' ? '10' : '100'}
-                    required
+                    type="checkbox"
+                    checked={formData.isBundle}
+                    onChange={(e) => setFormData({...formData, isBundle: e.target.checked})}
                   />
-                </div>
-                <div className="form-group">
-                  <label>Min Order Value (₹)</label>
-                  <input
-                    type="number"
-                    value={formData.minOrderValue}
-                    onChange={(e) => setFormData({...formData, minOrderValue: e.target.value})}
-                    placeholder="0"
-                  />
-                </div>
+                  <span>🎁 This is a Bundle Deal (e.g., Buy 3 for ₹899)</span>
+                </label>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Max Discount (₹)</label>
-                  <input
-                    type="number"
-                    value={formData.maxDiscount}
-                    onChange={(e) => setFormData({...formData, maxDiscount: e.target.value})}
-                    placeholder="Optional"
-                  />
+              {formData.isBundle ? (
+                // Bundle Fields
+                <div className="bundle-fields">
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Bundle Quantity *</label>
+                      <input
+                        type="number"
+                        value={formData.bundleQuantity}
+                        onChange={(e) => setFormData({...formData, bundleQuantity: e.target.value})}
+                        placeholder="e.g., 3"
+                        required={formData.isBundle}
+                        min="1"
+                      />
+                      <small>Number of items required</small>
+                    </div>
+                    <div className="form-group">
+                      <label>Bundle Price (₹) *</label>
+                      <input
+                        type="number"
+                        value={formData.bundlePrice}
+                        onChange={(e) => setFormData({...formData, bundlePrice: e.target.value})}
+                        placeholder="e.g., 899"
+                        required={formData.isBundle}
+                        min="0"
+                      />
+                      <small>Fixed price for bundle</small>
+                    </div>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>Usage Limit</label>
-                  <input
-                    type="number"
-                    value={formData.usageLimit}
-                    onChange={(e) => setFormData({...formData, usageLimit: e.target.value})}
-                    placeholder="Unlimited"
-                  />
-                </div>
-              </div>
+              ) : (
+                // Regular Discount Fields
+                <>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Discount {formData.type === 'percentage' ? '(%)' : '(₹)'} *</label>
+                      <input
+                        type="number"
+                        value={formData.discount}
+                        onChange={(e) => setFormData({...formData, discount: e.target.value})}
+                        placeholder={formData.type === 'percentage' ? '10' : '100'}
+                        required={!formData.isBundle}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Min Order Value (₹)</label>
+                      <input
+                        type="number"
+                        value={formData.minOrderValue}
+                        onChange={(e) => setFormData({...formData, minOrderValue: e.target.value})}
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Max Discount (₹)</label>
+                      <input
+                        type="number"
+                        value={formData.maxDiscount}
+                        onChange={(e) => setFormData({...formData, maxDiscount: e.target.value})}
+                        placeholder="Optional"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Usage Limit</label>
+                      <input
+                        type="number"
+                        value={formData.usageLimit}
+                        onChange={(e) => setFormData({...formData, usageLimit: e.target.value})}
+                        placeholder="Unlimited"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="form-row">
                 <div className="form-group">
