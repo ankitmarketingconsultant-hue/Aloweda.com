@@ -322,3 +322,39 @@
   }
 }
 
+
+/* Out of Stock Badge */
+.product-oos-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(220, 38, 38, 0.95);
+  padding: 12px 24px;
+  border-radius: 8px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+}
+
+.product-oos-badge span {
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Dim out of stock products */
+.product-card-3d:has(.product-oos-badge) .product-card-3d__img {
+  opacity: 0.6;
+  filter: grayscale(40%);
+}
+
+.product-card-3d:has(.product-oos-badge) {
+  pointer-events: all;
+}
+
+.product-card-3d:has(.product-oos-badge) .product-card-3d__overlay {
+  display: none;
+}

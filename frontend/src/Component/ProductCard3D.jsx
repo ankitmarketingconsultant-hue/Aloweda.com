@@ -63,6 +63,13 @@ export default function ProductCard3D({
             <span className="product-card-3d__tag">{product.tag}</span>
           )}
           
+          {/* Out of Stock Badge */}
+          {(product.stock === 0 || product.stock === undefined) && (
+            <div className="product-oos-badge">
+              <span>OUT OF STOCK</span>
+            </div>
+          )}
+          
           {/* Hover Overlay */}
           <div className="product-card-3d__overlay">
             <button 
