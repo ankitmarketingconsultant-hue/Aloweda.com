@@ -74,7 +74,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://aloweda-backend.vercel.app'; // Replace with your backend URL
+        const API_URL = 'https://aloweda-jitl.vercel.app'; // Production Backend URL
         let dbProducts = [];
 
         function log(message, color = '#0f0') {
@@ -87,9 +87,15 @@
 
         async function fetchDatabaseProducts() {
             log('📡 Fetching products from API...');
+            log(`API URL: ${API_URL}/api/admin/products/public`, '#ff0');
             
             try {
-                const response = await fetch(`${API_URL}/api/admin/products/public`);
+                const response = await fetch(`${API_URL}/api/admin/products/public`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const data = await response.json();
                 
                 if (data.success && data.products) {
