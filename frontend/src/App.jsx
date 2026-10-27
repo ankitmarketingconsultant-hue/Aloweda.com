@@ -497,13 +497,15 @@ function AppContent() {
               if (dbProduct) {
                 console.log('✅ MATCHED:', product.name, '→', dbProduct.name, '| Stock:', dbProduct.stock)
                 // Return product with database stock (0 means out of stock)
-                return { 
+                const updatedProduct = { 
                   ...product, 
                   stock: dbProduct.stock,
                   inStock: dbProduct.stock > 0,
                   outOfStock: dbProduct.stock === 0,
                   _id: dbProduct._id // Store database ID for reference
                 }
+                console.log('📦 Updated product object:', { id: updatedProduct.id, name: updatedProduct.name.substring(0, 40), stock: updatedProduct.stock, outOfStock: updatedProduct.outOfStock })
+                return updatedProduct
               }
               
               // No match found - default to in stock
