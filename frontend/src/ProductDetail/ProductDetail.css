@@ -1870,3 +1870,19 @@
   background: #9ca3af !important;
   transform: none !important;
 }
+
+.low-opacity-btn {
+  background: #f59e0b !important;
+  position: relative;
+}
+
+.low-opacity-btn:hover {
+  background: #d97706 !important;
+}
+
+.low-opacity-btn::after {
+  content: '⚠️';
+  position: absolute;
+  right: 16px;
+  font-size: 18px;
+}

@@ -275,7 +275,6 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
                 <button 
                   onClick={() => setQuantity(Math.max(1, quantity - 1))} 
                   aria-label="Decrease"
-                  disabled={product.outOfStock}
                 >−</button>
                 <input
                   id="quantity"
@@ -287,21 +286,20 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
                     const val = parseInt(e.target.value) || 1
                     setQuantity(Math.min(4, Math.max(1, val)))
                   }}
-                  disabled={product.outOfStock}
                 />
                 <button
                   onClick={() => setQuantity(Math.min(4, quantity + 1))}
                   aria-label="Increase"
-                  disabled={quantity >= 4 || product.outOfStock}
-                  style={{opacity: quantity >= 4 || product.outOfStock ? 0.5 : 1, cursor: quantity >= 4 || product.outOfStock ? 'not-allowed' : 'pointer'}}
+                  disabled={quantity >= 4}
+                  style={{opacity: quantity >= 4 ? 0.5 : 1, cursor: quantity >= 4 ? 'not-allowed' : 'pointer'}}
                 >
                   +
                 </button>
               </div>
             </div>
             {(product.stock === 0 || product.stock === undefined || product.outOfStock) ? (
-              <button className="add-to-cart-btn out-of-stock-btn" disabled>
-                OUT OF STOCK
+              <button className="add-to-cart-btn low-opacity-btn" onClick={handleAddToCart}>
+                Add to Cart (Out of Stock)
               </button>
             ) : (
               <button className="add-to-cart-btn" onClick={handleAddToCart}>

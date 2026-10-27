@@ -204,6 +204,15 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
   }
 
   const handleCheckout = async () => {
+    // Check for out of stock items
+    const outOfStockItems = safeCart.filter(item => item.stock === 0 || item.stock === undefined);
+    
+    if (outOfStockItems.length > 0) {
+      const itemNames = outOfStockItems.map(item => `• ${item.name}`).join('\n');
+      alert(`⚠️ Cannot proceed to checkout!\n\nThe following items are OUT OF STOCK:\n\n${itemNames}\n\nPlease remove them from cart to continue.`);
+      return;
+    }
+    
     if (totalItems > 5) {
       alert('⚠️ Maximum 5 items allowed per order!\n\nYou currently have ' + totalItems + ' items in cart.\nPlease reduce the quantity to proceed to checkout.')
       return
@@ -434,13 +443,23 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
             {/* Cart Items */}
             <div className="cart-items">
               {safeCart.map((item) => (
-                <div key={item.id} className="cart-item">
+                <div key={item.id} className={`cart-item ${(item.stock === 0 || item.stock === undefined) ? 'out-of-stock-item' : ''}`}>
                   <div className="cart-item__image">
                     <img src={item.img} alt={item.name} />
+                    {(item.stock === 0 || item.stock === undefined) && (
+                      <div className="out-of-stock-overlay">
+                        <span>OUT OF STOCK</span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="cart-item__details">
-                    <h3 className="cart-item__name">{item.name}</h3>
+                    <h3 className="cart-item__name">
+                      {item.name}
+                      {(item.stock === 0 || item.stock === undefined) && (
+                        <span className="oos-badge">⚠️ OUT OF STOCK</span>
+                      )}
+                    </h3>
                     <p className="cart-item__category">{item.category}</p>
                     <p className="cart-item__price">{item.price}</p>
                   </div>
