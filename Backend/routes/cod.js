@@ -22,6 +22,38 @@ router.post('/place-order', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Customer details required' });
     }
 
+    // CRITICAL: Validate stock availability before placing COD order
+    const Product = require('../models/Product');
+    const outOfStockItems = [];
+    
+    if (items && items.length > 0) {
+      const products = await Product.find({});
+      
+      for (const item of items) {
+        const normalizedItemName = item.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+        
+        const dbProduct = products.find(p => {
+          const normalizedDbName = p.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+          return normalizedItemName === normalizedDbName || 
+                 normalizedItemName.includes(normalizedDbName) || 
+                 normalizedDbName.includes(normalizedItemName);
+        });
+        
+        if (dbProduct && dbProduct.stock === 0) {
+          outOfStockItems.push(item.name);
+        }
+      }
+    }
+    
+    // If any items are out of stock, reject the order
+    if (outOfStockItems.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot place order: Some items are out of stock',
+        outOfStockItems: outOfStockItems
+      });
+    }
+
     // Generate unique orderId
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);

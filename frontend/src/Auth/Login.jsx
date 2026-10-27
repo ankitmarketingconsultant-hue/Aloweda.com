@@ -64,10 +64,12 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       if (response.user && response.user.role === 'admin') {
         setSuccess('Admin login successful! Redirecting...');
         
+        // Use React Router navigate for admin redirect (better than window.location)
         setTimeout(() => {
-          window.location.href = '/admin/dashboard'; // Full page redirect for admin
+          if (onClose) onClose(); // Close login modal
+          window.location.href = '/admin/dashboard'; // Full page redirect to ensure clean state
         }, 1000);
-        return; // Don't close modal, redirect instead
+        return; // Don't execute regular user flow
       }
 
       // Regular user - notify parent component

@@ -19,6 +19,36 @@ exports.createOrder = async (req, res) => {
     
     const userId = req.userId; // From auth middleware
     
+    // CRITICAL: Validate stock availability for all items before creating order
+    const Product = require('../models/Product');
+    const outOfStockItems = [];
+    
+    for (const item of items) {
+      // Try to find product in database by name (fuzzy match)
+      const products = await Product.find({});
+      const normalizedItemName = item.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+      
+      const dbProduct = products.find(p => {
+        const normalizedDbName = p.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+        return normalizedItemName === normalizedDbName || 
+               normalizedItemName.includes(normalizedDbName) || 
+               normalizedDbName.includes(normalizedItemName);
+      });
+      
+      if (dbProduct && dbProduct.stock === 0) {
+        outOfStockItems.push(item.name);
+      }
+    }
+    
+    // If any items are out of stock, reject the order
+    if (outOfStockItems.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot create order: Some items are out of stock',
+        outOfStockItems: outOfStockItems
+      });
+    }
+    
     // Calculate online payment discount if applicable
     let onlinePaymentDiscount = 0;
     if (paymentMethod === 'Online') {

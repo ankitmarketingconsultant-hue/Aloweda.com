@@ -447,90 +447,78 @@ function AppContent() {
         const response = await fetch(`${API_URL}/api/admin/products/public`)
         const data = await response.json()
         
-        console.log('🔍 API Response:', data)
-        
         if (data.success && data.products && data.products.length > 0) {
-          console.log('✓ Fetched', data.products.length, 'products from database')
-          console.log('📦 Database products:', data.products.map(p => ({ name: p.name, stock: p.stock })))
+          console.log('📦 Syncing stock from database:', data.products.length, 'products')
+          
+          // Create a map of database products for faster lookup
+          const dbProductMap = new Map()
+          data.products.forEach(dbProduct => {
+            const normalizedName = dbProduct.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+            dbProductMap.set(normalizedName, dbProduct)
+          })
           
           // Update products state with stock from database
-          setProducts(prevProducts => 
-            prevProducts.map(product => {
-              // Improved matching logic with multiple strategies
-              const dbProduct = data.products.find(p => {
-                const prodName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
-                const dbName = p.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
-                
-                // Strategy 1: Exact match
-                if (prodName === dbName) {
-                  console.log('✓ Strategy 1 (Exact):', product.name)
-                  return true
-                }
-                
-                // Strategy 2: One contains the other (longer match)
-                if (prodName.includes(dbName) || dbName.includes(prodName)) {
-                  console.log('✓ Strategy 2 (Contains):', product.name)
-                  return true
-                }
-                
-                // Strategy 3: Check first 30 characters for partial match
-                const prodStart = prodName.substring(0, 30)
-                const dbStart = dbName.substring(0, 30)
-                if (prodStart === dbStart && prodStart.length > 10) {
-                  console.log('✓ Strategy 3 (Prefix):', product.name)
-                  return true
-                }
-                
-                // Strategy 4: Extract key words and match (at least 2 words in common for better matching)
-                const prodWords = prodName.split(/\s+/).filter(w => w.length > 3)
-                const dbWords = dbName.split(/\s+/).filter(w => w.length > 3)
-                const commonWords = prodWords.filter(w => dbWords.includes(w))
-                if (commonWords.length >= 2) {
-                  console.log('✓ Strategy 4 (Words):', product.name, 'common:', commonWords)
-                  return true
-                }
-                
-                return false
-              })
+          setProducts(prevProducts => {
+            const updated = prevProducts.map(product => {
+              const normalizedProductName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
               
-              // If match found, use database stock and update stock field
-              if (dbProduct) {
-                console.log('✅ MATCHED:', product.name, '→', dbProduct.name, '| Stock:', dbProduct.stock)
-                // Return product with database stock (0 means out of stock)
-                const updatedProduct = { 
-                  ...product, 
-                  stock: dbProduct.stock,
-                  inStock: dbProduct.stock > 0,
-                  outOfStock: dbProduct.stock === 0,
-                  _id: dbProduct._id // Store database ID for reference
+              // Try exact match first
+              let dbProduct = dbProductMap.get(normalizedProductName)
+              
+              // If no exact match, try partial matching
+              if (!dbProduct) {
+                for (const [dbName, dbProd] of dbProductMap.entries()) {
+                  // Check if one name contains the other (minimum 15 chars for match)
+                  if (normalizedProductName.length >= 15 && dbName.length >= 15) {
+                    if (normalizedProductName.includes(dbName) || dbName.includes(normalizedProductName)) {
+                      dbProduct = dbProd
+                      console.log('✓ Partial match:', product.name, '→', dbProd.name)
+                      break
+                    }
+                  }
+                  
+                  // Try matching first 20 characters
+                  const prodStart = normalizedProductName.substring(0, 20)
+                  const dbStart = dbName.substring(0, 20)
+                  if (prodStart === dbStart && prodStart.length >= 15) {
+                    dbProduct = dbProd
+                    console.log('✓ Prefix match:', product.name, '→', dbProd.name)
+                    break
+                  }
                 }
-                console.log('📦 Updated product object:', { id: updatedProduct.id, name: updatedProduct.name.substring(0, 40), stock: updatedProduct.stock, outOfStock: updatedProduct.outOfStock })
-                return updatedProduct
               }
               
-              // No match found - default to in stock
-              console.log('❌ NO MATCH:', product.name)
-              return { ...product, stock: 100, inStock: true, outOfStock: false }
+              // If match found, sync stock from database
+              if (dbProduct) {
+                return { 
+                  ...product, 
+                  stock: dbProduct.stock,
+                  _dbId: dbProduct._id // Store database ID for reference
+                }
+              }
+              
+              // No match found - keep existing stock or default to 100
+              return { ...product, stock: product.stock ?? 100 }
             })
-          )
+            
+            const matchedCount = updated.filter(p => p._dbId).length
+            console.log(`✅ Synced ${matchedCount}/${prevProducts.length} products with database`)
+            
+            return updated
+          })
         } else {
-          // No DB products, set all to in stock
-          console.log('⚠️ No database products found, using defaults')
+          // No DB products, use default stock values
           setProducts(prevProducts => prevProducts.map(p => ({ 
             ...p, 
-            stock: 100, 
-            inStock: true, 
-            outOfStock: false 
+            stock: p.stock ?? 100 
           })))
         }
       } catch (error) {
-        console.error('❌ Failed to fetch products:', error)
-        // Fallback: all in stock
+        console.error('❌ Stock sync error:', error)
+        // Keep existing stock values on error
         setProducts(prevProducts => prevProducts.map(p => ({ 
           ...p, 
-          stock: 100, 
-          inStock: true, 
-          outOfStock: false 
+          stock: p.stock ?? 100 
         })))
       }
     }

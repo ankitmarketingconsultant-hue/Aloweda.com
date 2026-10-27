@@ -10,17 +10,58 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Check if user is authenticated and is admin
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('userRole');
-    const name = localStorage.getItem('userName');
+    const verifyAdminAccess = async () => {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('userRole');
+      const name = localStorage.getItem('userName');
 
-    // Require valid token and admin role
-    if (!token || role !== 'admin') {
-      navigate('/admin/login');
-      return;
-    }
+      // First check: localStorage validation
+      if (!token || role !== 'admin') {
+        navigate('/admin/login');
+        return;
+      }
 
-    setUserName(name || 'Admin');
+      // Second check: Verify token with backend API
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_URL}/api/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          // Token is invalid or expired
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('userName');
+          navigate('/admin/login');
+          return;
+        }
+
+        const data = await response.json();
+        
+        // Verify user actually has admin role in database
+        if (!data.user || data.user.role !== 'admin') {
+          // User is not admin - clear localStorage and redirect
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('userName');
+          alert('Access denied. Admin privileges required.');
+          navigate('/');
+          return;
+        }
+
+        // User is authenticated admin
+        setUserName(data.user.name || 'Admin');
+        
+      } catch (error) {
+        console.error('Admin verification failed:', error);
+        navigate('/admin/login');
+      }
+    };
+
+    verifyAdminAccess();
   }, [navigate]);
 
   const handleLogout = () => {
