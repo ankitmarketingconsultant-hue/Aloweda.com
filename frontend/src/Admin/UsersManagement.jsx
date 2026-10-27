@@ -55,8 +55,18 @@ const UsersManagement = () => {
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      second: '2-digit' // Show seconds
     });
+  };
+
+  const formatDuration = (seconds) => {
+    if (!seconds && seconds !== 0) return 'Active';
+    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
   };
 
   const formatDateShort = (date) => {
@@ -114,7 +124,7 @@ const UsersManagement = () => {
           <div className="stat-icon">✨</div>
           <div className="stat-content">
             <h3>{analytics?.usersToday || 0}</h3>
-            <p>New Today</p>
+            <p>Logins Today</p>
           </div>
         </div>
 
@@ -320,6 +330,9 @@ const UsersManagement = () => {
                         <div className="login-details">
                           <span className="login-ip">🌐 {login.ipAddress || 'Unknown IP'}</span>
                           <span className="login-device">💻 {login.userAgent || 'Unknown device'}</span>
+                          <span className="login-duration">
+                            ⏱️ Session: {formatDuration(login.sessionDuration)}
+                          </span>
                         </div>
                       </div>
                     ))}
