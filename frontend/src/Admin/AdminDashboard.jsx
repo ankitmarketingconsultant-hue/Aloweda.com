@@ -85,6 +85,14 @@ const AdminDashboard = () => {
           </Link>
 
           <Link 
+            to="/admin/marketing" 
+            className={`nav-item ${isActive('/admin/marketing') ? 'active' : ''}`}
+          >
+            <span className="nav-icon">📈</span>
+            {isSidebarOpen && <span className="nav-label">Marketing</span>}
+          </Link>
+
+          <Link 
             to="/admin/visual-editor" 
             className={`nav-item ${isActive('/admin/visual-editor') ? 'active' : ''}`}
           >
