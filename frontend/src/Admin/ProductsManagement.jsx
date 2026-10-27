@@ -181,6 +181,8 @@ const ProductsManagement = () => {
     const newStockValue = (product.stock || 0) > 0 ? 0 : 100;
     const action = newStockValue === 0 ? 'OUT OF STOCK' : 'IN STOCK';
     
+    console.log('🔄 Toggle stock:', product.name, 'from', product.stock, 'to', newStockValue);
+    
     if (!confirm(`Mark "${product.name}" as ${action}?`)) {
       return;
     }
@@ -188,8 +190,12 @@ const ProductsManagement = () => {
     try {
       setUpdating(true);
       const token = localStorage.getItem('token');
+      const url = `${API_URL}/api/admin/products/${product._id}/stock`;
+      
+      console.log('📡 API call:', url);
+      console.log('📦 Payload:', { stock: newStockValue });
 
-      const response = await fetch(`${API_URL}/api/admin/products/${product._id}/stock`, {
+      const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -199,19 +205,23 @@ const ProductsManagement = () => {
       });
 
       const data = await response.json();
+      console.log('📥 API Response:', data);
 
       if (data.success) {
+        console.log('✅ Stock updated successfully in database');
         // Update local state
         setProducts(products.map(p => 
           p._id === product._id ? { ...p, stock: newStockValue } : p
         ));
+        alert(`✅ Successfully marked as ${action}!`);
         fetchProducts(); // Refresh to update stats
       } else {
+        console.error('❌ API returned error:', data.message);
         alert(data.message || 'Failed to toggle stock status');
       }
     } catch (err) {
-      console.error('Error toggling stock:', err);
-      alert('Failed to toggle stock status');
+      console.error('❌ Error toggling stock:', err);
+      alert('Failed to toggle stock status: ' + err.message);
     } finally {
       setUpdating(false);
     }
