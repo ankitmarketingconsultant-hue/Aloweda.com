@@ -401,12 +401,13 @@ router.get('/users/analytics', auth, admin, async (req, res) => {
     const adminUsers = users.filter(u => u.role === 'admin').length;
     const regularUsers = users.filter(u => u.role === 'user').length;
     
-    // Users registered today
+    // Users who logged in today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const usersToday = users.filter(u => {
-      const signupDate = new Date(u.signupDate || u.createdAt);
-      return signupDate >= today;
+      if (!u.lastLogin) return false;
+      const lastLoginDate = new Date(u.lastLogin);
+      return lastLoginDate >= today;
     }).length;
     
     // Users registered this week

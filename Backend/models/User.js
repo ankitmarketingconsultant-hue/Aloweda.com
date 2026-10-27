@@ -45,8 +45,12 @@ const userSchema = new mongoose.Schema({
       default: Date.now
     },
     ipAddress: String,
-    userAgent: String
+    userAgent: String,
+    sessionDuration: Number // in seconds, null if session still active
   }],
+  currentSessionStart: {
+    type: Date // Track when current session started
+  },
   lastLogin: {
     type: Date
   },

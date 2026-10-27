@@ -102,10 +102,26 @@ router.post('/login', async (req, res) => {
     }
 
     // Track login activity
+    const now = new Date();
+    
+    // If there's an active session, calculate its duration and save it
+    if (user.currentSessionStart) {
+      const sessionDuration = Math.floor((now - user.currentSessionStart) / 1000); // in seconds
+      
+      // Find the last login entry and update its sessionDuration
+      if (user.loginHistory && user.loginHistory.length > 0) {
+        const lastEntry = user.loginHistory[user.loginHistory.length - 1];
+        if (!lastEntry.sessionDuration) {
+          lastEntry.sessionDuration = sessionDuration;
+        }
+      }
+    }
+    
     const loginEntry = {
-      timestamp: new Date(),
+      timestamp: now,
       ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent') || 'Unknown'
+      userAgent: req.get('user-agent') || 'Unknown',
+      sessionDuration: null // Will be filled on next login or explicit logout
     };
 
     // Update user login history (keep last 50 logins)
@@ -115,7 +131,8 @@ router.post('/login', async (req, res) => {
       user.loginHistory = user.loginHistory.slice(-50); // Keep only last 50
     }
 
-    user.lastLogin = new Date();
+    user.lastLogin = now;
+    user.currentSessionStart = now; // Start new session
     user.loginCount = (user.loginCount || 0) + 1;
 
     await user.save();
