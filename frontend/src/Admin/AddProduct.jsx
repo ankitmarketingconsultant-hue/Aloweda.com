@@ -9,8 +9,11 @@ const AddProduct = () => {
     price: '',
     mrp: '',
     stock: '100',
-    description: ''
+    description: '',
+    image: ''
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -24,6 +27,19 @@ const AddProduct = () => {
     });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -31,6 +47,28 @@ const AddProduct = () => {
 
     try {
       const token = localStorage.getItem('token');
+      
+      // Upload image first if provided
+      let imageUrl = '';
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        
+        const uploadResponse = await fetch(`${API_URL}/api/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+        
+        const uploadData = await uploadResponse.json();
+        if (uploadResponse.ok) {
+          imageUrl = uploadData.imageUrl;
+        } else {
+          throw new Error('Image upload failed');
+        }
+      }
       
       const response = await fetch(`${API_URL}/api/admin/products`, {
         method: 'POST',
@@ -45,6 +83,7 @@ const AddProduct = () => {
           mrp: parseFloat(formData.mrp),
           stock: parseInt(formData.stock),
           description: formData.description,
+          image: imageUrl || formData.image,
           isActive: true
         })
       });
@@ -60,7 +99,7 @@ const AddProduct = () => {
       }
     } catch (err) {
       console.error('Error:', err);
-      setError('Server error. Please try again.');
+      setError(err.message || 'Server error. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -193,6 +232,61 @@ const AddProduct = () => {
               }}
             />
           </div>
+
+          {/* Image Upload */}
+          <div className="form-group">
+            <label htmlFor="image">Product Image</label>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={loading}
+              style={{
+                padding: '12px 16px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                fontSize: '15px',
+                width: '100%',
+                cursor: 'pointer'
+              }}
+            />
+            <small style={{ color: '#6b7280', display: 'block', marginTop: '8px' }}>
+              Or enter image URL below
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="imageUrl">Image URL (Optional)</label>
+            <input
+              type="url"
+              id="imageUrl"
+              name="image"
+              value={formData.image}
+              onChange={handleChange}
+              placeholder="https://example.com/product.jpg"
+              disabled={loading}
+            />
+          </div>
+
+          {/* Image Preview */}
+          {imagePreview && (
+            <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                Image Preview:
+              </label>
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                style={{ 
+                  maxWidth: '200px', 
+                  maxHeight: '200px', 
+                  borderRadius: '8px',
+                  border: '2px solid #e2e8f0'
+                }} 
+              />
+            </div>
+          )}
 
           <div style={{ display: 'flex', gap: '12px' }}>
             <button 
