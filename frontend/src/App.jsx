@@ -420,6 +420,7 @@ export default function App() {
 // Main App Content with Routes
 function AppContent() {
   const [showLogin, setShowLogin] = useState(false)
+  const [products, setProducts] = useState(ALL_PRODUCTS) // Dynamic products with stock
   
   // Initialize cart from localStorage or empty array
   const [cart, setCart] = useState(() => {
@@ -435,6 +436,32 @@ function AppContent() {
   const [user, setUser] = useState(null) // User state
   const [notification, setNotification] = useState(null)
   const navigate = useNavigate()
+  
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+  // Fetch and sync product stock from API
+  useEffect(() => {
+    const fetchProductStock = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/admin/products`)
+        const data = await response.json()
+        if (data.success && data.products) {
+          setProducts(prevProducts => 
+            prevProducts.map(product => {
+              const apiProduct = data.products.find(p => p.name === product.name)
+              return apiProduct ? { ...product, stock: apiProduct.stock } : product
+            })
+          )
+        }
+      } catch (error) {
+        console.log('Using default products')
+      }
+    }
+
+    fetchProductStock()
+    const interval = setInterval(fetchProductStock, 30000) // Refresh every 30s
+    return () => clearInterval(interval)
+  }, [])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
