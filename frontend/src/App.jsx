@@ -448,13 +448,19 @@ function AppContent() {
         if (data.success && data.products) {
           setProducts(prevProducts => 
             prevProducts.map(product => {
-              const apiProduct = data.products.find(p => p.name === product.name)
-              return apiProduct ? { ...product, stock: apiProduct.stock } : product
+              const apiProduct = data.products.find(p => 
+                p.name.toLowerCase().includes(product.name.toLowerCase().substring(0, 20)) ||
+                product.name.toLowerCase().includes(p.name.toLowerCase().substring(0, 20))
+              )
+              // Only update if API product found, otherwise keep default (in stock)
+              return apiProduct ? { ...product, stock: apiProduct.stock } : { ...product, stock: 100 }
             })
           )
         }
       } catch (error) {
-        console.log('Using default products')
+        console.log('Using default products - all in stock')
+        // Fallback: set all products to in stock
+        setProducts(prevProducts => prevProducts.map(p => ({ ...p, stock: 100 })))
       }
     }
 
