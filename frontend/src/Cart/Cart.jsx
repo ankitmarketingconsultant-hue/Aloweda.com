@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
 import './Cart.css'
+import { trackInitiateCheckout, trackAddPaymentInfo, trackPurchase } from '../utils/metaPixel'
 
 export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemoveItem, onLoginClick, cartCount = 0, user = null }) {
   // Early return for testing - this will show if component is even rendering
@@ -222,6 +223,10 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       onLoginClick()
       return
     }
+    
+    // Track InitiateCheckout event for Meta Pixel
+    trackInitiateCheckout(safeCart, total)
+    
     // Open checkout form
     setShowCheckoutForm(true)
   }
@@ -315,6 +320,9 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
         })
         const data = await res.json()
         if (data.success) {
+          // Track Purchase event for Meta Pixel (COD)
+          trackPurchase(data.orderId, safeCart, total, 'COD')
+          
           setShowCheckoutForm(false)
           setOrderPlaced(true)
           setPlacedOrderId(data.orderId)
@@ -365,9 +373,14 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
             })
             const verifyData = await verifyRes.json()
             if (verifyData.success) {
+              const orderId = 'RZP-' + response.razorpay_payment_id.slice(-8).toUpperCase()
+              
+              // Track Purchase event for Meta Pixel (Online Payment)
+              trackPurchase(orderId, safeCart, total, 'Online')
+              
               setShowCheckoutForm(false)
               setOrderPlaced(true)
-              setPlacedOrderId('RZP-' + response.razorpay_payment_id.slice(-8).toUpperCase())
+              setPlacedOrderId(orderId)
             } else {
               alert('⚠️ Payment verification failed. Please contact support.')
             }
@@ -821,7 +834,11 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                 
                 {/* COD Option - No Discount */}
                 <div 
-                  onClick={() => setPaymentMethod('cod')}
+                  onClick={() => {
+                    setPaymentMethod('cod')
+                    // Track AddPaymentInfo event for Meta Pixel
+                    trackAddPaymentInfo('COD', safeCart, total)
+                  }}
                   style={{
                     border: paymentMethod === 'cod' ? '2px solid #28a745' : '2px solid #e0e0e0',
                     borderRadius: '8px',
@@ -859,7 +876,11 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
 
                 {/* Online Payment Option with Discount Badge */}
                 <div 
-                  onClick={() => setPaymentMethod('online')}
+                  onClick={() => {
+                    setPaymentMethod('online')
+                    // Track AddPaymentInfo event for Meta Pixel
+                    trackAddPaymentInfo('Online', safeCart, total)
+                  }}
                   style={{
                     border: paymentMethod === 'online' ? '2px solid #28a745' : '2px solid #e0e0e0',
                     borderRadius: '8px',
@@ -1028,7 +1049,11 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
               </label>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <div
-                  onClick={() => setPaymentMethod('cod')}
+                  onClick={() => {
+                    setPaymentMethod('cod')
+                    // Track AddPaymentInfo event for Meta Pixel
+                    trackAddPaymentInfo('COD', safeCart, total)
+                  }}
                   style={{
                     flex: 1, padding: '12px', borderRadius: '8px', cursor: 'pointer',
                     border: paymentMethod === 'cod' ? '2px solid #2c2416' : '2px solid #e0d8cc',
@@ -1039,7 +1064,11 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                   💵 Cash on Delivery
                 </div>
                 <div
-                  onClick={() => setPaymentMethod('online')}
+                  onClick={() => {
+                    setPaymentMethod('online')
+                    // Track AddPaymentInfo event for Meta Pixel
+                    trackAddPaymentInfo('Online', safeCart, total)
+                  }}
                   style={{
                     flex: 1, padding: '12px', borderRadius: '8px', cursor: 'pointer',
                     border: paymentMethod === 'online' ? '2px solid #27ae60' : '2px solid #e0d8cc',

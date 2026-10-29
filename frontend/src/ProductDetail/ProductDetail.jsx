@@ -5,6 +5,7 @@ import Footer from '../Footer/Footer'
 import LoveWhatYouSee from '../assets/LoveWhatYouSee.jpg'
 import './ProductDetail.css'
 import { handleNavigation } from '../utils/navigation'
+import { trackViewContent, trackAddToCart } from '../utils/metaPixel'
 
 // Lazy load 3D viewer - only loads when user clicks 3D View button
 const Model3DViewer = lazy(() => import('../Component/Model3DViewer'))
@@ -18,6 +19,8 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
 
   const handleAddToCart = () => {
     onAddToCart(product, quantity)
+    // Track AddToCart event for Meta Pixel
+    trackAddToCart(product, quantity)
     // Optional: Show success message or animation
     alert(`Added ${quantity} ${quantity > 1 ? 'items' : 'item'} to cart!`)
   }
@@ -28,6 +31,8 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Track ViewContent event for Meta Pixel
+    trackViewContent(product)
   }, [product.id])
 
   const toggleSection = (section) => {
