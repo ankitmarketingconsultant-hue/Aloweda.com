@@ -15,6 +15,7 @@ const adminRoutes = require('./routes/admin');
 const importProductsRoutes = require('./routes/import-products');
 const contentRoutes = require('./routes/content');
 const uploadRoutes = require('./routes/upload');
+const metaCapiTestRoutes = require('./routes/meta-capi-test');
 const protect = require('./middleware/auth');
 const User = require('./models/User');
 
@@ -105,6 +106,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/import-products', importProductsRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/meta-capi-test', metaCapiTestRoutes); // Meta CAPI testing endpoints
 
 app.get('/api/profile', protect, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');

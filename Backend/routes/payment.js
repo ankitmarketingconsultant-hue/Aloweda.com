@@ -3,6 +3,7 @@ const router = express.Router();
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Order = require('../models/Order');
+const { trackPurchase } = require('../utils/metaCAPI');
 
 const razorpay = process.env.RAZORPAY_KEY_ID ? new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -74,6 +75,21 @@ router.post('/verify', async (req, res) => {
         razorpayPaymentId: razorpay_payment_id,
       });
       await order.save();
+
+      // Track Purchase event with Meta CAPI (Server-side)
+      try {
+        await trackPurchase({
+          orderId: order.orderId,
+          items: orderData.items || [],
+          total: orderData.total || orderData.pricing?.total || 0,
+          customer: orderData.customer || orderData.customerInfo || {},
+          paymentMethod: 'Online'
+        });
+        console.log('✅ Meta CAPI: Purchase event tracked for Online order', order.orderId);
+      } catch (capiError) {
+        console.error('❌ Meta CAPI tracking failed (non-critical):', capiError);
+        // Don't fail the order if CAPI tracking fails
+      }
 
       return res.json({
         success: true,

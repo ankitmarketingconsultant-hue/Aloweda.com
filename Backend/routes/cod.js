@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const { sendOrderEmail } = require('../utils/emailService');
+const { trackPurchase, trackInitiateCheckout, trackAddPaymentInfo } = require('../utils/metaCAPI');
 
 // @desc    Place COD order + send email notification
 // @route   POST /api/cod/place-order
@@ -78,6 +79,21 @@ router.post('/place-order', async (req, res) => {
     });
 
     await order.save();
+
+    // Track Purchase event with Meta CAPI (Server-side)
+    try {
+      await trackPurchase({
+        orderId: order.orderId,
+        items: items,
+        total: pricing.total,
+        customer: customerInfo,
+        paymentMethod: 'COD'
+      });
+      console.log('✅ Meta CAPI: Purchase event tracked for COD order', order.orderId);
+    } catch (capiError) {
+      console.error('❌ Meta CAPI tracking failed (non-critical):', capiError);
+      // Don't fail the order if CAPI tracking fails
+    }
 
     // Send email notification
     try {
