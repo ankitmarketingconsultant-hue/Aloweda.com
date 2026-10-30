@@ -119,19 +119,19 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       if (isSignUp) {
         // Sign Up
         if (!formData.name || !formData.email || !formData.password) {
-          throw new Error('Sabhi fields fill karo')
+          throw new Error('Please fill in all fields')
         }
 
         if (formData.password.length < 6) {
-          throw new Error('Password kam se kam 6 characters ka hona chahiye')
+          throw new Error('Password must be at least 6 characters')
         }
 
         response = await authAPI.signup(formData.name, formData.email, formData.password)
-        setSuccess('Account successfully ban gaya! Login ho rahe hain...')
+        setSuccess('Account created successfully! Logging you in...')
       } else {
         // Login
         if (!formData.email || !formData.password) {
-          throw new Error('Email aur password dono do')
+          throw new Error('Please enter both email and password')
         }
 
         response = await authAPI.login(formData.email, formData.password)
@@ -169,7 +169,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       }, 1000)
 
     } catch (err) {
-      setError(err.message || 'Kuch gadbad ho gayi, dobara try karo')
+      setError(err.message || 'Something went wrong, please try again')
       console.error('Auth error:', err)
     } finally {
       setLoading(false)
