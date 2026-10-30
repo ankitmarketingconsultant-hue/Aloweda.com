@@ -18,17 +18,22 @@ const generateToken = (userId) => {
 
 // @route   GET /api/auth/google
 // @desc    Initiate Google OAuth
-router.get('/google', passport.authenticate('google', {
-  scope: ['profile', 'email']
-}));
+router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(503).json({ message: 'Google OAuth not configured' });
+  }
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
 
 // @route   GET /api/auth/google/callback
 // @desc    Google OAuth callback
 router.get('/google/callback', 
-  passport.authenticate('google', { 
-    failureRedirect: '/login',
-    session: false 
-  }),
+  (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(503).json({ message: 'Google OAuth not configured' });
+    }
+    passport.authenticate('google', { failureRedirect: '/login', session: false })(req, res, next);
+  },
   async (req, res) => {
     try {
       const token = generateToken(req.user._id);
