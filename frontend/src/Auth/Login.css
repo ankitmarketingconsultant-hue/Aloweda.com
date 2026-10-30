@@ -368,6 +368,10 @@
   gap: 12px;
 }
 
+.social-btn--full {
+  grid-column: 1 / -1; /* Full width when alone */
+}
+
 .social-btn {
   display: flex;
   align-items: center;
@@ -389,6 +393,16 @@
   border-color: var(--text-mid);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.social-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.social-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .social-btn svg {
