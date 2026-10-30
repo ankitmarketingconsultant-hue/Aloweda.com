@@ -53,6 +53,7 @@ const app = express();
 app.use(cors({
   origin: [
     'https://aloweda-smoky.vercel.app',
+    'https://aloweda-com-1kjn.vercel.app',
     'http://localhost:5173',
     process.env.CLIENT_URL
   ].filter(Boolean),
