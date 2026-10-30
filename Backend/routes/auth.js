@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const passport = require('../config/passport');
 
 const router = express.Router();
 
@@ -14,6 +15,72 @@ const generateToken = (userId) => {
     expiresIn: '7d',
   });
 };
+
+// @route   GET /api/auth/google
+// @desc    Initiate Google OAuth
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
+
+// @route   GET /api/auth/google/callback
+// @desc    Google OAuth callback
+router.get('/google/callback', 
+  passport.authenticate('google', { 
+    failureRedirect: '/login',
+    session: false 
+  }),
+  async (req, res) => {
+    try {
+      const token = generateToken(req.user._id);
+      
+      // Send response that can be captured by popup
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Google Sign In</title>
+          </head>
+          <body>
+            <script>
+              window.opener.postMessage({
+                type: 'GOOGLE_AUTH_SUCCESS',
+                payload: {
+                  token: '${token}',
+                  user: {
+                    id: '${req.user._id}',
+                    name: '${req.user.name}',
+                    email: '${req.user.email}',
+                    role: '${req.user.role}'
+                  }
+                }
+              }, '*');
+              window.close();
+            </script>
+          </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error('Google callback error:', error);
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Error</title>
+          </head>
+          <body>
+            <script>
+              window.opener.postMessage({
+                type: 'GOOGLE_AUTH_ERROR',
+                message: 'Authentication failed'
+              }, '*');
+              window.close();
+            </script>
+          </body>
+        </html>
+      `);
+    }
+  }
+);
 
 // @route   POST /api/auth/signup
 router.post('/signup', async (req, res) => {

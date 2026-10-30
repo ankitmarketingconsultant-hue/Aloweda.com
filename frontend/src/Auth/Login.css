@@ -442,7 +442,7 @@
   }
 
   .login-right {
-    padding: 30px 30px;
+    padding: 30px 30px 40px 30px; /* Extra padding at bottom */
   }
 
   .login-title {
@@ -451,6 +451,13 @@
 
   .social-buttons {
     grid-template-columns: 1fr;
+  }
+
+  /* Ensure toggle is visible on mobile */
+  .login-toggle {
+    margin-top: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px; /* Extra bottom padding */
   }
 }
 
@@ -465,7 +472,29 @@
   }
 
   .login-right {
-    padding: 24px 20px;
+    padding: 24px 20px 40px 20px; /* Increased bottom padding */
+  }
+
+  .login-form-wrap {
+    width: 100%;
+    padding-bottom: 20px; /* Extra space at bottom */
+  }
+
+  /* Make toggle more prominent on small screens */
+  .login-toggle {
+    margin-top: 24px;
+    padding: 20px 0;
+    background: var(--warm-white);
+    border-radius: 8px;
+  }
+
+  .login-toggle p {
+    font-size: 0.95rem;
+  }
+
+  .toggle-btn {
+    font-size: 0.95rem;
+    font-weight: 800;
   }
 }
 

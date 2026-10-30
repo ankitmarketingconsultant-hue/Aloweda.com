@@ -9,6 +9,8 @@
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid transparent;
   transition: top 0.3s, border-color 0.3s, box-shadow 0.3s;
+  margin-top: 0; /* Remove any default margin */
+  border-top: none; /* Remove any top border that might create a gap */
 }
 
 /* When announcement bar is closed/hidden */
@@ -261,5 +263,14 @@
   .navbar__burger { display: flex; }
   .navbar__icon-btn:not(.navbar__cart-btn):not(:last-of-type) { display: none; }
   .navbar__search-bar { min-width: 160px; }
+  .navbar { top: 36px; } /* Match announcement bar height on mobile */
+}
+
+@media (max-width: 1024px) {
+  .navbar { top: 38px; } /* Match announcement bar height on tablet */
+}
+
+@media (max-width: 480px) {
+  .navbar { top: 34px; } /* Match announcement bar height on small mobile */
 }
 

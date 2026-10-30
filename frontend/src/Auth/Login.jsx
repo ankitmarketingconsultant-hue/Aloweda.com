@@ -15,6 +15,96 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true)
+      setError('')
+      
+      // For now, we'll implement a simple OAuth flow
+      // In production, you'd use Google OAuth libraries
+      
+      // Open Google OAuth popup
+      const googleAuthUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`
+      
+      // Open popup window
+      const popup = window.open(
+        googleAuthUrl,
+        'Google Sign In',
+        'width=500,height=600,left=100,top=100'
+      )
+
+      // Listen for message from popup
+      const handleMessage = async (event) => {
+        // Verify origin
+        if (event.origin !== window.location.origin && 
+            event.origin !== (import.meta.env.VITE_API_URL || 'http://localhost:5000')) {
+          return
+        }
+
+        if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+          const { token, user } = event.data.payload
+          
+          // Save token and user data
+          storage.setToken(token)
+          storage.setUser(user)
+          
+          localStorage.setItem('token', token)
+          localStorage.setItem('userRole', user.role)
+          localStorage.setItem('userName', user.name)
+
+          setSuccess('Google sign-in successful!')
+
+          // Check if admin
+          if (user.role === 'admin') {
+            setSuccess('Admin login successful! Redirecting...')
+            setTimeout(() => {
+              if (onClose) onClose()
+              window.location.href = '/admin/dashboard'
+            }, 1000)
+            return
+          }
+
+          // Regular user
+          if (onLoginSuccess) {
+            onLoginSuccess(user)
+          }
+
+          setTimeout(() => {
+            onClose()
+          }, 1000)
+
+          // Close popup
+          if (popup) popup.close()
+        } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
+          setError(event.data.message || 'Google sign-in failed')
+        }
+
+        window.removeEventListener('message', handleMessage)
+      }
+
+      window.addEventListener('message', handleMessage)
+
+      // Check if popup was blocked
+      if (!popup || popup.closed) {
+        throw new Error('Popup blocked. Please allow popups for this site.')
+      }
+
+      // Timeout after 2 minutes
+      setTimeout(() => {
+        if (popup && !popup.closed) {
+          popup.close()
+          window.removeEventListener('message', handleMessage)
+        }
+      }, 120000)
+
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed')
+      console.error('Google sign-in error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -261,7 +351,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
               </div>
               
               <div className="social-buttons">
-                <button type="button" className="social-btn">
+                <button type="button" className="social-btn" onClick={handleGoogleSignIn} disabled={loading}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -271,7 +361,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
                   Google
                 </button>
                 
-                <button type="button" className="social-btn">
+                <button type="button" className="social-btn" disabled>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
