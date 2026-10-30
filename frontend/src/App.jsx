@@ -472,7 +472,7 @@ function AppContent() {
             const updated = prevProducts.map(product => {
               const normalizedProductName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
               console.log('Checking:', product.name, '→ normalized:', normalizedProductName.substring(0, 30))
-              
+            
               // Try exact match first
               let dbProduct = dbProductMap.get(normalizedProductName)
               
