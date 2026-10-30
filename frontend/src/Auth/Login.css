@@ -395,6 +395,14 @@
   border-top: 1px solid var(--border);
 }
 
+.login-toggle--top {
+  border-top: none;
+  border-bottom: 1px solid var(--border);
+  padding-top: 0;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
 .login-toggle p {
   font-size: 0.9rem;
   color: var(--text-mid);
@@ -409,11 +417,11 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: color 0.2s ease;
+  text-decoration: underline;
 }
 
 .toggle-btn:hover {
   color: var(--text-dark);
-  text-decoration: underline;
 }
 
 /* ─── RESPONSIVE ─── */
@@ -488,13 +496,24 @@
     border-radius: 8px;
   }
 
+  .login-toggle--top {
+    background: transparent;
+    padding-top: 0;
+    padding-bottom: 16px;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
   .login-toggle p {
     font-size: 0.95rem;
+    font-weight: 500;
   }
 
   .toggle-btn {
     font-size: 0.95rem;
     font-weight: 800;
+    text-decoration: underline;
+    color: var(--green);
   }
 }
 

@@ -218,6 +218,21 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
         {/* Right side - Form */}
         <div className="login-right">
           <div className="login-form-wrap">
+            {/* Toggle sign up/sign in - Now at top for better mobile visibility */}
+            <div className="login-toggle login-toggle--top">
+              <p>
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                {' '}
+                <button
+                  type="button"
+                  className="toggle-btn"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                >
+                  {isSignUp ? 'Sign In' : 'Sign Up'}
+                </button>
+              </p>
+            </div>
+
             <div className="login-header">
               <h2 className="login-title">
                 {isSignUp ? 'Create Account' : 'Sign In'}
