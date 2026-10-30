@@ -19,13 +19,13 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
     try {
       setLoading(true)
       setError('')
-      
+
       // For now, we'll implement a simple OAuth flow
       // In production, you'd use Google OAuth libraries
-      
+
       // Open Google OAuth popup
       const googleAuthUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`
-      
+
       // Open popup window
       const popup = window.open(
         googleAuthUrl,
@@ -36,23 +36,26 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       // Listen for message from popup
       const handleMessage = async (event) => {
         // Verify origin
-        if (event.origin !== window.location.origin && 
+        if (event.origin !== window.location.origin &&
             event.origin !== (import.meta.env.VITE_API_URL || 'http://localhost:5000')) {
           return
         }
 
         if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
           const { token, user } = event.data.payload
-          
+
           // Save token and user data
           storage.setToken(token)
           storage.setUser(user)
-          
+
           localStorage.setItem('token', token)
           localStorage.setItem('userRole', user.role)
           localStorage.setItem('userName', user.name)
 
           setSuccess('Google sign-in successful!')
+
+          // Close popup
+          if (popup) popup.close()
 
           // Check if admin
           if (user.role === 'admin') {
@@ -61,6 +64,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
               if (onClose) onClose()
               window.location.href = '/admin/dashboard'
             }, 1000)
+            window.removeEventListener('message', handleMessage)
             return
           }
 
@@ -70,11 +74,8 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
           }
 
           setTimeout(() => {
-            onClose()
+            if (onClose) onClose()
           }, 1000)
-
-          // Close popup
-          if (popup) popup.close()
         } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
           setError(event.data.message || 'Google sign-in failed')
         }
@@ -86,6 +87,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
 
       // Check if popup was blocked
       if (!popup || popup.closed) {
+        window.removeEventListener('message', handleMessage)
         throw new Error('Popup blocked. Please allow popups for this site.')
       }
 
@@ -93,8 +95,8 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       setTimeout(() => {
         if (popup && !popup.closed) {
           popup.close()
-          window.removeEventListener('message', handleMessage)
         }
+        window.removeEventListener('message', handleMessage)
       }, 120000)
 
     } catch (err) {
@@ -113,13 +115,13 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
 
     try {
       let response
-      
+
       if (isSignUp) {
         // Sign Up
         if (!formData.name || !formData.email || !formData.password) {
           throw new Error('Sabhi fields fill karo')
         }
-        
+
         if (formData.password.length < 6) {
           throw new Error('Password kam se kam 6 characters ka hona chahiye')
         }
@@ -139,27 +141,21 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
       // Save token and user data
       storage.setToken(response.token)
       storage.setUser(response.user)
-      
-      // Also set in standard localStorage keys for admin dashboard compatibility
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('userRole', response.user.role);
-      localStorage.setItem('userName', response.user.name);
 
-      // Debug log
-      console.log('Login Response:', response);
-      console.log('User Role:', response.user?.role);
-      console.log('Is Admin?', response.user?.role === 'admin');
+      // Also set in standard localStorage keys for admin dashboard compatibility
+      localStorage.setItem('token', response.token)
+      localStorage.setItem('userRole', response.user.role)
+      localStorage.setItem('userName', response.user.name)
 
       // Check if user is admin - redirect to admin panel
       if (response.user && response.user.role === 'admin') {
-        setSuccess('Admin login successful! Redirecting...');
-        
-        // Use React Router navigate for admin redirect (better than window.location)
+        setSuccess('Admin login successful! Redirecting...')
+
         setTimeout(() => {
-          if (onClose) onClose(); // Close login modal
-          window.location.href = '/admin/dashboard'; // Full page redirect to ensure clean state
-        }, 1000);
-        return; // Don't execute regular user flow
+          if (onClose) onClose() // Close login modal
+          window.location.href = '/admin/dashboard' // Full page redirect to ensure clean state
+        }, 1000)
+        return // Don't execute regular user flow
       }
 
       // Regular user - notify parent component
@@ -169,7 +165,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
 
       // Close modal after short delay
       setTimeout(() => {
-        onClose()
+        if (onClose) onClose()
       }, 1000)
 
     } catch (err) {
@@ -206,7 +202,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
               Discover nature-inspired wellness and premium skincare solutions
             </p>
           </div>
-          
+
           {/* Decorative elements */}
           <div className="login-decoration">
             <div className="deco-circle deco-circle-1"></div>
@@ -218,7 +214,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
         {/* Right side - Form */}
         <div className="login-right">
           <div className="login-form-wrap">
-            {/* Toggle sign up/sign in - Now at top for better mobile visibility */}
+            {/* Toggle sign up/sign in - at top for better mobile visibility */}
             <div className="login-toggle login-toggle--top">
               <p>
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
@@ -238,8 +234,8 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
                 {isSignUp ? 'Create Account' : 'Sign In'}
               </h2>
               <p className="login-subtitle">
-                {isSignUp 
-                  ? 'Join us for exclusive benefits' 
+                {isSignUp
+                  ? 'Join us for exclusive benefits'
                   : 'Continue your wellness journey'}
               </p>
             </div>
@@ -364,7 +360,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
               <div className="divider">
                 <span>or continue with</span>
               </div>
-              
+
               <div className="social-buttons">
                 <button type="button" className="social-btn" onClick={handleGoogleSignIn} disabled={loading}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -375,7 +371,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
                   </svg>
                   Google
                 </button>
-                
+
                 <button type="button" className="social-btn" disabled>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />

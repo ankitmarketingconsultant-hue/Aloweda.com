@@ -67,6 +67,7 @@
   transition: all 0.2s ease;
   z-index: 10;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
 }
 
 .login-close:hover {
@@ -166,6 +167,7 @@
 
 .login-form-wrap {
   max-width: 400px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -219,6 +221,7 @@
   color: var(--text-dark);
   background: var(--warm-white);
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .form-input:focus {
@@ -255,6 +258,8 @@
   align-items: center;
   justify-content: center;
   transition: color 0.2s ease;
+  width: auto;
+  min-height: 0;
 }
 
 .password-toggle:hover {
@@ -296,6 +301,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: color 0.2s ease;
+  width: auto;
+  padding: 0;
 }
 
 .forgot-link:hover {
@@ -407,9 +414,19 @@
   font-size: 0.9rem;
   color: var(--text-mid);
   margin: 0;
+  line-height: 1.5;
 }
 
 .toggle-btn {
+  /* explicit resets so global button styles can't break the inline layout */
+  display: inline;
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: inherit;
   background: none;
   border: none;
   color: #c9b896;
@@ -418,6 +435,7 @@
   cursor: pointer;
   transition: color 0.2s ease;
   text-decoration: underline;
+  white-space: nowrap;
 }
 
 .toggle-btn:hover {
@@ -427,30 +445,47 @@
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
   .login-container {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     max-height: 95vh;
+    overflow: hidden;
   }
 
+  /* Compact branding header */
   .login-left {
-    padding: 40px 30px;
-    min-height: 200px;
+    flex-shrink: 0;
+    min-height: auto;
+    padding: 20px 20px 16px;
   }
 
   .login-logo {
-    width: 80px;
-    margin-bottom: 20px;
+    width: 64px;
+    margin-bottom: 8px;
   }
 
   .login-brand-title {
-    font-size: 1.75rem;
+    font-size: 1.4rem;
+    margin: 0;
   }
 
   .login-brand-subtitle {
-    font-size: 0.9rem;
+    display: none; /* saves vertical space on mobile */
   }
 
+  /* Form area scrolls properly and starts from the top (no clipping) */
   .login-right {
-    padding: 30px 30px 40px 30px; /* Extra padding at bottom */
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 20px 24px 32px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .login-form-wrap {
+    width: 100%;
+    margin: 0 auto;
   }
 
   .login-title {
@@ -461,11 +496,11 @@
     grid-template-columns: 1fr;
   }
 
-  /* Ensure toggle is visible on mobile */
-  .login-toggle {
-    margin-top: 20px;
-    padding-top: 20px;
-    padding-bottom: 20px; /* Extra bottom padding */
+  .login-close {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
   }
 }
 
@@ -476,44 +511,38 @@
 
   .login-container {
     border-radius: 0;
+    height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
   }
 
   .login-right {
-    padding: 24px 20px 40px 20px; /* Increased bottom padding */
+    padding: 16px 20px 40px;
   }
 
-  .login-form-wrap {
-    width: 100%;
-    padding-bottom: 20px; /* Extra space at bottom */
-  }
-
-  /* Make toggle more prominent on small screens */
-  .login-toggle {
-    margin-top: 24px;
-    padding: 20px 0;
-    background: var(--warm-white);
-    border-radius: 8px;
-  }
-
+  /* Top toggle: one clean centered line */
   .login-toggle--top {
     background: transparent;
-    padding-top: 0;
-    padding-bottom: 16px;
-    margin-top: 0;
-    margin-bottom: 20px;
+    padding: 0 0 14px;
+    margin: 0 0 16px;
   }
 
   .login-toggle p {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
   }
 
   .toggle-btn {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 800;
-    text-decoration: underline;
-    color: var(--green);
+    color: var(--green, #4a5d43);
+  }
+
+  /* Bottom toggle */
+  .login-toggle {
+    margin-top: 20px;
+    padding: 16px 0;
   }
 }
 
@@ -604,6 +633,5 @@
 
 .login-submit-btn:disabled:hover {
   transform: translateY(0);
-  box-shadow: 0 4px 16px rgba(74, 93, 67, 0.3);
+  box-shadow: 0 4px 12px rgba(201, 184, 150, 0.3);
 }
-
