@@ -243,8 +243,8 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
     }
     setFormError('')
 
-    const API_URL = import.meta.env.VITE_API_URL || 'https://aloweda-jitl.vercel.app'
-    const KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TiFjw4SPJzbxde'
+    const API_URL = import.meta.env.VITE_API_URL || 'https://aloweda-com.vercel.app'
+    const KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_Tu5gecp04PYbnk'
 
     const orderItems = safeCart.map(item => ({
       name: item.name,
