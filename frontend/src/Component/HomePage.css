@@ -1765,3 +1765,171 @@
   margin: -8px 0 12px;
   font-style: italic;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   HERO SLIDER – MOBILE / TABLET FIX
+   (Ye block file ke END mein hi rehna chahiye, order important hai)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+
+  /* Hero ki fixed height hatao – ab slides ke content ke hisaab se height banegi */
+  .hero {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: hidden;
+  }
+
+  /* Saari slides ek hi cell mein stack hoti hain, hero tallest slide jitna hota hai */
+  .hero__track {
+    display: grid;
+    height: auto;
+  }
+
+  .hero__slide,
+  .hero__slide--whats-aloweda,
+  .hero__slide--serums {
+    position: relative;
+    inset: auto;
+    grid-area: 1 / 1;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-content: start;
+    align-items: start;
+    gap: 16px;
+    height: auto;
+    padding: 28px 20px 84px; /* neeche jagah: arrows + dots ke liye */
+  }
+
+  /* ── Text blocks ── */
+  .hero__whats-aloweda-left,
+  .hero__serums-left,
+  .hero__content {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero__heading,
+  .hero__whats-aloweda-left .hero__heading,
+  .hero__serums-left .hero__heading {
+    font-size: clamp(28px, 8vw, 40px);
+    margin: 0 0 8px;
+    text-align: center;
+  }
+
+  .hero__sub,
+  .hero__whats-aloweda-left .hero__sub,
+  .hero__serums-left .hero__sub {
+    font-size: 15px;
+    margin: 0 auto 10px;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .hero__sub-line {
+    text-align: center;
+    margin: 0 0 10px;
+  }
+
+  .hero__description,
+  .hero__serums-left .hero__description {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 auto 18px;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  /* ── Product images (serum, cream, face wash, lips, tattoo, hair) ── */
+  .hero__image-container {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    justify-content: center;
+  }
+
+  .hero__bg,
+  .hero__slide--serums .hero__bg {
+    width: 100% !important;      /* pehle 120% tha – isi se image side se cut ho rahi thi */
+    max-width: 100% !important;  /* tattoo slide ke inline style ko override */
+    margin: 0 auto !important;
+    height: 280px;
+    min-height: 0;
+    max-height: none;
+    background-size: contain !important;
+    background-position: center !important;
+  }
+
+  /* ── What's Aloweda videos ── */
+  .hero__whats-aloweda-right {
+    width: 100%;
+  }
+
+  .hero__graphics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+    gap: 8px 12px;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .hero__graphic-item {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .hero__graphic-video {
+    height: 90px;
+  }
+
+  .hero__graphic-label-top {
+    font-size: 12px;
+  }
+
+  /* ── Controls: arrows + dots ek line mein neeche, text/image ko cover nahi karenge ── */
+  .hero__arrow {
+    top: auto;
+    bottom: 14px;
+    transform: none;
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero__arrow:hover {
+    transform: none;
+  }
+
+  .hero__arrow--prev { left: 16px; }
+  .hero__arrow--next { right: 16px; }
+
+  .hero__dots {
+    bottom: 26px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__slide,
+  .hero__slide--whats-aloweda,
+  .hero__slide--serums {
+    padding: 24px 16px 80px;
+  }
+
+  .hero__bg,
+  .hero__slide--serums .hero__bg {
+    height: 240px;
+  }
+
+  .hero__graphic-video {
+    height: 76px;
+  }
+
+  .hero__description,
+  .hero__serums-left .hero__description {
+    font-size: 13px;
+  }
+}
