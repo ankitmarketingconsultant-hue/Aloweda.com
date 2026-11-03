@@ -6,7 +6,7 @@ import './Consultation.css';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ─── Consultation fee (change here to update everywhere) ───────────────────
-const CONSULTATION_FEE = 499; // INR
+const CONSULTATION_FEE = 250; // INR
 
 // ─── Google Calendar appointment link ─────────────────────────────────────
 // Replace the calendarUrl below with your actual Google Calendar appointment
