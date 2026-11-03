@@ -21,6 +21,7 @@ import AnnouncementBar from './Components/AnnouncementBar/AnnouncementBar'
 import About from './Pages/About'
 import Consultation from './Pages/Consultation'
 import TermsAndConditions from './Pages/TermsAndConditions'
+import Gifting from './Pages/Gifting'
 
 // Admin Panel Components
 import AdminLogin from './Admin/AdminLogin'
@@ -643,6 +644,8 @@ function AppContent() {
       navigate('/tattoo-quiz')
     } else if (path === 'rituals') {
       navigate('/rituals')
+    } else if (path === 'facewash') {
+      navigate('/facewash')
     } else {
       navigate(`/${path}`)
     }
@@ -704,6 +707,10 @@ function AppContent() {
           path="/rituals" 
           element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="rituals" pageTitle="Skin Rituals" onLoginClick={() => setShowLogin(true)} />} 
         />
+        <Route 
+          path="/facewash" 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="facewash" pageTitle="Face Wash" onLoginClick={() => setShowLogin(true)} />} 
+        />
 
         {/* Hair Care Route */}
         <Route 
@@ -745,6 +752,12 @@ function AppContent() {
         <Route 
           path="/consultation" 
           element={<Consultation onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />} 
+        />
+
+        {/* Gifting Route */}
+        <Route
+          path="/gifting"
+          element={<Gifting onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />}
         />
 
         {/* Terms & Conditions Route */}

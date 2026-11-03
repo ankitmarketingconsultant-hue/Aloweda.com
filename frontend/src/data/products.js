@@ -18,9 +18,11 @@ export const CATEGORIES = [
   { id: 'serums',       label: 'Serums',         parent: 'skincare' },
   { id: 'creams',       label: 'Creams',         parent: 'skincare' },
   { id: 'moisturisers', label: 'Moisturisers',   parent: 'skincare' },
-  { id: 'tattoo',       label: 'Tattoo Care',    parent: 'skincare' },
-  { id: 'lip',          label: 'Lip Care',       parent: 'skincare' },
-  { id: 'hair',         label: 'Hair Care',      parent: 'skincare' },
+  { id: 'tattoo',       label: 'Tattoo Care',      parent: 'skincare' },
+  { id: 'lip',          label: 'Lip Care',         parent: 'skincare' },
+  { id: 'hair',         label: 'Hair Care',        parent: 'skincare' },
+  { id: 'rituals',      label: 'Skincare Rituals', parent: 'skincare' },
+  { id: 'facewash',     label: 'Face Wash',        parent: 'skincare' },
 ]
 
 export const PRODUCTS = [

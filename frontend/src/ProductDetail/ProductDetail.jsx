@@ -10,6 +10,37 @@ import { trackViewContent, trackAddToCart } from '../utils/metaPixel'
 // Lazy load 3D viewer - only loads when user clicks 3D View button
 const Model3DViewer = lazy(() => import('../Component/Model3DViewer'))
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+function StarPicker({ value, onChange }) {
+  const [hovered, setHovered] = useState(0)
+  return (
+    <div className="rv-star-picker" role="group" aria-label="Rating">
+      {[1,2,3,4,5].map(n => (
+        <button
+          key={n}
+          type="button"
+          className={`rv-star-btn ${n <= (hovered || value) ? 'rv-star-btn--active' : ''}`}
+          onMouseEnter={() => setHovered(n)}
+          onMouseLeave={() => setHovered(0)}
+          onClick={() => onChange(n)}
+          aria-label={`${n} star`}
+        >★</button>
+      ))}
+    </div>
+  )
+}
+
+function ReviewStars({ rating }) {
+  return (
+    <span className="review-stars" aria-label={`${rating} out of 5 stars`}>
+      {[1,2,3,4,5].map(n => (
+        <span key={n} className={n <= rating ? 'rv-star--filled' : 'rv-star--empty'}>★</span>
+      ))}
+    </span>
+  )
+}
+
 export default function ProductDetail({ product, onNavigate, onBack, relatedProducts = [], onLoginClick, onAddToCart, cartCount }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -17,23 +48,84 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
   const [hoveredProduct, setHoveredProduct] = useState(null)
   const [load3DViewer, setLoad3DViewer] = useState(false) // Control when to load 3D viewer
 
+  // ── Review state ──
+  const [reviews, setReviews] = useState([])
+  const [ratingSummary, setRatingSummary] = useState(null)
+  const [reviewsLoading, setReviewsLoading] = useState(true)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewForm, setReviewForm] = useState({ rating: 0, title: '', comment: '' })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewError, setReviewError] = useState('')
+  const [reviewSuccess, setReviewSuccess] = useState(false)
+
+  const isLoggedIn = !!localStorage.getItem('token')
+
   const handleAddToCart = () => {
     onAddToCart(product, quantity)
-    // Track AddToCart event for Meta Pixel
     trackAddToCart(product, quantity)
-    // Optional: Show success message or animation
     alert(`Added ${quantity} ${quantity > 1 ? 'items' : 'item'} to cart!`)
   }
   const [expandedSection, setExpandedSection] = useState(null)
 
-  // Product images - if product has multiple images, use them, otherwise use main image
   const images = product.images || [product.img]
 
+  // Fetch product-specific reviews whenever the product changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    // Track ViewContent event for Meta Pixel
     trackViewContent(product)
+    setReviews([])
+    setRatingSummary(null)
+    setReviewsLoading(true)
+    setReviewSuccess(false)
+    setShowReviewForm(false)
+    fetch(`${API_BASE}/api/reviews/product/${product.id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          setReviews(data.data || [])
+          setRatingSummary(data.ratingSummary || null)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setReviewsLoading(false))
   }, [product.id])
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault()
+    if (!reviewForm.rating) return setReviewError('Please select a star rating.')
+    if (!reviewForm.title.trim()) return setReviewError('Please add a short title.')
+    if (!reviewForm.comment.trim()) return setReviewError('Please write your review.')
+    setReviewError('')
+    setReviewSubmitting(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API_BASE}/api/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: String(product.id),
+          rating: reviewForm.rating,
+          title: reviewForm.title.trim(),
+          comment: reviewForm.comment.trim(),
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setReviewSuccess(true)
+        setReviewForm({ rating: 0, title: '', comment: '' })
+        setShowReviewForm(false)
+      } else {
+        setReviewError(data.message || 'Could not submit review. Please try again.')
+      }
+    } catch {
+      setReviewError('Network error. Please check your connection.')
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section)
@@ -343,54 +435,118 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
       {/* Customer Reviews Section */}
       <div className="product-reviews">
         <div className="product-reviews__container">
-          <h2 className="reviews-title">Customer Reviews</h2>
 
-          {/* Reviews List */}
-          <div className="reviews-list">
-            <div className="review-card">
-              <div className="review-header">
-                <div className="review-stars">
-                  {'★'.repeat(5)}{'☆'.repeat(0)}
-                </div>
-                <span className="review-date">2 weeks ago</span>
-              </div>
-              <p className="review-author">Priya M.</p>
-              <p className="review-text">Amazing product! My skin feels so much softer and more radiant. Highly recommend this to everyone looking for effective skincare solutions.</p>
-            </div>
-
-            <div className="review-card">
-              <div className="review-header">
-                <div className="review-stars">
-                  {'★'.repeat(4)}{'☆'.repeat(1)}
-                </div>
-                <span className="review-date">1 month ago</span>
-              </div>
-              <p className="review-author">Rahul K.</p>
-              <p className="review-text">Great quality and fast delivery. The product works well and I can see visible results. Will definitely purchase again.</p>
-            </div>
-
-            <div className="review-card">
-              <div className="review-header">
-                <div className="review-stars">
-                  {'★'.repeat(5)}{'☆'.repeat(0)}
-                </div>
-                <span className="review-date">1 month ago</span>
-              </div>
-              <p className="review-author">Anjali S.</p>
-              <p className="review-text">Love it! Proven ingredients, no harsh chemicals. My skin has never looked better. Worth every penny.</p>
-            </div>
-
-            <div className="review-card">
-              <div className="review-header">
-                <div className="review-stars">
-                  {'★'.repeat(5)}{'☆'.repeat(0)}
-                </div>
-                <span className="review-date">2 months ago</span>
-              </div>
-              <p className="review-author">Vikram D.</p>
-              <p className="review-text">Excellent product quality. Packaging was perfect and the results are visible within weeks. Highly satisfied!</p>
-            </div>
+          {/* Header row */}
+          <div className="rv-header">
+            <h2 className="reviews-title">Customer Reviews</h2>
+            {!showReviewForm && !reviewSuccess && (
+              isLoggedIn
+                ? <button className="rv-write-btn" onClick={() => { setShowReviewForm(true); setReviewError('') }}>
+                    ✏️ Write a Review
+                  </button>
+                : <button className="rv-write-btn rv-write-btn--login" onClick={onLoginClick}>
+                    Login to Write a Review
+                  </button>
+            )}
           </div>
+
+          {/* Rating summary bar */}
+          {ratingSummary && ratingSummary.totalReviews > 0 && (
+            <div className="rv-summary">
+              <div className="rv-summary__avg">
+                <span className="rv-avg-score">{ratingSummary.averageRating.toFixed(1)}</span>
+                <ReviewStars rating={Math.round(ratingSummary.averageRating)} />
+                <span className="rv-avg-count">{ratingSummary.totalReviews} review{ratingSummary.totalReviews !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="rv-summary__bars">
+                {[5,4,3,2,1].map(star => {
+                  const count = ratingSummary[`${['one','two','three','four','five'][star-1]}StarCount`] || 0
+                  const pct = ratingSummary.totalReviews ? Math.round((count / ratingSummary.totalReviews) * 100) : 0
+                  return (
+                    <div key={star} className="rv-bar-row">
+                      <span className="rv-bar-label">{star}★</span>
+                      <div className="rv-bar-track"><div className="rv-bar-fill" style={{ width: `${pct}%` }} /></div>
+                      <span className="rv-bar-pct">{pct}%</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Post-submit success */}
+          {reviewSuccess && (
+            <div className="rv-success-msg">
+              ✅ Thank you! Your review has been submitted and will be visible after admin approval.
+            </div>
+          )}
+
+          {/* Write a Review form */}
+          {showReviewForm && (
+            <form className="rv-form" onSubmit={handleReviewSubmit}>
+              <h3 className="rv-form-title">Write a Review</h3>
+              <div className="rv-form-field">
+                <label className="rv-form-label">Your Rating *</label>
+                <StarPicker value={reviewForm.rating} onChange={v => setReviewForm(f => ({ ...f, rating: v }))} />
+              </div>
+              <div className="rv-form-field">
+                <label className="rv-form-label">Review Title *</label>
+                <input className="rv-form-input" type="text" maxLength={100}
+                  placeholder="Summarise your experience"
+                  value={reviewForm.title}
+                  onChange={e => setReviewForm(f => ({ ...f, title: e.target.value }))} />
+              </div>
+              <div className="rv-form-field">
+                <label className="rv-form-label">Your Review *</label>
+                <textarea className="rv-form-textarea" rows={4} maxLength={1000}
+                  placeholder="Tell others about your experience with this product…"
+                  value={reviewForm.comment}
+                  onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))} />
+              </div>
+              {reviewError && <p className="rv-form-error">{reviewError}</p>}
+              <div className="rv-form-actions">
+                <button type="submit" className="rv-submit-btn" disabled={reviewSubmitting}>
+                  {reviewSubmitting ? 'Submitting…' : 'Submit Review'}
+                </button>
+                <button type="button" className="rv-cancel-btn"
+                  onClick={() => { setShowReviewForm(false); setReviewError('') }}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Reviews list */}
+          {reviewsLoading ? (
+            <p className="rv-loading">Loading reviews…</p>
+          ) : reviews.length === 0 ? (
+            <p className="rv-empty">No reviews yet for this product. Be the first to share your experience!</p>
+          ) : (
+            <div className="reviews-list">
+              {reviews.map((r) => (
+                <div key={r._id} className="review-card">
+                  <div className="review-header">
+                    <ReviewStars rating={r.rating} />
+                    <span className="review-date">
+                      {new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+                  {r.title && <p className="rv-review-title">{r.title}</p>}
+                  <p className="review-author">
+                    {r.userName}
+                    {r.verifiedPurchase && <span className="rv-verified"> ✔ Verified Purchase</span>}
+                  </p>
+                  <p className="review-text">{r.comment}</p>
+                  {r.adminResponse?.text && (
+                    <div className="rv-admin-response">
+                      <span className="rv-admin-label">Aloweda Response:</span>
+                      <p>{r.adminResponse.text}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

@@ -153,6 +153,7 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
       'tattoo': '/tattoo',
       'tattoo-quiz': '/tattoo-quiz',
       'rituals': '/rituals',
+      'facewash': '/facewash',
       'about': '/about'
     }
     return routes[page] || `/${page}`
@@ -196,6 +197,7 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
             )}
           </div>
           <Link to="/bestsellers" className="navbar__link" onClick={() => { setMenuOpen(false); setShopOpen(false); }}>Best Sellers</Link>
+          <Link to="/gifting" className="navbar__link" onClick={() => { setMenuOpen(false); setShopOpen(false); }}>Gifting</Link>
           <Link to="/consultation" className="navbar__link" onClick={() => { setMenuOpen(false); setShopOpen(false); }}>Specialist Consultation</Link>
         </nav>
 
@@ -289,6 +291,7 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
           <Link to="/" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Home</Link>
           <Link to="/shop" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>All Products</Link>
           <Link to="/bestsellers" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Best Sellers</Link>
+          <Link to="/gifting" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Gifting</Link>
           <Link to="/consultation" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Specialist Consultation</Link>
           <div className="navbar__mobile-divider">Smart Skincare</div>
           {CATEGORIES.filter(c => c.parent === 'skincare').map((c) => (

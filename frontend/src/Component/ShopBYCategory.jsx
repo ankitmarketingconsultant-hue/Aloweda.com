@@ -4,8 +4,8 @@ const categories = [
   { label: 'Face Serums', icon: '✦' },
   { label: 'Moisturisers', icon: '✦' },
   { label: 'Face Wash', icon: '✦' },
-  { label: 'Eye Care', icon: '✦' },
-  { label: 'Sunscreen', icon: '✦' },
+  { label: 'Skincare Rituals', icon: '✦' },
+  { label: 'Creams', icon: '✦' },
   { label: 'Hair Care', icon: '✦' },
 ]
 
