@@ -171,6 +171,7 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
                 </div>
                 <div className="aw-doctor-header-text">
                   <h2 className="aw-doctor-name">{doctor.name}</h2>
+                  <p className="aw-doctor-title">Advisor</p>
                 </div>
               </div>
 
