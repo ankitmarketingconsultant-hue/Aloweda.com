@@ -127,9 +127,9 @@ const slides = [
 const categories = [
   { label: 'Face Serums', icon: '✦', page: 'serums' },
   { label: 'Moisturisers', icon: '✦', page: 'moisturisers' },
-  { label: 'Face Wash', icon: '✦', page: 'shop' },
-  { label: 'Eye Care', icon: '✦', page: 'shop' },
-  { label: 'Sunscreen', icon: '✦', page: 'shop' },
+  { label: 'Face Wash', icon: '✦', page: 'facewash' },
+  { label: 'Skincare Rituals', icon: '✦', page: 'rituals' },
+  { label: 'Creams', icon: '✦', page: 'creams' },
   { label: 'Hair Care', icon: '✦', page: 'hair' },
 ]
 
