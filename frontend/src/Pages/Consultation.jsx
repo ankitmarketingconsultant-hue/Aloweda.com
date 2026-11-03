@@ -172,7 +172,6 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
                 <div className="aw-doctor-header-text">
                   <h2 className="aw-doctor-name">{doctor.name}</h2>
                 </div>
-                <span className="aw-doctor-badge">{doctor.badge}</span>
               </div>
 
               <div className="aw-doctor-body">
