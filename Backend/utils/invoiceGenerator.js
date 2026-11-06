@@ -2,292 +2,287 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
-/**
- * Generate optimized invoice PDF
- * Compact, professional design with reduced file size
- */
+// ── GST helpers ────────────────────────────────────────────────────────────
+// All website prices are INCLUSIVE of 18% GST
+// Formula: base = total / 1.18,  gst = total - base
+// CGST = SGST = gst / 2
+const GST_RATE = 0.18;
+const SHIPPING_CHARGE = 80; // fixed for all orders
+
+function calcGST(inclusivePrice) {
+  const base = Math.round(inclusivePrice / (1 + GST_RATE));
+  const gst  = inclusivePrice - base;
+  return { base, gst, cgst: Math.round(gst / 2), sgst: Math.round(gst / 2) };
+}
+
+// ── Invoice generator ──────────────────────────────────────────────────────
 class InvoiceGenerator {
   constructor(order) {
     this.order = order;
-    this.doc = new PDFDocument({
-      size: 'A4',
-      margin: 30,
-      compress: true // Enable compression for smaller file size
-    });
+    this.doc = new PDFDocument({ size: 'A4', margin: 40, compress: true });
+    this.W = 515; // usable width
+    this.L = 40;  // left margin
+    this.R = 555; // right edge
   }
 
   async generate(outputPath) {
     const stream = fs.createWriteStream(outputPath);
     this.doc.pipe(stream);
-
-    this.addHeader();
-    this.addCompanyInfo();
-    this.addCustomerInfo();
-    this.addOrderInfo();
-    this.addItemsTable();
-    this.addPricingSummary();
-    this.addFooter();
-
+    this._build();
     this.doc.end();
-
-    return new Promise((resolve, reject) => {
-      stream.on('finish', () => resolve(outputPath));
-      stream.on('error', reject);
+    return new Promise((res, rej) => {
+      stream.on('finish', () => res(outputPath));
+      stream.on('error', rej);
     });
   }
 
-  addHeader() {
-    // Invoice title
-    this.doc
-      .fontSize(20)
-      .font('Helvetica-Bold')
-      .text('TAX INVOICE', { align: 'center' })
-      .moveDown(0.3);
+  _build() {
+    this._header();
+    this._companyBlock();
+    this._divider();
+    this._customerAndOrderBlock();
+    this._divider();
+    this._itemsTable();
+    this._transactionDetails();
+    this._paymentDetails();
+    this._shippingDetails();
+    this._footer();
   }
 
-  addCompanyInfo() {
-    this.doc
-      .fontSize(10)
-      .font('Helvetica-Bold')
-      .text('ALOWEDA', { align: 'left' })
-      .font('Helvetica')
-      .fontSize(8)
-      .text('Premium Dermatologist-Tested Skincare', { align: 'left' })
-      .text('GST: [YOUR_GST_NUMBER]', { align: 'left' })
-      .text('Email: support@aloweda.com', { align: 'left' })
-      .text('Phone: +91-XXXXXXXXXX', { align: 'left' })
-      .moveDown(0.5);
+  // ── Header ──
+  _header() {
+    const now = new Date();
+    const dateStr = `${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')}/${now.getFullYear().toString().slice(-2)}, ${now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
 
-    // Horizontal line
-    this.doc
-      .moveTo(30, this.doc.y)
-      .lineTo(565, this.doc.y)
-      .stroke();
-    
+    this.doc.fontSize(8).font('Helvetica').fillColor('#555')
+      .text(dateStr, this.L, 40)
+      .text('Order printer', this.R - 60, 40);
+
     this.doc.moveDown(0.5);
   }
 
-  addCustomerInfo() {
-    const { customerInfo } = this.order;
-    const startY = this.doc.y;
+  // ── Company name + address ──
+  _companyBlock() {
+    const order = this.order;
+    const dateStr = new Date(order.createdAt || Date.now()).toLocaleDateString('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit'});
 
-    // Billing Address
-    this.doc
-      .fontSize(8)
-      .font('Helvetica-Bold')
-      .text('BILL TO:', 30, startY)
-      .font('Helvetica')
-      .text(customerInfo.name, 30)
-      .text(customerInfo.email, 30)
-      .text(customerInfo.phone, 30);
+    // Company name big
+    this.doc.fontSize(22).font('Helvetica-Bold').fillColor('#000')
+      .text('Aloweda', this.L, this.doc.y);
 
-    if (customerInfo.address) {
-      const addr = customerInfo.address;
-      this.doc
-        .text(`${addr.street}, ${addr.city}`, 30)
-        .text(`${addr.state} - ${addr.pincode}`, 30);
-    }
+    // Invoice number top-right
+    this.doc.fontSize(9).font('Helvetica').fillColor('#000')
+      .text(dateStr, this.R - 80, this.doc.y - 20, { align: 'right', width: 80 })
+      .text(`Invoice for #${order.orderId}`, this.R - 120, this.doc.y, { align: 'right', width: 120 });
 
-    // Shipping Address (same column, below)
-    this.doc
-      .moveDown(0.3)
-      .font('Helvetica-Bold')
-      .text('SHIP TO:', 30)
-      .font('Helvetica')
-      .text('Same as billing address', 30);
+    this.doc.fontSize(9).font('Helvetica').fillColor('#000')
+      .text('A 107 Oman Topaz Agara, Sarjapur Road', this.L)
+      .text('Bengaluru KA 560102', this.L)
+      .text('India', this.L);
 
-    // Order details on the right
-    this.doc
-      .font('Helvetica-Bold')
-      .text('Invoice No:', 350, startY)
-      .font('Helvetica')
-      .text(this.order.orderId, 450, startY, { align: 'right' })
-      .font('Helvetica-Bold')
-      .text('Invoice Date:', 350)
-      .font('Helvetica')
-      .text(new Date(this.order.createdAt).toLocaleDateString('en-IN'), 450, undefined, { align: 'right' })
-      .font('Helvetica-Bold')
-      .text('Order Date:', 350)
-      .font('Helvetica')
-      .text(new Date(this.order.createdAt).toLocaleDateString('en-IN'), 450, undefined, { align: 'right' })
-      .font('Helvetica-Bold')
-      .text('Payment Method:', 350)
-      .font('Helvetica')
-      .text(this.order.paymentMethod, 450, undefined, { align: 'right' });
-
-    this.doc.moveDown(1);
+    this.doc.moveDown(0.8);
   }
 
-  addOrderInfo() {
-    // Horizontal line
-    this.doc
-      .moveTo(30, this.doc.y)
-      .lineTo(565, this.doc.y)
-      .stroke();
-    
+  _divider() {
+    this.doc.moveTo(this.L, this.doc.y).lineTo(this.R, this.doc.y).strokeColor('#ccc').stroke();
     this.doc.moveDown(0.5);
   }
 
-  addItemsTable() {
-    const tableTop = this.doc.y;
-    const itemCodeX = 30;
-    const descriptionX = 120;
-    const quantityX = 380;
-    const priceX = 450;
-    const amountX = 520;
+  // ── Customer + order meta ──
+  _customerAndOrderBlock() {
+    // (no separate block needed — already in company block above)
+  }
 
-    // Table header
-    this.doc
-      .fontSize(8)
-      .font('Helvetica-Bold')
-      .text('ITEM', itemCodeX, tableTop)
-      .text('DESCRIPTION', descriptionX, tableTop)
-      .text('QTY', quantityX, tableTop)
-      .text('PRICE', priceX, tableTop)
-      .text('AMOUNT', amountX, tableTop);
+  // ── Items table ──
+  _itemsTable() {
+    const colQty   = this.L;
+    const colItem  = this.L + 45;
+    const colTax   = this.R - 160;
+    const colPrice = this.R - 60;
 
-    // Header underline
-    this.doc
-      .moveTo(30, tableTop + 15)
-      .lineTo(565, tableTop + 15)
-      .stroke();
+    // Table heading
+    this.doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+      .text('Item Details', this.L, this.doc.y);
+    this.doc.moveDown(0.4);
 
-    let y = tableTop + 20;
+    // Header row
+    const hY = this.doc.y;
+    this.doc.rect(this.L, hY, this.W, 18).fillColor('#f0f0f0').fill();
+    this.doc.fontSize(8).font('Helvetica-Bold').fillColor('#000')
+      .text('Quantity', colQty, hY + 4)
+      .text('Item',     colItem, hY + 4)
+      .text('Taxes',    colTax,  hY + 4)
+      .text('Price',    colPrice,hY + 4);
 
-    // Table rows
-    this.doc.font('Helvetica').fontSize(7);
+    // Border around header
+    this.doc.rect(this.L, hY, this.W, 18).strokeColor('#bbb').stroke();
 
-    this.order.items.forEach((item, index) => {
-      if (y > 700) {
-        this.doc.addPage();
-        y = 50;
-      }
+    let y = hY + 18;
 
-      const itemTotal = item.price * item.quantity;
+    this.order.items.forEach((item) => {
+      const qty       = item.quantity || 1;
+      const unitPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+      const lineTotal = unitPrice * qty;
+      const { cgst, sgst } = calcGST(lineTotal);
 
-      this.doc
-        .text(index + 1, itemCodeX, y)
-        .text(item.name, descriptionX, y, {
-          width: 250,
-          height: 30,
-          ellipsis: true
-        })
-        .text(item.quantity, quantityX, y)
-        .text(`₹${item.price}`, priceX, y)
-        .text(`₹${itemTotal}`, amountX, y);
+      const taxText   = `Rs. ${cgst.toFixed(2)}\nCGST\nRs. ${sgst.toFixed(2)}\nSGST`;
+      const rowH      = 55;
 
-      y += 25;
+      // row border
+      this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
+
+      this.doc.fontSize(8).font('Helvetica').fillColor('#000')
+        .text(`${qty} x`, colQty,  y + 8)
+        .text(item.name, colItem, y + 8, { width: colTax - colItem - 10, lineGap: 2 })
+        .text(taxText,   colTax,  y + 8, { lineGap: 1 })
+        .text(`Rs.\n${lineTotal.toFixed(2)}`, colPrice, y + 8);
+
+      y += rowH;
     });
-
-    // Bottom line
-    this.doc
-      .moveTo(30, y)
-      .lineTo(565, y)
-      .stroke();
 
     this.doc.y = y + 10;
+    this.doc.moveDown(0.5);
   }
 
-  addPricingSummary() {
+  // ── Transaction Details ──
+  _transactionDetails() {
+    const order = this.order;
+    const total = parseFloat(String(order.pricing?.total || 0).replace(/[^0-9.]/g, ''));
+    const method = order.paymentMethod === 'COD' ? 'Cash on delivery (cod)' : 'Online payment';
+
+    this.doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+      .text('Transaction Details', this.L, this.doc.y);
+    this.doc.moveDown(0.4);
+
+    const hY = this.doc.y;
+    this.doc.rect(this.L, hY, this.W, 18).fillColor('#f0f0f0').fill();
+    this.doc.fontSize(8).font('Helvetica-Bold').fillColor('#000')
+      .text('Type',   this.L + 4, hY + 4)
+      .text('Amount', this.L + 180, hY + 4)
+      .text('Kind',   this.L + 310, hY + 4)
+      .text('Status', this.L + 420, hY + 4);
+    this.doc.rect(this.L, hY, this.W, 18).strokeColor('#bbb').stroke();
+
+    // Row 1 — pending (for COD)
+    const r1Y = hY + 18;
+    this.doc.rect(this.L, r1Y, this.W, 18).strokeColor('#bbb').stroke();
+    this.doc.fontSize(8).font('Helvetica').fillColor('#000')
+      .text(method,             this.L + 4, r1Y + 4)
+      .text(`Rs. ${total.toFixed(2)}`, this.L + 180, r1Y + 4)
+      .text('sale',             this.L + 310, r1Y + 4)
+      .text(order.paymentMethod === 'COD' ? 'pending' : 'success', this.L + 420, r1Y + 4);
+
+    // Row 2 — success
+    const r2Y = r1Y + 18;
+    this.doc.rect(this.L, r2Y, this.W, 18).strokeColor('#bbb').stroke();
+    this.doc.fontSize(8).font('Helvetica').fillColor('#000')
+      .text(method,             this.L + 4, r2Y + 4)
+      .text(`Rs. ${total.toFixed(2)}`, this.L + 180, r2Y + 4)
+      .text('sale',             this.L + 310, r2Y + 4)
+      .text('success',          this.L + 420, r2Y + 4);
+
+    this.doc.y = r2Y + 28;
+    this.doc.moveDown(0.5);
+  }
+
+  // ── Payment Details ──
+  _paymentDetails() {
     const { pricing } = this.order;
-    const labelX = 380;
-    const valueX = 520;
+
+    // Compute subtotal (excl GST) from items
+    let itemsTotal = 0;
+    (this.order.items || []).forEach(item => {
+      const qty  = item.quantity || 1;
+      const price = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+      itemsTotal += price * qty;
+    });
+
+    // Apply discounts
+    const bundleDiscount = pricing?.bundleDiscount || 0;
+    const couponDiscount = pricing?.couponDiscount || 0;
+    const onlineDiscount = pricing?.onlinePaymentDiscount || 0;
+    const discountedTotal = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
+
+    const { base: subtotal, gst: totalGst } = calcGST(discountedTotal);
+    const shipping = SHIPPING_CHARGE;
+    const grandTotal = discountedTotal + shipping;
+
+    this.doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+      .text('Payment Details', this.L, this.doc.y);
+    this.doc.moveDown(0.4);
+
+    const rows = [
+      { label: 'Subtotal price:',  value: `Rs. ${subtotal.toFixed(2)}`,       bold: false },
+      { label: 'Total tax',        value: `Rs. ${totalGst.toFixed(2)}`,        bold: false },
+      { label: 'Shipping:',        value: `Rs. ${shipping.toFixed(2)}`,        bold: false },
+      { label: 'Total price',      value: `Rs. ${grandTotal.toFixed(2)}`,      bold: true  },
+    ];
+
     let y = this.doc.y;
+    rows.forEach(row => {
+      this.doc.rect(this.L, y, this.W, 18).strokeColor('#bbb').stroke();
+      const font = row.bold ? 'Helvetica-Bold' : 'Helvetica';
+      this.doc.fontSize(8).font(font).fillColor('#000')
+        .text(row.label, this.L + 4, y + 4)
+        .text(row.value, this.R - 100, y + 4, { align: 'right', width: 96 });
+      y += 18;
+    });
 
-    this.doc.fontSize(8).font('Helvetica');
-
-    // Subtotal
-    this.doc
-      .text('Subtotal:', labelX, y)
-      .text(`₹${pricing.subtotal}`, valueX, y, { align: 'right' });
-    y += 15;
-
-    // Bundle discount
-    if (pricing.bundleDiscount > 0) {
-      this.doc
-        .text('Bundle Discount:', labelX, y)
-        .text(`- ₹${pricing.bundleDiscount}`, valueX, y, { align: 'right' });
-      y += 15;
-    }
-
-    // Coupon discount
-    if (pricing.couponDiscount > 0) {
-      this.doc
-        .text('Coupon Discount:', labelX, y)
-        .text(`- ₹${pricing.couponDiscount}`, valueX, y, { align: 'right' });
-      y += 15;
-    }
-
-    // Online payment discount
-    if (pricing.onlinePaymentDiscount > 0) {
-      this.doc
-        .text('Online Payment Discount:', labelX, y)
-        .text(`- ₹${pricing.onlinePaymentDiscount}`, valueX, y, { align: 'right' });
-      y += 15;
-    }
-
-    // Shipping
-    if (pricing.shippingCharges > 0) {
-      this.doc
-        .text('Shipping Charges:', labelX, y)
-        .text(`₹${pricing.shippingCharges}`, valueX, y, { align: 'right' });
-      y += 15;
-    }
-
-    // Tax
-    if (pricing.tax > 0) {
-      this.doc
-        .text('Tax (GST):', labelX, y)
-        .text(`₹${pricing.tax}`, valueX, y, { align: 'right' });
-      y += 15;
-    }
-
-    // Line before total
-    this.doc
-      .moveTo(380, y)
-      .lineTo(565, y)
-      .stroke();
-    y += 10;
-
-    // Total
-    this.doc
-      .fontSize(10)
-      .font('Helvetica-Bold')
-      .text('Total Amount:', labelX, y)
-      .text(`₹${pricing.total}`, valueX, y, { align: 'right' });
-
-    this.doc.moveDown(2);
+    this.doc.y = y + 10;
+    this.doc.moveDown(0.5);
   }
 
-  addFooter() {
-    this.doc
-      .fontSize(7)
-      .font('Helvetica')
-      .text('Thank you for shopping with Aloweda!', { align: 'center' })
-      .text('For support: support@aloweda.com | +91-XXXXXXXXXX', { align: 'center' })
-      .moveDown(0.5)
-      .fontSize(6)
+  // ── Shipping Details ──
+  _shippingDetails() {
+    const c = this.order.customerInfo;
+    if (!c) return;
+
+    this.doc.fontSize(12).font('Helvetica-Bold').fillColor('#000')
+      .text('Shipping Details', this.L, this.doc.y);
+    this.doc.moveDown(0.4);
+
+    const boxY = this.doc.y;
+    const lines = [
+      c.name,
+      c.address,
+      `${c.pincode} ${c.city} ${c.state}`,
+      'India',
+    ].filter(Boolean);
+
+    const boxH = lines.length * 14 + 16;
+    this.doc.rect(this.L, boxY, this.W, boxH).strokeColor('#bbb').stroke();
+
+    let ty = boxY + 8;
+    lines.forEach(line => {
+      const font = ty === boxY + 8 ? 'Helvetica-Bold' : 'Helvetica';
+      this.doc.fontSize(8).font(font).fillColor('#000').text(line, this.L + 8, ty);
+      ty += 14;
+    });
+
+    this.doc.y = boxY + boxH + 14;
+  }
+
+  // ── Footer ──
+  _footer() {
+    this.doc.moveDown(0.5);
+    this.doc.fontSize(8).font('Helvetica').fillColor('#000')
+      .text('If you have any questions, please send an email to marketing@aloweda.com', this.L, this.doc.y, { link: 'mailto:marketing@aloweda.com' });
+
+    this.doc.moveDown(1);
+    this.doc.fontSize(7).fillColor('#888')
       .text('This is a computer-generated invoice and does not require a signature.', { align: 'center' });
   }
 }
 
-/**
- * Generate invoice PDF for an order
- * @param {object} order - Order object
- * @param {string} outputDir - Output directory path
- * @returns {Promise<string>} Path to generated PDF
- */
-exports.generateInvoice = async (order, outputDir = './invoices') => {
-  // Create output directory if it doesn't exist
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
+// ── Public API ─────────────────────────────────────────────────────────────
+exports.generateInvoice = async (order, outputDir = '/tmp/invoices') => {
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
   const filename = `invoice_${order.orderId}.pdf`;
   const outputPath = path.join(outputDir, filename);
-
-  const generator = new InvoiceGenerator(order);
-  await generator.generate(outputPath);
-
+  const gen = new InvoiceGenerator(order);
+  await gen.generate(outputPath);
   return outputPath;
 };
+
+exports.SHIPPING_CHARGE = SHIPPING_CHARGE;
+exports.calcGST = calcGST;

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const { sendOrderEmail } = require('../utils/emailService');
-const { trackPurchase, trackInitiateCheckout, trackAddPaymentInfo } = require('../utils/metaCAPI');
+const { generateInvoice } = require('../utils/invoiceGenerator');
+const { trackPurchase } = require('../utils/metaCAPI');
 
 // @desc    Place COD order + send email notification
 // @route   POST /api/cod/place-order
@@ -95,14 +96,24 @@ router.post('/place-order', async (req, res) => {
       // Don't fail the order if CAPI tracking fails
     }
 
-    // Send email notification
+    // Send email notification with invoice PDF
     try {
+      // Generate invoice PDF first
+      let invoicePath = null;
+      try {
+        invoicePath = await generateInvoice(order);
+        console.log('✅ Invoice generated:', invoicePath);
+      } catch (invoiceErr) {
+        console.error('⚠️  Invoice generation failed (non-critical):', invoiceErr.message);
+      }
+
       await sendOrderEmail({
         customer: customerInfo,
         items,
         total: pricing.total,
         paymentMethod: 'Cash on Delivery (COD)',
         orderId: order.orderId,
+        invoicePath,
       });
     } catch (emailError) {
       console.error('Email sending failed:', emailError);

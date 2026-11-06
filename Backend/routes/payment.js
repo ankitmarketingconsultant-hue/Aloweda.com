@@ -4,6 +4,8 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Order = require('../models/Order');
 const { trackPurchase } = require('../utils/metaCAPI');
+const { sendOrderEmail } = require('../utils/emailService');
+const { generateInvoice } = require('../utils/invoiceGenerator');
 
 const razorpay = process.env.RAZORPAY_KEY_ID ? new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -89,6 +91,29 @@ router.post('/verify', async (req, res) => {
       } catch (capiError) {
         console.error('❌ Meta CAPI tracking failed (non-critical):', capiError);
         // Don't fail the order if CAPI tracking fails
+      }
+
+      // Generate invoice PDF and send email
+      try {
+        let invoicePath = null;
+        try {
+          invoicePath = await generateInvoice(order);
+          console.log('✅ Invoice generated:', invoicePath);
+        } catch (invoiceErr) {
+          console.error('⚠️  Invoice generation failed (non-critical):', invoiceErr.message);
+        }
+
+        const customerInfo = orderData.customer || orderData.customerInfo || {};
+        await sendOrderEmail({
+          customer: customerInfo,
+          items: orderData.items || [],
+          total: orderData.total || orderData.pricing?.total || 0,
+          paymentMethod: 'Online Payment',
+          orderId: order.orderId,
+          invoicePath,
+        });
+      } catch (emailErr) {
+        console.error('⚠️  Email sending failed (non-critical):', emailErr.message);
       }
 
       return res.json({
