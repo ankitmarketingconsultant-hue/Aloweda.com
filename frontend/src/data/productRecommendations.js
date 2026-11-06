@@ -1,6 +1,16 @@
 // Product Recommendation Mappings
 // Maps concerns/bundles/skin types to actual product IDs from PRODUCTS array
 
+import SC4  from '../SkinCareImg/SkinCare4.jpg'
+import SC8  from '../SkinCareImg/SkinCare8.jpg'
+import SC12 from '../SkinCareImg/SkinCare12.jpg'
+import SC14 from '../SkinCareImg/SkinCare14.jpg'
+import SC6  from '../SkinCareImg/SkinCare6.jpg'
+import LC1  from '../LipCareImg/LipCare1.jpg'
+import HairCareImg from '../assets/HairCare.png'
+import TattooCleanser from '../assets/TattooCleanser.png'
+import TattooButter   from '../assets/TattooButter.png'
+
 export const concernToProducts = {
   acne: ['tone-texture', 'super-glow'],
   darkspots: ['super-glow', 'day-cream', 'radiance-cream'],
@@ -76,6 +86,7 @@ export const productDatabase = {
     routine: 'morning',
     price: 499,
     mrp: 549,
+    img: SC4,
   },
   'super-glow': {
     id: 8,
@@ -86,6 +97,7 @@ export const productDatabase = {
     routine: 'morning',
     price: 649,
     mrp: 699,
+    img: SC8,
   },
   'tone-texture': {
     id: 12,
@@ -96,6 +108,7 @@ export const productDatabase = {
     routine: 'morning',
     price: 599,
     mrp: 649,
+    img: SC12,
   },
   'radiance-cream': {
     id: 14,
@@ -106,6 +119,7 @@ export const productDatabase = {
     routine: 'evening',
     price: 499,
     mrp: 549,
+    img: SC14,
   },
   'saffron-oil': {
     id: 6,
@@ -116,6 +130,7 @@ export const productDatabase = {
     routine: 'evening',
     price: 799,
     mrp: null,
+    img: SC6,
   },
   'lip-butter': {
     id: 17,
@@ -126,6 +141,7 @@ export const productDatabase = {
     routine: 'special',
     price: 95,
     mrp: 105,
+    img: LC1,
   },
   'hair-serum': {
     id: 16,
@@ -136,6 +152,7 @@ export const productDatabase = {
     routine: 'special',
     price: 875,
     mrp: 975,
+    img: HairCareImg,
   },
   'tattoo-cleanser': {
     id: 19,
@@ -146,6 +163,7 @@ export const productDatabase = {
     routine: 'tattoo',
     price: 195,
     mrp: 245,
+    img: TattooCleanser,
   },
   'tattoo-butter': {
     id: 20,
@@ -156,5 +174,6 @@ export const productDatabase = {
     routine: 'tattoo',
     price: 499,
     mrp: 599,
+    img: TattooButter,
   },
 }
