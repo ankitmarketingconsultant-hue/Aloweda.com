@@ -67,108 +67,76 @@ export const skinTypeToProducts = {
 }
 
 export const productDatabase = {
-  'glow-essence': {
-    id: 1, // Glow Essence Face Serum
-    name: 'Glow Essence Face Serum',
-    size: '30 ml',
-    ingredients: 'Vitamin C & Niacinamide',
-    purpose: 'Brightens, hydrates and evens skin tone',
-    routine: 'morning'
-  },
   'day-cream': {
-    id: 4, // The Day Cream SPF 30 - CORRECTED ID
+    id: 4,
     name: 'The Day Cream SPF 30',
     size: '50 G',
     ingredients: 'Hyaluronic Acid, SPF 30, Vitamin E',
-    purpose: 'Daytime hydration, moisturization, daily sun protection',
+    purpose: 'Daily moisturizer with broad-spectrum SPF 30 protection. Hydrates and shields skin from UV damage.',
     routine: 'morning'
   },
   'super-glow': {
-    id: 8, // Super Glow Face Serum - CORRECTED ID
-    name: 'Super Glow Face Serum',
+    id: 8,
+    name: 'Super Glow Serum',
     size: '30 ml',
-    ingredients: 'Hyaluronic Acid & Peptide blend',
-    purpose: 'Plump, dewy skin - glow, brightening, dull skin',
+    ingredients: 'Vitamin C 15%, Niacinamide 5%, Hyaluronic Acid, Ferulic Acid 1%',
+    purpose: 'Brightens dull skin, fades dark spots and delivers a visible glow with potent antioxidants.',
     routine: 'morning'
   },
   'tone-texture': {
-    id: 12, // Tone & Texture Serum - CORRECTED ID
+    id: 12,
     name: 'Tone & Texture Serum',
     size: '30 ml',
-    ingredients: 'Niacinamide & Acetyl Glucosamine',
-    purpose: 'Smooth, even-toned skin - uneven tone, texture',
+    ingredients: 'Niacinamide 10%, Acetyl Glucosamine, Ceramides',
+    purpose: 'Smooths uneven texture, minimises pores and evens out skin tone for a refined complexion.',
     routine: 'morning'
   },
   'radiance-cream': {
-    id: 14, // Radiance Cream - CORRECTED ID
+    id: 14,
     name: 'Radiance Cream',
     size: '50 G',
-    ingredients: 'Vitamin C 20% & Kojic Acid',
-    purpose: 'Night brightening cream for radiant, glowing skin',
+    ingredients: 'Vitamin C 20%, Kojic Acid, Avocado Extract, Argan Oil',
+    purpose: 'Nighttime brightening cream that fades pigmentation and boosts radiance while you sleep.',
     routine: 'evening'
   },
-  'moisture-lotion': {
-    id: 6, // Deep Moisture Lotion
-    name: 'Deep Moisture Lotion',
-    size: '100 ml',
-    ingredients: 'Ceramides and Aloe Vera',
-    purpose: 'All-day hydration, fragrance-free',
-    routine: 'optional'
-  },
-  'tattoo-balm': {
-    id: 7, // Tattoo Protect Balm
-    name: 'Tattoo Protect Balm',
-    size: '50 G',
-    ingredients: 'Petroleum-free formula',
-    purpose: 'Keeps ink vibrant and skin moisturised',
-    routine: 'tattoo'
+  'saffron-oil': {
+    id: 6,
+    name: 'Saffron Face Oil',
+    size: '30 ml',
+    ingredients: 'Saffron Essential Oil, Sweet Almond Oil, Grape Seed Oil, Honey, Ghee',
+    purpose: 'Deeply nourishes and revives dull skin with a luxurious natural oil blend for an evening glow.',
+    routine: 'evening'
   },
   'lip-butter': {
-    id: 17, // Lip Butter 8g - CORRECTED ID
+    id: 17,
     name: 'Lip Butter',
-    size: '8-15 G',
-    ingredients: 'Shea butter, Cocoa butter & Vitamin E',
-    purpose: 'Lip treatment - heals, softens, protects',
+    size: '8 G',
+    ingredients: 'Shea Butter, Cocoa Butter, Beeswax, Honey',
+    purpose: 'Zero-chemical lip treatment that heals, softens and protects dry or chapped lips.',
     routine: 'special'
   },
   'hair-serum': {
     id: 16,
     name: 'Total Hair Therapy Serum',
     size: '50 ml',
-    ingredients: 'Redensyl 5%, Anagain 5% & Biotin',
-    purpose: 'Hair growth, strength and healthy shine',
+    ingredients: 'Redensyl 5%, Anagain 5%, Rice Water, Biotin',
+    purpose: 'Clinically proven ingredients to reduce hair fall, stimulate new growth and add visible shine.',
     routine: 'special'
   },
   'tattoo-cleanser': {
     id: 19,
-    name: 'Tattoo Cleanser 100 ml',
+    name: 'Tattoo Cleanser',
     size: '100 ml',
     ingredients: 'Orange, Lemon & Tangerine Extracts, Aloe Vera, Vitamin E',
-    purpose: 'Gently cleanses tattooed skin, removes impurities without stripping moisture',
+    purpose: 'Sulphate-free cleanser that gently cleanses tattooed skin and preserves ink vibrancy.',
     routine: 'tattoo'
   },
   'tattoo-butter': {
     id: 20,
-    name: 'Tattoo Butter 50 Grams',
+    name: 'Tattoo Butter',
     size: '50 G',
     ingredients: 'Shea, Cocoa, Mango & Kokum Butter, Beeswax, Fig Honey',
-    purpose: 'Nourishes & protects tattooed skin, preserves ink vibrancy',
+    purpose: 'Chemical-free butter that deeply nourishes tattooed skin and keeps colours vivid.',
     routine: 'tattoo'
   },
-  'glow-ritual-kit': {
-    id: 10, // Glow Ritual Kit
-    name: 'Glow Ritual Kit',
-    size: '3-Step Kit',
-    ingredients: 'Complete ritual: Cleanse, Treat, Moisturise',
-    purpose: 'Complete 3-step skincare ritual',
-    routine: 'optional'
-  },
-  'saffron-oil': {
-    id: 6, // Saffron Face Oil - CORRECTED ID
-    name: 'Saffron Face Oil',
-    size: '30 ml',
-    ingredients: 'Pure Saffron & Vitamin E',
-    purpose: 'Radiant, nourished skin - nourishment, hydration, glow',
-    routine: 'evening'
-  }
 }
