@@ -322,7 +322,29 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
         if (data.success) {
           // Track Purchase event for Meta Pixel (COD)
           trackPurchase(data.orderId, safeCart, total, 'COD')
-          
+
+          // W3Forms — notify ajay@aloweda.com
+          try {
+            const w3 = new FormData()
+            w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976')
+            w3.append('subject', `New Order #${data.orderId} — ₹${total} (COD)`)
+            w3.append('name', checkoutForm.name)
+            w3.append('email', checkoutForm.email || 'guest@aloweda.com')
+            w3.append('message',
+              `ORDER ID: ${data.orderId}\n` +
+              `Payment: Cash on Delivery\n\n` +
+              `CUSTOMER:\n` +
+              `Name: ${checkoutForm.name}\n` +
+              `Phone: ${checkoutForm.phone}\n` +
+              `Address: ${checkoutForm.address}, ${checkoutForm.city}, ${checkoutForm.state} - ${checkoutForm.pincode}\n\n` +
+              `ITEMS:\n${orderItems.map(i => `• ${i.name} x${i.quantity} — ${i.price}`).join('\n')}\n\n` +
+              `TOTAL: ₹${total} (incl. ₹80 shipping)`
+            )
+            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 })
+          } catch (w3Err) {
+            console.log('W3Forms notify failed (non-critical):', w3Err)
+          }
+
           setShowCheckoutForm(false)
           setOrderPlaced(true)
           setPlacedOrderId(data.orderId)
@@ -377,7 +399,29 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
               
               // Track Purchase event for Meta Pixel (Online Payment)
               trackPurchase(orderId, safeCart, total, 'Online')
-              
+
+              // W3Forms — notify ajay@aloweda.com
+              try {
+                const w3 = new FormData()
+                w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976')
+                w3.append('subject', `New Order #${orderId} — ₹${total} (Online Payment)`)
+                w3.append('name', checkoutForm.name)
+                w3.append('email', checkoutForm.email || 'guest@aloweda.com')
+                w3.append('message',
+                  `ORDER ID: ${orderId}\n` +
+                  `Payment: Online (Razorpay)\n\n` +
+                  `CUSTOMER:\n` +
+                  `Name: ${checkoutForm.name}\n` +
+                  `Phone: ${checkoutForm.phone}\n` +
+                  `Address: ${checkoutForm.address}, ${checkoutForm.city}, ${checkoutForm.state} - ${checkoutForm.pincode}\n\n` +
+                  `ITEMS:\n${orderItems.map(i => `• ${i.name} x${i.quantity} — ${i.price}`).join('\n')}\n\n` +
+                  `TOTAL: ₹${total} (incl. ₹80 shipping)`
+                )
+                await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 })
+              } catch (w3Err) {
+                console.log('W3Forms notify failed (non-critical):', w3Err)
+              }
+
               setShowCheckoutForm(false)
               setOrderPlaced(true)
               setPlacedOrderId(orderId)
