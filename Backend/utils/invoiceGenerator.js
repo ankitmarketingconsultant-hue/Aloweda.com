@@ -77,23 +77,25 @@ class InvoiceGenerator {
     const dateStr = new Date(order.createdAt || Date.now())
       .toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-    const startY = this.doc.y;
+    const startY = 40;
 
-    // Left: big company name + address
+    // Right: date + invoice number (absolutely positioned)
+    this.doc.fontSize(9).font('Helvetica').fillColor('#000')
+      .text(dateStr,                          this.L, startY, { align: 'right', width: this.W })
+      .text(`Invoice for #${order.orderId}`,  this.L, startY + 14, { align: 'right', width: this.W });
+
+    // Left: big company name
     this.doc.fontSize(24).font('Helvetica-Bold').fillColor('#000')
       .text('Aloweda', this.L, startY);
 
+    // Address lines below name
     this.doc.fontSize(9).font('Helvetica').fillColor('#000')
-      .text('A 107 Oman Topaz Agara, Sarjapur Road', this.L)
-      .text('Bengaluru KA 560102', this.L)
-      .text('India', this.L);
+      .text('A 107 Oman Topaz Agara, Sarjapur Road', this.L, startY + 30)
+      .text('Bengaluru KA 560102', this.L, startY + 42)
+      .text('India', this.L, startY + 54);
 
-    // Right: date + invoice number
-    this.doc.fontSize(9).font('Helvetica').fillColor('#000')
-      .text(dateStr,                     this.L, startY + 4,   { align: 'right', width: this.W })
-      .text(`Invoice for #${order.orderId}`, this.L, startY + 16, { align: 'right', width: this.W });
-
-    this.doc.moveDown(1.2);
+    // Move cursor well below address before divider
+    this.doc.y = startY + 75;
   }
 
   // ── Items table ──
