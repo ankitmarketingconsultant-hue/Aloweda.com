@@ -148,6 +148,30 @@ const OrdersManagement = () => {
     }
   };
 
+  const handleDownloadInvoice = async (orderId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/admin/orders/${orderId}/invoice`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Failed to generate invoice');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Aloweda_Invoice_${orderId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Invoice download error:', err);
+      alert('Failed to download invoice. Please try again.');
+    }
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       pending: '#f59e0b',
@@ -341,6 +365,14 @@ const OrdersManagement = () => {
                   <option value="shipped">Shipped</option>
                   <option value="delivered">Delivered</option>
                 </select>
+
+                <button
+                  className="action-btn invoice-btn"
+                  onClick={() => handleDownloadInvoice(order._id)}
+                  title="Download Invoice PDF"
+                >
+                  📄 Invoice
+                </button>
 
                 <button
                   className="action-btn cancel-btn"

@@ -5,6 +5,8 @@ const admin = require('../middleware/admin');
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 const User = require('../models/User');
+const { generateInvoice } = require('../utils/invoiceGenerator');
+const fs = require('fs');
 
 // ============================================
 // PUBLIC ENDPOINT - No Auth Required
@@ -163,6 +165,32 @@ router.put('/products/:id/stock', auth, admin, async (req, res) => {
       success: false,
       message: 'Failed to update stock'
     });
+  }
+});
+
+// Download invoice PDF for an order
+router.get('/orders/:id/invoice', auth, admin, async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Generate fresh PDF
+    const invoicePath = await generateInvoice(order);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Aloweda_Invoice_${order.orderId}.pdf"`);
+
+    const stream = fs.createReadStream(invoicePath);
+    stream.pipe(res);
+    stream.on('end', () => {
+      // Clean up temp file after sending
+      try { fs.unlinkSync(invoicePath); } catch (_) {}
+    });
+  } catch (error) {
+    console.error('Invoice generation error:', error);
+    res.status(500).json({ success: false, message: 'Failed to generate invoice' });
   }
 });
 

@@ -260,6 +260,15 @@
   background: #dc2626;
 }
 
+.invoice-btn {
+  background: #1f4d3d;
+  color: white;
+}
+
+.invoice-btn:hover:not(:disabled) {
+  background: #163a2d;
+}
+
 .refund-btn {
   background: #f97316;
   color: white;
