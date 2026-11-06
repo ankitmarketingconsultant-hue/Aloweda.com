@@ -72,8 +72,27 @@ export default function Gifting({ onNavigate, onLoginClick, cartCount }) {
     if (Object.keys(errs).length) return setErrors(errs);
 
     setSubmitting(true);
-    // Simulate a brief async operation (replace with real API call if needed)
-    await new Promise((r) => setTimeout(r, 900));
+
+    // W3Forms — notify ajay@aloweda.com
+    try {
+      const w3 = new FormData();
+      w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976');
+      w3.append('subject', `New Gift Enquiry from ${form.senderName} — ${form.bundleSize}`);
+      w3.append('name', form.senderName);
+      w3.append('email', form.senderEmail);
+      w3.append('message',
+        `GIFT ENQUIRY\n\n` +
+        `SENDER:\nName: ${form.senderName}\nEmail: ${form.senderEmail}\nPhone: ${form.senderPhone}\nOccasion: ${form.occasion || 'Not specified'}\n\n` +
+        `RECIPIENT:\nName: ${form.recipientName}\nPhone: ${form.recipientPhone || 'Not provided'}\nDelivery Date: ${form.deliveryDate || 'Not specified'}\n\n` +
+        `BUNDLE SIZE: ${form.bundleSize}\n` +
+        `SKIN CONCERNS: ${form.skinConcerns.join(', ') || 'None specified'}\n\n` +
+        `PERSONAL MESSAGE:\n${form.message || 'None'}`
+      );
+      await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 });
+    } catch (w3Err) {
+      console.log('W3Forms notify failed (non-critical):', w3Err);
+    }
+
     setSubmitting(false);
     setSubmitted(true);
   };

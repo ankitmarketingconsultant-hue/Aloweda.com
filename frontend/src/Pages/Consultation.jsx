@@ -122,6 +122,25 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
             const verifyData = await verifyRes.json();
 
             if (verifyData.success) {
+              // W3Forms — notify ajay@aloweda.com about consultation booking
+              try {
+                const w3 = new FormData();
+                w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976');
+                w3.append('subject', `New Consultation Booking — ${customerName} — ₹${CONSULTATION_FEE}`);
+                w3.append('name', customerName.trim());
+                w3.append('email', customerEmail.trim());
+                w3.append('message',
+                  `CONSULTATION BOOKING\n\n` +
+                  `Name: ${customerName.trim()}\n` +
+                  `Email: ${customerEmail.trim()}\n` +
+                  `Amount Paid: ₹${CONSULTATION_FEE}\n` +
+                  `Payment ID: ${response.razorpay_payment_id}\n\n` +
+                  `Customer needs to book a slot on Google Calendar.`
+                );
+                await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 });
+              } catch (w3Err) {
+                console.log('W3Forms notify failed (non-critical):', w3Err);
+              }
               setPaymentDone(true);
               setShowPaywall(false);
             } else {
