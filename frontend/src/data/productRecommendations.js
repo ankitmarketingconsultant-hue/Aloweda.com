@@ -73,7 +73,9 @@ export const productDatabase = {
     size: '50 G',
     ingredients: 'Hyaluronic Acid, SPF 30, Vitamin E',
     purpose: 'Daily moisturizer with broad-spectrum SPF 30 protection. Hydrates and shields skin from UV damage.',
-    routine: 'morning'
+    routine: 'morning',
+    price: 499,
+    mrp: 549,
   },
   'super-glow': {
     id: 8,
@@ -81,7 +83,9 @@ export const productDatabase = {
     size: '30 ml',
     ingredients: 'Vitamin C 15%, Niacinamide 5%, Hyaluronic Acid, Ferulic Acid 1%',
     purpose: 'Brightens dull skin, fades dark spots and delivers a visible glow with potent antioxidants.',
-    routine: 'morning'
+    routine: 'morning',
+    price: 649,
+    mrp: 699,
   },
   'tone-texture': {
     id: 12,
@@ -89,7 +93,9 @@ export const productDatabase = {
     size: '30 ml',
     ingredients: 'Niacinamide 10%, Acetyl Glucosamine, Ceramides',
     purpose: 'Smooths uneven texture, minimises pores and evens out skin tone for a refined complexion.',
-    routine: 'morning'
+    routine: 'morning',
+    price: 599,
+    mrp: 649,
   },
   'radiance-cream': {
     id: 14,
@@ -97,7 +103,9 @@ export const productDatabase = {
     size: '50 G',
     ingredients: 'Vitamin C 20%, Kojic Acid, Avocado Extract, Argan Oil',
     purpose: 'Nighttime brightening cream that fades pigmentation and boosts radiance while you sleep.',
-    routine: 'evening'
+    routine: 'evening',
+    price: 499,
+    mrp: 549,
   },
   'saffron-oil': {
     id: 6,
@@ -105,7 +113,9 @@ export const productDatabase = {
     size: '30 ml',
     ingredients: 'Saffron Essential Oil, Sweet Almond Oil, Grape Seed Oil, Honey, Ghee',
     purpose: 'Deeply nourishes and revives dull skin with a luxurious natural oil blend for an evening glow.',
-    routine: 'evening'
+    routine: 'evening',
+    price: 799,
+    mrp: null,
   },
   'lip-butter': {
     id: 17,
@@ -113,7 +123,9 @@ export const productDatabase = {
     size: '8 G',
     ingredients: 'Shea Butter, Cocoa Butter, Beeswax, Honey',
     purpose: 'Zero-chemical lip treatment that heals, softens and protects dry or chapped lips.',
-    routine: 'special'
+    routine: 'special',
+    price: 95,
+    mrp: 105,
   },
   'hair-serum': {
     id: 16,
@@ -121,7 +133,9 @@ export const productDatabase = {
     size: '50 ml',
     ingredients: 'Redensyl 5%, Anagain 5%, Rice Water, Biotin',
     purpose: 'Clinically proven ingredients to reduce hair fall, stimulate new growth and add visible shine.',
-    routine: 'special'
+    routine: 'special',
+    price: 875,
+    mrp: 975,
   },
   'tattoo-cleanser': {
     id: 19,
@@ -129,7 +143,9 @@ export const productDatabase = {
     size: '100 ml',
     ingredients: 'Orange, Lemon & Tangerine Extracts, Aloe Vera, Vitamin E',
     purpose: 'Sulphate-free cleanser that gently cleanses tattooed skin and preserves ink vibrancy.',
-    routine: 'tattoo'
+    routine: 'tattoo',
+    price: 195,
+    mrp: 245,
   },
   'tattoo-butter': {
     id: 20,
@@ -137,6 +153,8 @@ export const productDatabase = {
     size: '50 G',
     ingredients: 'Shea, Cocoa, Mango & Kokum Butter, Beeswax, Fig Honey',
     purpose: 'Chemical-free butter that deeply nourishes tattooed skin and keeps colours vivid.',
-    routine: 'tattoo'
+    routine: 'tattoo',
+    price: 499,
+    mrp: 599,
   },
 }

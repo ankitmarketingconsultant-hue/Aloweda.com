@@ -3,7 +3,6 @@ import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
 import { concernToProducts, bundleToProducts, skinTypeToProducts, hairConcernToProducts, lipConcernToProducts, productDatabase } from '../data/productRecommendations'
 import { skinConcerns, bundles, skinTypes, hairConcerns, lipConcerns } from '../data/regimenOptions'
-import { PRODUCTS } from '../data/products'
 import './RecommendationResults.css'
 
 export default function RecommendationResults({ formData, onNavigate, onAddToCart }) {
@@ -69,8 +68,10 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
       .sort(([, a], [, b]) => b - a)
       .map(([id]) => {
         const recProduct = productDatabase[id]
-        const fullProduct = PRODUCTS.find(p => p.id === recProduct?.id)
-        return { ...recProduct, ...fullProduct }
+        if (!recProduct) return null
+        // Use productDatabase data directly — do NOT merge with PRODUCTS
+        // as PRODUCTS array uses different IDs
+        return recProduct
       })
       .filter(Boolean)
 
