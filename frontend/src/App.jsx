@@ -143,6 +143,15 @@ import ToneAndTexture3 from './assets/ToneAndTexture3.jpg'
 import ToneAndTexture4 from './assets/ToneAndTexture4.jpg'
 import ToneAndTexture5 from './assets/ToneAndTexture5.jpg'
 import ToneAndTexture6 from './assets/ToneAndTexture6.jpg'
+import TattooCleanser1 from './assets/TattooCleanser1.png'
+import TattooCleanser2 from './assets/TattooCleanser2.png'
+import TattooCleanser3 from './assets/TattooCleanser3.png'
+import TheNightCream1 from './assets/TheNightCream1.jpg'
+import TheNightCream2 from './assets/TheNightCream2.jpg'
+import TheNightCream3 from './assets/TheNightCream3.jpg'
+import TheNightCream4 from './assets/TheNightCream4.jpg'
+import TheNightCream5 from './assets/TheNightCream5.jpg'
+import TheNightCream6 from './assets/TheNightCream6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -223,7 +232,7 @@ const ALL_PRODUCTS = [
   { 
     id: 5, 
     img: TheNightCreamDetail, // Changed to new detail image
-    images: [TheNightCreamDetail], // Only show new image
+    images: [TheNightCreamDetail, TheNightCream1, TheNightCream2, TheNightCream3, TheNightCream4, TheNightCream5, TheNightCream6], // Only show new image
     name: 'Retinol 1%, Niacinamide 10 %, Aloe Vera Extract & Carrot oil: The Night Cream 50 G', 
     category: 'Cream', 
     keywords: 'retinol niacinamide aloe vera carrot oil night cream anti aging restore brighten replenish argan vitamin e saffron fragrance', 
@@ -441,7 +450,7 @@ const ALL_PRODUCTS = [
   { 
     id: 19, 
     img: TattooCleanser, 
-    images: [TattooCleanser],
+    images: [TattooCleanser, TattooCleanser1, TattooCleanser2, TattooCleanser3],
     name: 'Tattoo Cleanser 100 ml', 
     category: 'Tattoo', 
     keywords: 'tattoo cleanser citrus fruit wash gentle sulphate free aloe vera vitamin e orange lemon tangerine tattoo care healed fresh', 
