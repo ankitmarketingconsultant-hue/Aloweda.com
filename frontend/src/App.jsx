@@ -162,7 +162,7 @@ const ALL_PRODUCTS = [
   { 
     id: 2, 
     img: PerfectComplexionDetail, // Changed to new detail image
-    images: [PerfectComplexionDetail, RadianceRitual1, RadianceRitual2, RadianceRitual3, RadianceRitual4, RadianceRitual5, RadianceRitual6], // Only show new image
+    images: [PerfectComplexionDetail], // Only show new image
     name: 'PERFECT COMPLEXION RITUAL: Pigment Control Serum + The Day Cream + Complexion Cream + Smooth Perfection Serum', 
     category: 'Combo', 
     keywords: 'pigment control serum day cream complexion smooth perfection ritual combo kit alpha arbutin vitamin c dark spots even tone ceramides spf', 
@@ -176,7 +176,7 @@ const ALL_PRODUCTS = [
   { 
     id: 3, 
     img: RitualOfRadianceDetail, // Changed main image to new one
-    images: [RitualOfRadianceDetail], // Only show new image, no gallery
+    images: [RitualOfRadianceDetail, RadianceRitual1, RadianceRitual2, RadianceRitual3, RadianceRitual4, RadianceRitual5, RadianceRitual6], // Only show new image, no gallery
     name: 'RITUAL OF RADIANCE: Super Glow Serum 30 ml + The Day Cream + Radiance Cream 50 gram', 
     category: 'Combo', 
     keywords: 'super glow serum day cream radiance ritual combo kit glow vitamin c ferulic acid niacinamide kojic acid radiant skin 30 days brightening', 
