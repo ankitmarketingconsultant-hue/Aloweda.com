@@ -203,15 +203,7 @@ body {
 
 /* Hero slider — wide */
 .hero__slide {
-  aspect-ratio: 16 / 9;
-  min-height: unset; /* let aspect-ratio drive height on mobile */
-}
-
-@media (min-width: 768px) {
-  .hero__slide {
-    aspect-ratio: auto; /* desktop: use existing fixed height */
-    min-height: 500px;
-  }
+  min-height: 500px;
 }
 
 /* Image carousel items */
