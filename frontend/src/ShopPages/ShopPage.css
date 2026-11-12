@@ -219,8 +219,11 @@
 
   .shop-page__grid { 
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 20px 16px 40px;
+    gap: 12px;
+    padding: 20px 10px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .shop-page__topbar { 
@@ -301,7 +304,8 @@
 
   .shop-page__grid { 
     gap: 10px;
-    padding: 16px 12px 32px;
+    padding: 16px 10px 32px;
+    box-sizing: border-box;
   }
 
   .shop-page__topbar {
@@ -501,3 +505,27 @@
   }
 }
 
+
+/* Prevent cards from overflowing viewport on mobile */
+@media (max-width: 768px) {
+  .shop-page {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  .sp-card {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .sp-card__img-wrap {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .sp-card__img {
+    max-width: 100%;
+    width: 100%;
+  }
+}
