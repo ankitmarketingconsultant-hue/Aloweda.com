@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom'
 import './App.css'
 
-// Eagerly loaded — always visible on first paint
+// Eagerly loaded — always visible on first paint jo 
 import HomePage from './Component/HomePage'
 import PageTransition from './Component/PageTransition'
 import WhatsAppButton from './Component/WhatsAppButton'
@@ -101,6 +101,11 @@ import ComplexionCream3 from './assets/ComplexionCream3.jpg'
 import ComplexionCream4 from './assets/ComplexionCream4.jpg'
 import ComplexionCream5 from './assets/ComplexionCream5.jpg'
 import ComplexionCream6 from './assets/ComplexionCream6.jpg'
+import DailyRoutine1 from './assets/DailyRoutine1.jpg'
+import DailyRoutine2 from './assets/DailyRoutine2.png'
+import DailyRoutine3 from './assets/DailyRoutine3.jpg'
+import DailyRoutine4 from './assets/DailyRoutine4.jpg'
+import DailyRoutine5 from './assets/DailyRoutine5.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -124,7 +129,7 @@ const ALL_PRODUCTS = [
   { 
     id: 1, 
     img: YourSimpleRoutineDetail, // Changed to new detail image
-    images: [YourSimpleRoutineDetail], // Only show new image
+    images: [YourSimpleRoutineDetail, DailyRoutine1, DailyRoutine2, DailyRoutine3, DailyRoutine4, DailyRoutine5], // Only show new image
     name: 'YOUR SIMPLE ROUTINE: The Day Cream + The Night Cream + Lip Butter', 
     category: 'Combo', 
     keywords: 'day cream night cream lip butter routine combo kit summer care spf hyaluronic acid retinol niacinamide sun protection hydration', 
