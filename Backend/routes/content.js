@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
           messages: [
             { text: '🎉 Free Shipping on Orders Above ₹999', bgColor: '#2d5f3f' },
             { text: '💳 Flat 10% Discount on Online Payments', bgColor: '#1e40af' },
-            { text: '🩺 Doctor Recommended Products', bgColor: '#7c3aed' }
+            { text: '🩺 Consult Specialist', bgColor: '#7c3aed' }
           ]
         },
         homepageBanners: [

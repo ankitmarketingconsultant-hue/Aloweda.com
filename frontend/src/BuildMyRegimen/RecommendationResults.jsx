@@ -64,7 +64,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
     }
 
     // Score products based on tattoo concerns — only tattoo products
-    if (formData.tattooConcerns && formData.tattooConcerns.length > 0) {
+    if (formData.tattooConcerns && formData.tattooConcerns.length > 0 && !formData.tattooConcerns.every(c => c === 'none')) {
       // Always ensure tattoo products are scored if tattoo concerns selected
       ;['tattoo-cleanser', 'tattoo-butter'].forEach(id => {
         productScores[id] = (productScores[id] || 0) + 5
@@ -72,7 +72,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
     }
 
     // Always ensure lip-butter is scored if lip concerns selected
-    if (formData.lipConcerns && formData.lipConcerns.length > 0 && formData.lipConcerns[0] !== 'none') {
+    if (formData.lipConcerns && formData.lipConcerns.length > 0 && !formData.lipConcerns.every(c => c === 'none')) {
       productScores['lip-butter'] = (productScores['lip-butter'] || 0) + 5
     }
 
@@ -89,19 +89,21 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
     const hasTattooConcerns = formData.tattooConcerns && formData.tattooConcerns.length > 0 && formData.tattooConcerns[0] !== 'none'
     const hasLipConcerns    = formData.lipConcerns    && formData.lipConcerns.length > 0    && formData.lipConcerns[0]    !== 'none'
 
-    // Exclude tattoo + lip products from morning/evening — they have dedicated sections
-    const morning  = sortedProducts.filter(p => p.routine === 'morning' && p.routine !== 'tattoo' && p.routine !== 'special').slice(0, 3)
-    const evening  = sortedProducts.filter(p => p.routine === 'evening' && p.routine !== 'tattoo' && p.routine !== 'special').slice(0, 3)
+    // Exclude tattoo + lip + special (hair/lip) products from morning/evening — they have dedicated sections
+    const morning  = sortedProducts.filter(p => p.routine === 'morning').slice(0, 3)
+    const evening  = sortedProducts.filter(p => p.routine === 'evening').slice(0, 3)
     const optional = sortedProducts.filter(p => p.routine === 'optional').slice(0, 2)
 
-    // Always include lip-butter if user selected any lip concerns
-    const lip = (formData.lipConcerns && formData.lipConcerns.length > 0 && formData.lipConcerns[0] !== 'none')
-      ? sortedProducts.filter(p => p.routine === 'special')
+    // Lip: only lip-butter (id 17), not hair-serum which also has routine:'special'
+    const hasRealLipConcerns = formData.lipConcerns && formData.lipConcerns.length > 0 && !formData.lipConcerns.every(c => c === 'none')
+    const lip = hasRealLipConcerns
+      ? [productDatabase['lip-butter']].filter(Boolean)
       : []
 
-    // Always include tattoo products if user selected any tattoo concerns
-    const tattoo = (formData.tattooConcerns && formData.tattooConcerns.length > 0 && formData.tattooConcerns[0] !== 'none')
-      ? sortedProducts.filter(p => p.routine === 'tattoo')
+    // Tattoo: always show both products if any real tattoo concern is selected
+    const hasRealTattooConcerns = formData.tattooConcerns && formData.tattooConcerns.length > 0 && !formData.tattooConcerns.every(c => c === 'none')
+    const tattoo = hasRealTattooConcerns
+      ? [productDatabase['tattoo-cleanser'], productDatabase['tattoo-butter']].filter(Boolean)
       : []
 
     setRecommendations({ morning, evening, optional, lip, tattoo })
