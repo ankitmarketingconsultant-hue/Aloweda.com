@@ -421,7 +421,7 @@ function OurValues() {
 
 function AlowedaIntro({ onNavigate }) {
   const fullTitle = "Aloweda: The Skincare Experts"
-  const fullDesc = "Aloweda is a 'Cuticle Care' brand which offers a range of scientifically-formulated products for your Skin, Hair, Lips, Tattoos & more. Our formulations use proven ingredients like aloe vera, kokum butter and turmeric with Vitamins & safe Synthetics, aiming to provide effective solutions for various skincare and beauty needs."
+  const fullDesc = "Aloweda is a comprehensive Skincare brand which offers a range of scientifically-formulated products for your skin, Hair, Lips, Tattoos & more. Our formulations use Ayurvedic ingredients that are time tested over Centuries and validated by modern clinical studies. Allopathic ingredients include vitamins and minerals. Safe Synthetics boost product performance, maintain right pH and preserve the product as per the stated shelf life and beyond. Our Products deliver results but not miracles!"
 
   // Check localStorage on mount
   const hasTypedBefore = localStorage.getItem('aloweda_hero_typed') === 'true'
