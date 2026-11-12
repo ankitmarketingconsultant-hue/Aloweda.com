@@ -159,6 +159,12 @@ import SmoothPerfectionSerum3 from './assets/SmoothPerfectionSerum3.jpg'
 import SmoothPerfectionSerum4 from './assets/SmoothPerfectionSerum4.jpg'
 import SmoothPerfectionSerum5 from './assets/SmoothPerfectionSerum5.jpg'
 import SmoothPerfectionSerum6 from './assets/SmoothPerfectionSerum6.jpg'
+import TheDayCream1 from './assets/TheDayCream1.jpg'
+import TheDayCream2 from './assets/TheDayCream2.jpg'
+import TheDayCream3 from './assets/TheDayCream3.jpg'
+import TheDayCream4 from './assets/TheDayCream4.jpg'
+import TheDayCream5 from './assets/TheDayCream5.jpg'
+import TheDayCream6 from './assets/TheDayCream6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -224,7 +230,7 @@ const ALL_PRODUCTS = [
   { 
     id: 4, 
     img: DayCream4Detail, // Changed main image to new one
-    images: [DayCream4Detail], // Only show new image, no gallery
+    images: [DayCream4Detail, TheDayCream1, TheDayCream2, TheDayCream3, TheDayCream4, TheDayCream5, TheDayCream6], // Only show new image, no gallery
     name: 'Hyaluronic Acid, SPF 30 & Vitamin E : The Day Cream 50 G', 
     category: 'Cream', 
     keywords: 'hyaluronic acid spf vitamin e day cream moisturizer sunscreen protection hydrating revitalising uva uvb broad spectrum', 
