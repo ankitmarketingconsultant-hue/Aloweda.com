@@ -95,6 +95,12 @@ import YourSimpleRoutineDetail from './ProductDetailsImages/YOURSIMPLE ROUTINETh
 import TheNightCreamDetail from './ProductDetailsImages/TheNightCream.png'
 import SaffronEssentialOilDetail from './ProductDetailsImages/SaffronEssentialOil.png'
 import ComplexionCreamDetail from './ProductDetailsImages/ComplexionCream.png'
+import ComplexionCream1 from './assets/ComplexionCream1.jpg'
+import ComplexionCream2 from './assets/ComplexionCream2.jpg'
+import ComplexionCream3 from './assets/ComplexionCream3.jpg'
+import ComplexionCream4 from './assets/ComplexionCream4.jpg'
+import ComplexionCream5 from './assets/ComplexionCream5.jpg'
+import ComplexionCream6 from './assets/ComplexionCream6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -206,7 +212,7 @@ const ALL_PRODUCTS = [
   { 
     id: 7, 
     img: ComplexionCreamDetail, // Changed to new detail image
-    images: [ComplexionCreamDetail], // Only show new image
+    images: [ComplexionCreamDetail, ComplexionCream1, ComplexionCream2, ComplexionCream3, ComplexionCream4, ComplexionCream5, ComplexionCream6], 
     name: 'Alpha Arbutin 2%, Vitamin C 15 % & Micro Crystalline Wax: Complexion Cream 50 G', 
     category: 'Cream', 
     keywords: 'alpha arbutin vitamin c complexion brightening pigmentation dark spots lighten brighten polish micro crystalline wax avocado argan calamine magnolia', 
