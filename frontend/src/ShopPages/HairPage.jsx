@@ -121,7 +121,7 @@ export default function HairCarePage({ onNavigate, searchQuery, onLoginClick }) 
                         <p>✓ Premium Quality Product</p>
                         <p>✓ Cruelty-Free & Vegan</p>
                         <p>✓ GMP Certified</p>
-                        <p>✓ Free Shipping on Orders Above ₹499</p>
+                        <p>✓ Free Shipping on Orders Above ₹999</p>
                       </div>
                     </div>
                     <button 
