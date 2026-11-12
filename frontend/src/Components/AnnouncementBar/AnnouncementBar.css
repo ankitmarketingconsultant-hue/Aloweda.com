@@ -34,7 +34,7 @@
   gap: 0;
   white-space: nowrap;
   will-change: transform;
-  animation: marquee 20s linear infinite;
+  animation: marquee 12s linear infinite;
 }
 
 .announcement-bar__marquee.paused {
@@ -222,7 +222,7 @@
 
   /* Faster animation on mobile */
   .announcement-bar__marquee {
-    animation-duration: 18s;
+    animation-duration: 10s;
   }
 }
 
