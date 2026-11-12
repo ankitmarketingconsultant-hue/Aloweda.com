@@ -82,14 +82,16 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
       .map(([id]) => {
         const recProduct = productDatabase[id]
         if (!recProduct) return null
-        // Use productDatabase data directly — do NOT merge with PRODUCTS
-        // as PRODUCTS array uses different IDs
         return recProduct
       })
       .filter(Boolean)
 
-    const morning  = sortedProducts.filter(p => p.routine === 'morning').slice(0, 3)
-    const evening  = sortedProducts.filter(p => p.routine === 'evening').slice(0, 3)
+    const hasTattooConcerns = formData.tattooConcerns && formData.tattooConcerns.length > 0 && formData.tattooConcerns[0] !== 'none'
+    const hasLipConcerns    = formData.lipConcerns    && formData.lipConcerns.length > 0    && formData.lipConcerns[0]    !== 'none'
+
+    // Exclude tattoo + lip products from morning/evening — they have dedicated sections
+    const morning  = sortedProducts.filter(p => p.routine === 'morning' && p.routine !== 'tattoo' && p.routine !== 'special').slice(0, 3)
+    const evening  = sortedProducts.filter(p => p.routine === 'evening' && p.routine !== 'tattoo' && p.routine !== 'special').slice(0, 3)
     const optional = sortedProducts.filter(p => p.routine === 'optional').slice(0, 2)
 
     // Always include lip-butter if user selected any lip concerns
