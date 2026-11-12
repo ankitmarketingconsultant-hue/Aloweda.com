@@ -63,14 +63,8 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
       })
     }
 
-    // Score products based on tattoo concerns
+    // Score products based on tattoo concerns — only tattoo products
     if (formData.tattooConcerns && formData.tattooConcerns.length > 0) {
-      formData.tattooConcerns.forEach(concern => {
-        const products = concernToProducts[concern] || []
-        products.forEach(productId => {
-          productScores[productId] = (productScores[productId] || 0) + 3
-        })
-      })
       // Always ensure tattoo products are scored if tattoo concerns selected
       ;['tattoo-cleanser', 'tattoo-butter'].forEach(id => {
         productScores[id] = (productScores[id] || 0) + 5

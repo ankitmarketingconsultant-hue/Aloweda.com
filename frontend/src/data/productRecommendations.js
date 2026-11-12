@@ -30,7 +30,6 @@ export const concernToProducts = {
   // Tattoo concerns
   'fadingink': ['tattoo-cleanser', 'tattoo-butter'],
   'itching': ['tattoo-cleanser', 'tattoo-butter'],
-  'dryness': ['tattoo-butter', 'tattoo-cleanser'],
   'notHealing': ['tattoo-cleanser', 'tattoo-butter'],
   'colorsFading': ['tattoo-butter', 'tattoo-cleanser'],
 }
