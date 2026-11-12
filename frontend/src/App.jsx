@@ -165,6 +165,12 @@ import TheDayCream3 from './assets/TheDayCream3.jpg'
 import TheDayCream4 from './assets/TheDayCream4.jpg'
 import TheDayCream5 from './assets/TheDayCream5.jpg'
 import TheDayCream6 from './assets/TheDayCream6.jpg'
+import SuperGlowSerum1 from './assets/SuperGlowSerum1.jpg'
+import SuperGlowSerum2 from './assets/SuperGlowSerum2.jpg'
+import SuperGlowSerum3 from './assets/SuperGlowSerum3.jpg'
+import SuperGlowSerum4 from './assets/SuperGlowSerum4.jpg'
+import SuperGlowSerum5 from './assets/SuperGlowSerum5.jpg'
+import SuperGlowSerum6 from './assets/SuperGlowSerum6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -292,7 +298,7 @@ const ALL_PRODUCTS = [
   { 
     id: 8, 
     img: SuperGlowSerumDetail, // Changed to new detail image
-    images: [SuperGlowSerumDetail], // Only show new image
+    images: [SuperGlowSerumDetail, SuperGlowSerum1, SuperGlowSerum2, SuperGlowSerum3, SuperGlowSerum4, SuperGlowSerum5, SuperGlowSerum6],
     name: 'Vitamin C 15%, Niacinamide 5%, Hyaluronic Acid & Ferulic Acid 1% Serum 30 ml for Super Glow', 
     category: 'Serum', 
     keywords: 'vitamin c ferulic acid niacinamide super glow serum brightening radiance texture smoothness advanced 3-o-ethyl ascorbic acid ceramide hyaluronate', 
