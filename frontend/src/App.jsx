@@ -113,6 +113,12 @@ import LinesAndWrinklesSerum4 from './assets/LinesAndWrinklesSerum4.jpg'
 import LinesAndWrinklesSerum5 from './assets/LinesAndWrinklesSerum5.jpg'
 import LinesAndWrinklesSerum6 from './assets/LinesAndWrinklesSerum6.jpg'
 import LinesAndWrinklesSerum7 from './assets/LinesAndWrinklesSerum7.jpg'
+import PigmentComplex1 from './assets/PigmentComplex1.jpg'
+import PigmentComplex2 from './assets/PigmentComplex2.jpg'
+import PigmentComplex3 from './assets/PigmentComplex3.jpg'
+import PigmentComplex4 from './assets/PigmentComplex4.jpg'
+import PigmentComplex5 from './assets/PigmentComplex5.jpg'
+import PigmentComplex6 from './assets/PigmentComplex6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -256,7 +262,7 @@ const ALL_PRODUCTS = [
   { 
     id: 9, 
     img: PigmentControlSerumDetail, 
-    images: [PigmentControlSerumDetail, PigmentSerum1Detail, PigmentSerum2Detail, PigmentSerum3Detail, PigmentSerum4Detail, PigmentSerum5Detail], 
+    images: [PigmentControlSerumDetail, PigmentSerum1Detail, PigmentSerum2Detail, PigmentSerum3Detail, PigmentSerum4Detail, PigmentSerum5Detail, PigmentComplex1, PigmentComplex2, PigmentComplex3, PigmentComplex4, PigmentComplex5, PigmentComplex6], 
     name: 'Alpha Arbutin 2%, Aloe Vera Extract, Ceramides & Kojic Acid 1%: Pigment Control Serum 30 ml', 
     category: 'Serum', 
     keywords: 'alpha arbutin aloe vera ceramides kojic acid pigment control dark spots fades melasma blackheads blemishes clear skin brightening 45 days', 
