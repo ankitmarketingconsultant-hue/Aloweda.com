@@ -1,8 +1,14 @@
 import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
+import useSEO from '../utils/useSEO'
 import './TermsAndConditions.css'
 
 export default function TermsAndConditions({ onNavigate, onLoginClick, cartCount }) {
+  useSEO({
+    title: 'Terms & Conditions | Aloweda',
+    description: 'Read Aloweda\'s terms and conditions, privacy policy, return policy and shipping information.',
+    canonical: '/terms',
+  })
   const sections = [
     {
       title: 'Privacy',

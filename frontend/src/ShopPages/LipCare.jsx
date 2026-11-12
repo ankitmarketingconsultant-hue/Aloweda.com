@@ -4,6 +4,7 @@ import Footer from '../Footer/Footer'
 import './ShopPage.css'
 import './LipCare.css'
 import { handleNavigation } from '../utils/navigation'
+import useSEO from '../utils/useSEO'
 
 import LC1 from '../LipCareImg/LipCare1.jpg'
 import LC2 from '../LipCareImg/LipCare2.jpg'
@@ -28,6 +29,11 @@ const products = [
 ]
 
 export default function LipCarePage({ onNavigate, searchQuery, onLoginClick }) {
+  useSEO({
+    title: 'Lip Care Products | Natural Lip Butter | Aloweda',
+    description: 'Shop Aloweda\'s natural Lip Butter — made with shea, cocoa, mango butter, beeswax & honey. Zero petrochemicals. Heals chapped lips & ulcers.',
+    canonical: '/lipcare',
+  })
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '')
   const [hoveredProduct, setHoveredProduct] = useState(null)
 

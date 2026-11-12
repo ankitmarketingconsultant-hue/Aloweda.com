@@ -4,6 +4,7 @@ import Footer from '../Footer/Footer'
 import HairCareImg from '../assets/HairCare.png'
 import './ShopPage.css'
 import { handleNavigation } from '../utils/navigation'
+import useSEO from '../utils/useSEO'
 import './HairCare.css'
 
 const products = [
@@ -18,6 +19,11 @@ const products = [
 ]
 
 export default function HairCarePage({ onNavigate, searchQuery, onLoginClick }) {
+  useSEO({
+    title: 'Hair Care Products | Redensyl Hair Serum | Aloweda',
+    description: 'Shop Aloweda\'s Total Hair Therapy Serum with Redensyl 5%, Anagain 5%, Rice Water & Biotin. Reduces hair fall, boosts growth & thickness.',
+    canonical: '/haircare',
+  })
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '')
   const [hoveredProduct, setHoveredProduct] = useState(null)
 

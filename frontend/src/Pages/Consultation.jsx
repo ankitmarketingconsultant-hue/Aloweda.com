@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../Navbar/navbar';
 import Footer from '../Footer/Footer';
+import useSEO from '../utils/useSEO';
 import './Consultation.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -42,6 +43,11 @@ function loadRazorpay() {
 }
 
 export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
+  useSEO({
+    title: 'Book a Skincare Consultation | Aloweda',
+    description: 'Get a personalised skincare consultation from Aloweda experts. Book your session and receive a custom skincare routine tailored to your skin type.',
+    canonical: '/consultation',
+  })
   const [showPaywall, setShowPaywall]     = useState(false);
   const [customerName, setCustomerName]   = useState('');
   const [customerEmail, setCustomerEmail] = useState('');

@@ -4,13 +4,78 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-    <meta name="theme-color" content="#667eea" />
+    <meta name="theme-color" content="#2d5f3f" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <title>Aloweda - Sensible · Simple · Synergy</title>
-    <meta name="description" content="Science-based skincare solutions from expert dermatologists. Clinically proven ingredients for healthy, radiant skin." />
-    
+
+    <!-- ── PRIMARY SEO ── -->
+    <title>Aloweda - Science-Based Skincare | Sensible · Simple · Synergy</title>
+    <meta name="description" content="Aloweda offers science-based skincare with clinically proven ingredients. Shop serums, creams, face oils, lip butter, hair therapy & tattoo care. Free shipping above ₹999." />
+    <meta name="keywords" content="skincare, serum, day cream, night cream, vitamin c serum, niacinamide, retinol, lip butter, hair serum, tattoo care, aloweda, science based skincare, india" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Aloweda" />
+
+    <!-- ── CANONICAL ── -->
+    <link rel="canonical" href="https://www.aloweda.com/" />
+
+    <!-- ── OPEN GRAPH (Facebook / WhatsApp / LinkedIn) ── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Aloweda" />
+    <meta property="og:title" content="Aloweda - Science-Based Skincare | Sensible · Simple · Synergy" />
+    <meta property="og:description" content="Clinically proven skincare — serums, creams, lip butter, hair & tattoo care. Shop now with free shipping above ₹999." />
+    <meta property="og:url" content="https://www.aloweda.com/" />
+    <meta property="og:image" content="https://www.aloweda.com/favicon.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- ── TWITTER CARD ── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Aloweda - Science-Based Skincare" />
+    <meta name="twitter:description" content="Clinically proven skincare — serums, creams, lip butter, hair & tattoo care. Free shipping above ₹999." />
+    <meta name="twitter:image" content="https://www.aloweda.com/favicon.png" />
+
+    <!-- ── STRUCTURED DATA: Organisation ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Aloweda",
+      "url": "https://www.aloweda.com",
+      "logo": "https://www.aloweda.com/favicon.png",
+      "description": "Science-based skincare with clinically proven ingredients. Serums, creams, lip butter, hair & tattoo care.",
+      "email": "marketing@aloweda.com",
+      "telephone": "+91-99722-69191",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://www.instagram.com/aloweda",
+        "https://www.facebook.com/aloweda"
+      ]
+    }
+    </script>
+
+    <!-- ── STRUCTURED DATA: WebSite + Sitelinks Searchbox ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Aloweda",
+      "url": "https://www.aloweda.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.aloweda.com/shop?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Meta Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
@@ -31,7 +96,7 @@
     <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1130650692951273&ev=PageView&noscript=1"
     /></noscript>
-    
+
     <div id="root"></div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script type="module" src="/src/main.jsx"></script>

@@ -4,6 +4,7 @@ import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
 import TattooCleanser from '../assets/TattooCleanser.png'
 import TattooButter from '../assets/TattooButter.png'
+import useSEO from '../utils/useSEO'
 import './TattooQuiz.css'
 
 // ── SVG Icons ────────────────────────────────────────────────────────────────
@@ -221,6 +222,11 @@ function ProductCard({ product, onAddToCart, added }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function TattooQuiz({ onNavigate, onLoginClick, cartCount, onAddToCart }) {
+  useSEO({
+    title: 'Tattoo Care Quiz | Find Your Tattoo Products | Aloweda',
+    description: 'Take the Aloweda tattoo care quiz to find the right cleanser and butter for your tattoo. Natural, chemical-free tattoo aftercare products.',
+    canonical: '/tattoo-quiz',
+  })
   const [step, setStep] = useState('quiz') // 'quiz' | 'results'
   const [selected, setSelected] = useState([])
   const [addedProducts, setAddedProducts] = useState(new Set())

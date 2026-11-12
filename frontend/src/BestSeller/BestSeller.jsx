@@ -3,6 +3,7 @@ import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
 import './BestSeller.css'
 import { handleNavigation } from '../utils/navigation'
+import useSEO from '../utils/useSEO'
 
 // Import product images
 import SC1 from '../SkinCareImg/SkinCare1.png'
@@ -31,6 +32,11 @@ const HERO_ITEMS = [
 ]
 
 export default function BestSellerPage({ onNavigate, onLoginClick, cartCount }) {
+  useSEO({
+    title: 'Best Sellers | Top Rated Skincare | Aloweda',
+    description: 'Shop Aloweda\'s best-selling skincare products — Vitamin C serums, SPF day cream, retinol night cream, niacinamide serum and more. Free shipping above ₹999.',
+    canonical: '/bestsellers',
+  })
   const [sortBy, setSortBy] = useState('featured')
   const [hoveredProduct, setHoveredProduct] = useState(null)
 

@@ -5,6 +5,7 @@ import Footer from '../Footer/Footer'
 import './ShopPage.css'
 import './SkinCare.css'
 import { handleNavigation } from '../utils/navigation'
+import useSEO from '../utils/useSEO'
 
 import SC1  from '../SkinCareImg/SkinCare1.png'
 import SC2  from '../SkinCareImg/SkinCare2.png'
@@ -49,6 +50,11 @@ const products = [
 ]
 
 export default function SkinCarePage({ onNavigate, searchQuery, categoryFilter, pageTitle, showAllProducts, onLoginClick }) {
+  useSEO({
+    title: `${pageTitle || 'Skincare'} | Aloweda`,
+    description: `Shop Aloweda ${pageTitle || 'skincare'} — science-based formulas with Vitamin C, Niacinamide, Retinol, Alpha Arbutin & more. Free shipping above ₹999.`,
+    canonical: categoryFilter ? `/${categoryFilter}` : '/skincare',
+  })
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '')
   const [hoveredProduct, setHoveredProduct] = useState(null)
 

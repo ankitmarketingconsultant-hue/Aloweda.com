@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import Navbar from '../Navbar/navbar';
 import Footer from '../Footer/Footer';
+import useSEO from '../utils/useSEO';
 import './About.css';
 
 // Import doctor image
 const drAjayImage = '/images/dr-ajay.jpg'; // Add actual image
 
 export default function About({ onNavigate, onLoginClick, cartCount }) {
+  useSEO({
+    title: 'About Aloweda | Science-Based Skincare Brand',
+    description: 'Learn about Aloweda — a science-based skincare brand built on the synergy of Ayurveda, Allopathy and Safe Synthetics. Meet our team.',
+    canonical: '/about',
+  })
   const [showContactModal, setShowContactModal] = useState(false);
 
   const doctors = [

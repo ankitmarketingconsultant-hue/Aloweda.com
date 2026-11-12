@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
 import { handleNavigation } from '../utils/navigation'
+import useSEO from '../utils/useSEO'
 import './ShopPage.css'
 import './SkinCare.css'
 import './AllProducts.css'
@@ -58,6 +59,11 @@ const allProducts = [
 ]
 
 export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick }) {
+  useSEO({
+    title: 'All Skincare Products | Shop Aloweda',
+    description: 'Browse all Aloweda skincare products — serums, creams, face oils, lip butter, hair & tattoo care. Science-based formulas with clinically proven ingredients.',
+    canonical: '/shop',
+  })
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [hoveredProduct, setHoveredProduct] = useState(null)

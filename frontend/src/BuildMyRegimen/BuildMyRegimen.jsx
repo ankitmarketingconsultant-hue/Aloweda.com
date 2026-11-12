@@ -6,6 +6,7 @@ import BundleStep from './BundleStep'
 import SkinTypeStep from './SkinTypeStep'
 import HairCareStep from './HairCareStep'
 import LipCareStep from './LipCareStep'
+import useSEO from '../utils/useSEO'
 import TattooCareStep from './TattooCareStep'
 import PhotoUploadStep from './PhotoUploadStep'
 import ConsultationStep from './ConsultationStep'
@@ -32,6 +33,11 @@ function CheckIcon() {
 }
 
 export default function BuildMyRegimen({ onNavigate, onLoginClick, cartCount, onAddToCart }) {
+  useSEO({
+    title: 'Build My Skincare Regimen | Personalised Routine | Aloweda',
+    description: 'Answer a few questions and get your personalised skincare routine from Aloweda. Products matched to your skin type, concerns and goals.',
+    canonical: '/build-my-regimen',
+  })
   const [currentStep, setCurrentStep] = useState(1)
   const [showResults, setShowResults] = useState(false)
   const [formData, setFormData] = useState({

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- ── HOME ── -->
+  <url>
+    <loc>https://www.aloweda.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- ── SHOP PAGES ── -->
+  <url>
+    <loc>https://www.aloweda.com/shop</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/skincare</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/serums</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/creams</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/moisturisers</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/haircare</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/lipcare</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/tattoo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/rituals</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/facewash</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/bestsellers</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ── PRODUCT PAGES ── -->
+  <!-- 1: YOUR SIMPLE ROUTINE Combo -->
+  <url>
+    <loc>https://www.aloweda.com/product/1</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 2: PERFECT COMPLEXION RITUAL Combo -->
+  <url>
+    <loc>https://www.aloweda.com/product/2</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 3: RITUAL OF RADIANCE Combo -->
+  <url>
+    <loc>https://www.aloweda.com/product/3</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 4: The Day Cream SPF 30 -->
+  <url>
+    <loc>https://www.aloweda.com/product/4</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 5: The Night Cream Retinol -->
+  <url>
+    <loc>https://www.aloweda.com/product/5</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 6: Saffron Face Oil -->
+  <url>
+    <loc>https://www.aloweda.com/product/6</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 7: Complexion Cream Alpha Arbutin -->
+  <url>
+    <loc>https://www.aloweda.com/product/7</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 8: Super Glow Serum Vitamin C -->
+  <url>
+    <loc>https://www.aloweda.com/product/8</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 9: Pigment Control Serum Alpha Arbutin -->
+  <url>
+    <loc>https://www.aloweda.com/product/9</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 10: Wrinkles & Lines Cream Retinol -->
+  <url>
+    <loc>https://www.aloweda.com/product/10</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 11: Lines & Wrinkles Serum Encapsulated Retinol -->
+  <url>
+    <loc>https://www.aloweda.com/product/11</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 12: Tone & Texture Serum Niacinamide -->
+  <url>
+    <loc>https://www.aloweda.com/product/12</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 13: Smooth Perfection Serum Salicylic Acid -->
+  <url>
+    <loc>https://www.aloweda.com/product/13</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 14: Radiance Cream Vitamin C 20% -->
+  <url>
+    <loc>https://www.aloweda.com/product/14</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 15: Anti Acne Face Wash Salicylic Acid -->
+  <url>
+    <loc>https://www.aloweda.com/product/15</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 16: Total Hair Therapy Serum Redensyl -->
+  <url>
+    <loc>https://www.aloweda.com/product/16</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- 17: Lip Butter 8g -->
+  <url>
+    <loc>https://www.aloweda.com/product/17</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 18: Lip Butter 15g -->
+  <url>
+    <loc>https://www.aloweda.com/product/18</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 19: Tattoo Cleanser -->
+  <url>
+    <loc>https://www.aloweda.com/product/19</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 20: Tattoo Butter -->
+  <url>
+    <loc>https://www.aloweda.com/product/20</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 21: Winter Combo -->
+  <url>
+    <loc>https://www.aloweda.com/product/21</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ── OTHER PAGES ── -->
+  <url>
+    <loc>https://www.aloweda.com/build-my-regimen</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/tattoo-quiz</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/consultation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/gifting</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.aloweda.com/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

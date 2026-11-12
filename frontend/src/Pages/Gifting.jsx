@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Navbar from '../Navbar/navbar';
 import Footer from '../Footer/Footer';
+import useSEO from '../utils/useSEO';
 import './Gifting.css';
 
 // ─── Replace with your Google Form embed URL if you have one ──────────────
@@ -35,6 +36,11 @@ const EMPTY_FORM = {
 };
 
 export default function Gifting({ onNavigate, onLoginClick, cartCount }) {
+  useSEO({
+    title: 'Skincare Gift Sets | Corporate & Personal Gifting | Aloweda',
+    description: 'Send Aloweda skincare as a gift. Personalised gift sets for birthdays, anniversaries, and corporate events. Natural, science-based skincare products.',
+    canonical: '/gifting',
+  })
   const [form, setForm]         = useState(EMPTY_FORM);
   const [errors, setErrors]     = useState({});
   const [submitted, setSubmitted] = useState(false);

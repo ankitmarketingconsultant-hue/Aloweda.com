@@ -46,6 +46,7 @@ import ImageCarousel from './ImageCarousel'
 import FeatureList from './FeatureList/FeatureList'
 import Footer from '../Footer/Footer'
 import LazySection from './LazySection'
+import useSEO from '../utils/useSEO'
 import './HomePage.css'
 
 /* ─────────────── DATA ─────────────── */
@@ -679,6 +680,11 @@ function Testimonials() {
 /* ─────────────── ROOT ─────────────── */
 
 export default function HomePage({ onNavigate, onLoginClick, cartCount, onAddToCart, allProducts, cart = [] }) {
+  useSEO({
+    title: 'Aloweda - Science-Based Skincare | Sensible · Simple · Synergy',
+    description: 'Shop science-based skincare with clinically proven ingredients. Serums, creams, face oils, lip butter, hair & tattoo care. Free shipping above ₹999.',
+    canonical: '/',
+  })
   return (
     <div className="page">
       <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} cartCount={cartCount} />

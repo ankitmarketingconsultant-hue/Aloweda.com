@@ -1,15 +1,16 @@
-# Aloweda Website - Robots.txt
-# Allow all pages except admin panel
-
 User-agent: *
 Allow: /
+
+# Block admin panel from indexing
 Disallow: /admin
-Disallow: /admin/*
-Disallow: /admin/login
-Disallow: /admin/register
-Disallow: /admin/dashboard
-Disallow: /admin/products
-Disallow: /admin/orders
+Disallow: /admin/
+
+# Block cart, auth, and utility pages
+Disallow: /cart
+Disallow: /login
+
+# Block API calls if ever crawled
+Disallow: /api/
 
 # Sitemap location
-Sitemap: https://aloweda-smoky.vercel.app/sitemap.xml
+Sitemap: https://www.aloweda.com/sitemap.xml

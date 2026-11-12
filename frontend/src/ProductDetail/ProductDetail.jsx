@@ -8,11 +8,17 @@ import { handleNavigation } from '../utils/navigation'
 import { trackViewContent, trackAddToCart } from '../utils/metaPixel'
 import ProductReviews from '../Components/Reviews/ProductReviews'
 import LazySection from '../Component/LazySection'
+import useSEO from '../utils/useSEO'
 
 // Lazy load 3D viewer - only loads when user clicks 3D View button
 const Model3DViewer = lazy(() => import('../Component/Model3DViewer'))
 
 export default function ProductDetail({ product, onNavigate, onBack, relatedProducts = [], onLoginClick, onAddToCart, cartCount }) {
+  useSEO({
+    title: `${product.name} | Aloweda`,
+    description: product.description ? product.description.slice(0, 155) + '…' : `Buy ${product.name} from Aloweda. Science-based skincare with clinically proven ingredients.`,
+    canonical: `/product/${product.id}`,
+  })
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [viewMode, setViewMode] = useState('image') // 'image' or '3d'
