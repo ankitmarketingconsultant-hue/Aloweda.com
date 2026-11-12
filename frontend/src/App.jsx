@@ -171,6 +171,13 @@ import SuperGlowSerum3 from './assets/SuperGlowSerum3.jpg'
 import SuperGlowSerum4 from './assets/SuperGlowSerum4.jpg'
 import SuperGlowSerum5 from './assets/SuperGlowSerum5.jpg'
 import SuperGlowSerum6 from './assets/SuperGlowSerum6.jpg'
+import WrinklesandLinesCream1 from './assets/WrinklesandLinesCream1.jpg'
+import WrinklesandLinesCream2 from './assets/WrinklesandLinesCream2.jpg'
+import WrinklesandLinesCream3 from './assets/WrinklesandLinesCream3.jpg'
+import WrinklesandLinesCream4 from './assets/WrinklesandLinesCream4.jpg'
+import WrinklesandLinesCream5 from './assets/WrinklesandLinesCream5.jpg'
+import WrinklesandLinesCream6 from './assets/WrinklesandLinesCream6.jpg'
+import WrinklesandLinesCream7 from './assets/WrinklesandLinesCream7.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -330,7 +337,7 @@ const ALL_PRODUCTS = [
   { 
     id: 10, 
     img: SC10, 
-    images: [SC10], 
+    images: [SC10, WrinklesandLinesCream1, WrinklesandLinesCream2, WrinklesandLinesCream3, WrinklesandLinesCream4, WrinklesandLinesCream5, WrinklesandLinesCream6, WrinklesandLinesCream7], 
     name: 'Retinol 0.3%, Copper Tripeptide, Alpha Arbutin & Niacinamide: Wrinkles & Lines Cream 50 G', 
     category: 'Cream', 
     keywords: 'retinol copper tripeptide alpha arbutin niacinamide wrinkles lines anti aging youthful toned textured skin gotu kola avocado tuberose', 
