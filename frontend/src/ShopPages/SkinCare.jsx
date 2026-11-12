@@ -71,6 +71,7 @@ export default function SkinCarePage({ onNavigate, searchQuery, categoryFilter, 
         if (filter === 'moisturisers') return productCategory === 'moisturisers' || productCategory === 'moisturiser' || productCategory === 'moisturizer'
         if (filter === 'tattoo') return productCategory.includes('tattoo')
         if (filter === 'rituals') return productCategory === 'rituals' || productCategory === 'combo' || productCategory.includes('ritual')
+        if (filter === 'facewash') return productCategory === 'face wash' || productCategory === 'facewash'
         
         return false
       })
