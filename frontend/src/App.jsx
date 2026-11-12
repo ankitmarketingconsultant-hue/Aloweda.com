@@ -119,6 +119,12 @@ import PigmentComplex3 from './assets/PigmentComplex3.jpg'
 import PigmentComplex4 from './assets/PigmentComplex4.jpg'
 import PigmentComplex5 from './assets/PigmentComplex5.jpg'
 import PigmentComplex6 from './assets/PigmentComplex6.jpg'
+import RadianceRitual1 from './assets/RadianceRitual1.jpg'
+import RadianceRitual2 from './assets/RadianceRitual2.jpg'
+import RadianceRitual3 from './assets/RadianceRitual3.jpg'
+import RadianceRitual4 from './assets/RadianceRitual4.jpg'
+import RadianceRitual5 from './assets/RadianceRitual5.jpg'
+import RadianceRitual6 from './assets/RadianceRitual6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -156,7 +162,7 @@ const ALL_PRODUCTS = [
   { 
     id: 2, 
     img: PerfectComplexionDetail, // Changed to new detail image
-    images: [PerfectComplexionDetail], // Only show new image
+    images: [PerfectComplexionDetail, RadianceRitual1, RadianceRitual2, RadianceRitual3, RadianceRitual4, RadianceRitual5, RadianceRitual6], // Only show new image
     name: 'PERFECT COMPLEXION RITUAL: Pigment Control Serum + The Day Cream + Complexion Cream + Smooth Perfection Serum', 
     category: 'Combo', 
     keywords: 'pigment control serum day cream complexion smooth perfection ritual combo kit alpha arbutin vitamin c dark spots even tone ceramides spf', 
