@@ -133,6 +133,16 @@ import PERFECTCOMPLEXION5 from './assets/PERFECTCOMPLEXION5.jpg'
 import PERFECTCOMPLEXION6 from './assets/PERFECTCOMPLEXION6.jpg'
 import PERFECTCOMPLEXION7 from './assets/PERFECTCOMPLEXION7.jpg'
 import PERFECTCOMPLEXION8 from './assets/PERFECTCOMPLEXION8.jpg'
+import WinterCombo1 from './assets/WinterCombo1.jpg'
+import WinterCombo2 from './assets/WinterCombo2.jpg'
+import WinterCombo3 from './assets/WinterCombo3.jpg'
+import WinterCombo4 from './assets/WinterCombo4.jpg'
+import ToneAndTexture1 from './assets/ToneAndTexture1.jpg'
+import ToneAndTexture2 from './assets/ToneAndTexture2.jpg'
+import ToneAndTexture3 from './assets/ToneAndTexture3.jpg'
+import ToneAndTexture4 from './assets/ToneAndTexture4.jpg'
+import ToneAndTexture5 from './assets/ToneAndTexture5.jpg'
+import ToneAndTexture6 from './assets/ToneAndTexture6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -322,6 +332,7 @@ const ALL_PRODUCTS = [
   { 
     id: 12, 
     img: SC12, 
+    images: [SC12, ToneAndTexture1, ToneAndTexture2, ToneAndTexture3, ToneAndTexture4, ToneAndTexture5, ToneAndTexture6],
     name: 'Niacinamide 10 %, Acetyl Glucosamine & Ceramides 30 ml Serum for Tone & Texture', 
     category: 'Serum', 
     keywords: 'niacinamide acetyl glucosamine ceramides tone texture smooth skin smoothens tones boosts clear complexion avocado kojic acid grape seed', 
@@ -462,7 +473,7 @@ const ALL_PRODUCTS = [
   {
     id: 21,
     img: WinterComboMobileView,
-    images: [WinterComboMobileView],
+    images: [WinterComboMobileView, WinterCombo1, WinterCombo2, WinterCombo3, WinterCombo4],
     name: 'Winter Combo : The Day Cream 50 Gram + The Night Cream 50 Gram + Lip Butter 15 Gram',
     category: 'Combo',
     keywords: 'winter combo day cream night cream lip butter routine combo kit spf hyaluronic acid retinol niacinamide vitamin e hydration winter care',
