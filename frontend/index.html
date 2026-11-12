@@ -76,6 +76,17 @@
     }
     </script>
 
+    <!-- ── GOOGLE FONTS — non-blocking preload ── -->
+    <!-- preconnect: open connection early so font download starts immediately -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- display=swap: text renders in fallback font first, swaps when Comfortaa loads -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <!-- Fallback for no-JS -->
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" />
+    </noscript>
+
     <!-- Meta Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)

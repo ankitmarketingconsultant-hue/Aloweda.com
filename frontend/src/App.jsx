@@ -573,8 +573,9 @@ function AppContent() {
     }
 
     fetchAndMergeProducts()
-    // Refresh every 10 seconds to get latest stock
-    const interval = setInterval(fetchAndMergeProducts, 10000)
+    // Refresh every 5 minutes — frequent enough to catch stock changes,
+    // slow enough to not cause constant re-renders that hurt INP
+    const interval = setInterval(fetchAndMergeProducts, 5 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
 
