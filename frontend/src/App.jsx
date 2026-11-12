@@ -152,6 +152,13 @@ import TheNightCream3 from './assets/TheNightCream3.jpg'
 import TheNightCream4 from './assets/TheNightCream4.jpg'
 import TheNightCream5 from './assets/TheNightCream5.jpg'
 import TheNightCream6 from './assets/TheNightCream6.jpg'
+import TattooButter1 from './assets/TattooButter1.png'
+import SmoothPerfectionSerum1 from './assets/SmoothPerfectionSerum1.jpg'
+import SmoothPerfectionSerum2 from './assets/SmoothPerfectionSerum2.jpg'
+import SmoothPerfectionSerum3 from './assets/SmoothPerfectionSerum3.jpg'
+import SmoothPerfectionSerum4 from './assets/SmoothPerfectionSerum4.jpg'
+import SmoothPerfectionSerum5 from './assets/SmoothPerfectionSerum5.jpg'
+import SmoothPerfectionSerum6 from './assets/SmoothPerfectionSerum6.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -357,7 +364,7 @@ const ALL_PRODUCTS = [
   { 
     id: 13, 
     img: SmoothPerfectionSerumDetail, 
-    images: [SmoothPerfectionSerumDetail], 
+    images: [SmoothPerfectionSerumDetail, SmoothPerfectionSerum1, SmoothPerfectionSerum2, SmoothPerfectionSerum3, SmoothPerfectionSerum4, SmoothPerfectionSerum5, SmoothPerfectionSerum6], 
     name: 'Salicylic Acid 2%, Witch Hazel Extract & Squalene: Smooth Perfection Serum 30 ml', 
     category: 'Serum', 
     keywords: 'salicylic acid witch hazel squalene smooth perfection acne pores bha skin perfecting exfoliate clarify kojic acid aloe vera ceramide', 
@@ -466,7 +473,7 @@ const ALL_PRODUCTS = [
   { 
     id: 20, 
     img: TattooButter, 
-    images: [TattooButter],
+    images: [TattooButter, TattooButter1],
     name: 'Tattoo Butter 50 Grams, NO CHEMICALS, NATURAL BUTTERS & OILS', 
     category: 'Tattoo', 
     keywords: 'tattoo butter natural butters oils shea cocoa mango kokum protection vibrant tattoo care chemical free nourish protect hydrate flaunt gotu kola lemongrass rosehip', 
