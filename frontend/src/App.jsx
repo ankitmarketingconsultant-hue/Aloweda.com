@@ -106,6 +106,13 @@ import DailyRoutine2 from './assets/DailyRoutine2.png'
 import DailyRoutine3 from './assets/DailyRoutine3.jpg'
 import DailyRoutine4 from './assets/DailyRoutine4.jpg'
 import DailyRoutine5 from './assets/DailyRoutine5.jpg'
+import LinesAndWrinklesSerum1 from './assets/LinesAndWrinklesSerum1.jpg'
+import LinesAndWrinklesSerum2 from './assets/LinesAndWrinklesSerum2.jpg'
+import LinesAndWrinklesSerum3 from './assets/LinesAndWrinklesSerum3.jpg'
+import LinesAndWrinklesSerum4 from './assets/LinesAndWrinklesSerum4.jpg'
+import LinesAndWrinklesSerum5 from './assets/LinesAndWrinklesSerum5.jpg'
+import LinesAndWrinklesSerum6 from './assets/LinesAndWrinklesSerum6.jpg'
+import LinesAndWrinklesSerum7 from './assets/LinesAndWrinklesSerum7.jpg'
 import SuperGlowSerumDetail from './ProductDetailsImages/SuperGlowSerum.png'
 import PigmentControlSerumDetail from './ProductDetailsImages/PigmentControlSerum.png'
 import PigmentSerum1Detail from './ProductDetailsImages/PigmentSerum1.png'
@@ -280,7 +287,7 @@ const ALL_PRODUCTS = [
   { 
     id: 11, 
     img: LinesWrinklesSerumDetail, 
-    images: [LinesWrinklesSerumDetail], 
+    images: [LinesWrinklesSerumDetail, LinesAndWrinklesSerum1, LinesAndWrinklesSerum2, LinesAndWrinklesSerum3, LinesAndWrinklesSerum4, LinesAndWrinklesSerum5, LinesAndWrinklesSerum6, LinesAndWrinklesSerum7], 
     name: 'Encapsulated Retinol 1 %, Grape Seed Extract, & Ceramides : Lines & Wrinkles Serum 30 ml', 
     category: 'Serum', 
     keywords: 'retinol grape seed ceramides lines wrinkles anti aging serum renews youthful soothing encapsulated kojic acid aloe vera minimal irritation', 
