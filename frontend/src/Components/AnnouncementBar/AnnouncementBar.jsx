@@ -57,16 +57,6 @@ const AnnouncementBar = () => {
         linkText: 'Learn More',
         isActive: true,
         order: 3
-      },
-      {
-        _id: '4',
-        text: '🔥 Limited Time Offer – Buy 2 Get 1 Free',
-        icon: '🔥',
-        showIcon: true,
-        link: '/shop',
-        linkText: 'Shop Now',
-        isActive: true,
-        order: 4
       }
     ];
   }
