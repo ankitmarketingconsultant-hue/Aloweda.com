@@ -85,6 +85,7 @@ import LC2 from './LipCareImg/LipCare2.jpg'
 import TattooCleanser from './assets/TattooCleanser.png'
 import TattooButter from './assets/TattooButter.png'
 import WinterCombo from './assets/Winter Combo.png'
+import WinterComboMobileView from './assets/WinterComboMobileView.png'
 
 // Product Detail Images
 import RitualOfRadianceDetail from './ProductDetailsImages/RITUALOFRADIANCESuperGlowSerum30ml+TheDayCream+RadianceCream50gram.png'
@@ -422,8 +423,8 @@ const ALL_PRODUCTS = [
   },
   {
     id: 21,
-    img: WinterCombo,
-    images: [WinterCombo],
+    img: WinterComboMobileView,
+    images: [WinterComboMobileView],
     name: 'Winter Combo : The Day Cream 50 Gram + The Night Cream 50 Gram + Lip Butter 15 Gram',
     category: 'Combo',
     keywords: 'winter combo day cream night cream lip butter routine combo kit spf hyaluronic acid retinol niacinamide vitamin e hydration winter care',
