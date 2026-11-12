@@ -23,7 +23,7 @@ import SC15 from '../SkinCareImg/SkinCare15.jpg'
 import HairCareImg from '../assets/HairCare.png'
 import LC1 from '../LipCareImg/LipCare1.jpg'
 import LC2 from '../LipCareImg/LipCare2.jpg'
-import WinterCombo from '../assets/Winter Combo.png'
+import WinterCombo from '../assets/WinterComboMobileView.png'
 
 // All products for search
 const ALL_SEARCH_PRODUCTS = [

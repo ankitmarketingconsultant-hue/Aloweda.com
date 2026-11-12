@@ -25,7 +25,7 @@ import SC15 from '../SkinCareImg/SkinCare15.jpg'
 import HairCareImg from '../assets/HairCare.png'
 import TattooCleanser from '../assets/TattooCleanser.png'
 import TattooButter from '../assets/TattooButter.png'
-import WinterCombo from '../assets/Winter Combo.png'
+import WinterCombo from '../assets/WinterComboMobileView.png'
 
 const products = [
   { id:1,  img:SC1,  name:'YOUR SIMPLE ROUTINE: The Day Cream + The Night Cream + Lip Butter', category: 'Combo', keywords: 'day cream night cream lip butter routine combo kit', price:'Rs. 899.00', mrp:'Rs. 1,199.00' },

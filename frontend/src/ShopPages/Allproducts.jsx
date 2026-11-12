@@ -14,7 +14,7 @@ import FaceWashImg from '../assets/FaceWash.png'
 import HairCareImg from '../assets/HairCare.png'
 import TattooCleanser from '../assets/TattooCleanser.png'
 import TattooButter from '../assets/TattooButter.png'
-import WinterCombo from '../assets/Winter Combo.png'
+import WinterCombo from '../assets/WinterComboMobileView.png'
 import LC1 from '../LipCareImg/LipCare1.jpg'
 import LC2 from '../LipCareImg/LipCare2.jpg'
 
