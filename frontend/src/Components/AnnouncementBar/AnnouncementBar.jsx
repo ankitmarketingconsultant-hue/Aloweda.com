@@ -50,7 +50,7 @@ const AnnouncementBar = () => {
       },
       {
         _id: '3',
-        text: '🌿 Doctor Recommended Products',
+        text: '🌿 Consult Specialist',
         icon: '🌿',
         showIcon: true,
         link: '/about',
