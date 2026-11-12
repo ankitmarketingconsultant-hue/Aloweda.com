@@ -191,7 +191,7 @@ function ProductCard({ product, onAddToCart, added }) {
     <div className="tq-product-card">
       {product.tag && <span className="tq-product-tag">{product.tag}</span>}
       <Link to={`/product/${product.id}`} className="tq-product-img-wrap">
-        <img src={product.img} alt={product.name} className="tq-product-img" />
+        <img src={product.img} alt={product.name} className="tq-product-img" loading="lazy" decoding="async" />
       </Link>
       <div className="tq-product-body">
         <h3 className="tq-product-name">{product.name}</h3>

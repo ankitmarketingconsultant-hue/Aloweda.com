@@ -45,6 +45,7 @@ import BuildRegimenCTA from './BuildRegimenCTA'
 import ImageCarousel from './ImageCarousel'
 import FeatureList from './FeatureList/FeatureList'
 import Footer from '../Footer/Footer'
+import LazySection from './LazySection'
 import './HomePage.css'
 
 /* ─────────────── DATA ─────────────── */
@@ -618,7 +619,7 @@ function LookBookSlider({ onNavigate, onAddToCart, allProducts, cart = [] }) {
                   onClick={(e) => handleNavigation(e, onNavigate, 'product', { productId: product.id })}
                   onAuxClick={(e) => e.button === 1 && handleNavigation(e, onNavigate, 'product', { productId: product.id })}
                 >
-                  <img src={product.img} alt={product.name} />
+                  <img src={product.img} alt={product.name} loading="lazy" decoding="async" />
                 </div>
                 <div className="lookbook-product__info">
                   <h3 
@@ -685,14 +686,30 @@ export default function HomePage({ onNavigate, onLoginClick, cartCount, onAddToC
         <HeroSlider onNavigate={onNavigate} />
         <MarqueeStrip />
         <BestSellers onNavigate={onNavigate} onAddToCart={onAddToCart} allProducts={allProducts} />
-        <BuildRegimenCTA onNavigate={onNavigate} />
-        <ImageCarousel />
-        <LookBookSlider onNavigate={onNavigate} onAddToCart={onAddToCart} allProducts={allProducts} cart={cart} />
-        <AlowedaIntro onNavigate={onNavigate} />
-        <Categories onNavigate={onNavigate} />
-        <WhyAloweda />
-        <OurValues />
-        <Testimonials />
+        <LazySection rootMargin="200px 0px">
+          <BuildRegimenCTA onNavigate={onNavigate} />
+        </LazySection>
+        <LazySection rootMargin="200px 0px">
+          <ImageCarousel />
+        </LazySection>
+        <LazySection rootMargin="200px 0px">
+          <LookBookSlider onNavigate={onNavigate} onAddToCart={onAddToCart} allProducts={allProducts} cart={cart} />
+        </LazySection>
+        <LazySection rootMargin="150px 0px">
+          <AlowedaIntro onNavigate={onNavigate} />
+        </LazySection>
+        <LazySection rootMargin="150px 0px">
+          <Categories onNavigate={onNavigate} />
+        </LazySection>
+        <LazySection rootMargin="150px 0px">
+          <WhyAloweda />
+        </LazySection>
+        <LazySection rootMargin="150px 0px">
+          <OurValues />
+        </LazySection>
+        <LazySection rootMargin="150px 0px">
+          <Testimonials />
+        </LazySection>
       </main>
       <Footer onLoginClick={onLoginClick} />
     </div>

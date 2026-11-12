@@ -1206,7 +1206,7 @@ const VisualEditor = () => {
                     className="gallery-item"
                     onClick={() => selectImageFromGallery(img.url)}
                   >
-                    <img src={img.url} alt={img.filename} />
+                    <img src={img.url} alt={img.filename} loading="lazy" decoding="async" />
                     <div className="gallery-item-overlay">
                       <span>✓ Select</span>
                     </div>

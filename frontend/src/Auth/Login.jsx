@@ -196,7 +196,7 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
         {/* Left side - Branding */}
         <div className="login-left">
           <div className="login-brand">
-            <img src={AlowedaLogo} alt="Aloweda" className="login-logo" />
+            <img src={AlowedaLogo} alt="Aloweda" className="login-logo" decoding="async" />
             <h1 className="login-brand-title">Welcome Back</h1>
             <p className="login-brand-subtitle">
               Discover nature-inspired wellness and premium skincare solutions

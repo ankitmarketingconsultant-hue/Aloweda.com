@@ -203,7 +203,7 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
 
         {/* Logo */}
         <Link to="/" className="navbar__logo-wrap" onClick={() => { setMenuOpen(false); setShopOpen(false); }}>
-          <img src={AlowedaLogo} alt="Aloweda" className="navbar__logo" />
+          <img src={AlowedaLogo} alt="Aloweda" className="navbar__logo" fetchpriority="high" decoding="async" />
         </Link>
 
         {/* Right */}
@@ -235,7 +235,7 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
                       className="navbar__search-result"
                       onClick={() => { setSearchOpen(false); setSearchQuery(''); setSearchResults([]); }}
                     >
-                      <img src={product.img} alt={product.name} className="navbar__search-result-img" />
+                      <img src={product.img} alt={product.name} className="navbar__search-result-img" loading="lazy" decoding="async" />
                       <div className="navbar__search-result-info">
                         <div className="navbar__search-result-name">{product.name}</div>
                         <div className="navbar__search-result-price">{product.price}</div>

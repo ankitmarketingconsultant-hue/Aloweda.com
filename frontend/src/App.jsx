@@ -1,41 +1,67 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom'
 import './App.css'
+
+// Eagerly loaded — always visible on first paint
 import HomePage from './Component/HomePage'
 import PageTransition from './Component/PageTransition'
-import BestSellerPage from './BestSeller/BestSeller'
-import SkinCarePage from './ShopPages/SkinCare'
-import HairCarePage from './ShopPages/HairPage'
-import LipCarePage  from './ShopPages/LipCare'
-import AllProductsPage from './ShopPages/Allproducts'
-import ProductDetail from './ProductDetail/ProductDetail'
-import Cart from './Cart/Cart'
-// import CartTest from './Cart/CartTest' // Uncomment for testing
-import BuildMyRegimen from './BuildMyRegimen/BuildMyRegimen'
-import TattooQuiz from './TattooQuiz/TattooQuiz'
 import WhatsAppButton from './Component/WhatsAppButton'
 import ScrollToTop from './Component/ScrollToTop'
-import Login from './Auth/Login'
-import NotFound from './Pages/NotFound'
 import AnnouncementBar from './Components/AnnouncementBar/AnnouncementBar'
-import About from './Pages/About'
-import Consultation from './Pages/Consultation'
-import TermsAndConditions from './Pages/TermsAndConditions'
-import Gifting from './Pages/Gifting'
 
-// Admin Panel Components
-import AdminLogin from './Admin/AdminLogin'
-import AdminRegister from './Admin/AdminRegister'
-import QuickAdminSetup from './Admin/QuickAdminSetup'
-import AdminDashboard from './Admin/AdminDashboard'
-import SalesAnalytics from './Admin/SalesAnalytics'
-import ProductsManagement from './Admin/ProductsManagement'
-import OrdersManagement from './Admin/OrdersManagement'
-import AddProduct from './Admin/AddProduct'
-import VisualEditor from './Admin/VisualEditor'
-import UsersManagement from './Admin/UsersManagement'
-import MarketingAnalytics from './Admin/MarketingAnalytics'
-import CouponManagement from './Admin/CouponManagement'
+// Lazily loaded page routes — split into separate chunks
+const BestSellerPage    = lazy(() => import('./BestSeller/BestSeller'))
+const SkinCarePage      = lazy(() => import('./ShopPages/SkinCare'))
+const HairCarePage      = lazy(() => import('./ShopPages/HairPage'))
+const LipCarePage       = lazy(() => import('./ShopPages/LipCare'))
+const AllProductsPage   = lazy(() => import('./ShopPages/Allproducts'))
+const ProductDetail     = lazy(() => import('./ProductDetail/ProductDetail'))
+const Cart              = lazy(() => import('./Cart/Cart'))
+const BuildMyRegimen    = lazy(() => import('./BuildMyRegimen/BuildMyRegimen'))
+const TattooQuiz        = lazy(() => import('./TattooQuiz/TattooQuiz'))
+const Login             = lazy(() => import('./Auth/Login'))
+const NotFound          = lazy(() => import('./Pages/NotFound'))
+const About             = lazy(() => import('./Pages/About'))
+const Consultation      = lazy(() => import('./Pages/Consultation'))
+const TermsAndConditions= lazy(() => import('./Pages/TermsAndConditions'))
+const Gifting           = lazy(() => import('./Pages/Gifting'))
+
+// Admin Panel — lazily loaded (heavy, rarely visited)
+const AdminLogin          = lazy(() => import('./Admin/AdminLogin'))
+const AdminRegister       = lazy(() => import('./Admin/AdminRegister'))
+const QuickAdminSetup     = lazy(() => import('./Admin/QuickAdminSetup'))
+const AdminDashboard      = lazy(() => import('./Admin/AdminDashboard'))
+const SalesAnalytics      = lazy(() => import('./Admin/SalesAnalytics'))
+const ProductsManagement  = lazy(() => import('./Admin/ProductsManagement'))
+const OrdersManagement    = lazy(() => import('./Admin/OrdersManagement'))
+const AddProduct          = lazy(() => import('./Admin/AddProduct'))
+const VisualEditor        = lazy(() => import('./Admin/VisualEditor'))
+const UsersManagement     = lazy(() => import('./Admin/UsersManagement'))
+const MarketingAnalytics  = lazy(() => import('./Admin/MarketingAnalytics'))
+const CouponManagement    = lazy(() => import('./Admin/CouponManagement'))
+
+// Minimal full-page loader shown while lazy chunks download
+function PageLoader() {
+  return (
+    <div style={{
+      minHeight: '60vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#faf8f4'
+    }}>
+      <div style={{
+        width: 36,
+        height: 36,
+        border: '3px solid #e8e0d5',
+        borderTopColor: '#2d5f3f',
+        borderRadius: '50%',
+        animation: 'spin 0.7s linear infinite'
+      }} />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  )
+}
 
 // Import all products
 import SC1  from './SkinCareImg/SkinCare1.png'
@@ -654,6 +680,7 @@ function AppContent() {
   return (
     <>
       <PageTransition />
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Home Route */}
         <Route 
@@ -801,10 +828,15 @@ function AppContent() {
         {/* Catch-all redirect to 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
 
       <WhatsAppButton />
       <ScrollToTop />
-      {showLogin && <Login onNavigate={handleNavigate} onClose={() => setShowLogin(false)} onLoginSuccess={handleLoginSuccess} />}
+      {showLogin && (
+        <Suspense fallback={null}>
+          <Login onNavigate={handleNavigate} onClose={() => setShowLogin(false)} onLoginSuccess={handleLoginSuccess} />
+        </Suspense>
+      )}
       {notification && (
         <div style={{
           position: 'fixed',

@@ -151,6 +151,8 @@ export default function About({ onNavigate, onLoginClick, cartCount }) {
                   src={doctor.image} 
                   alt={doctor.name}
                   className="doctor-image"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     e.target.src = `https://via.placeholder.com/400x350/ff6b6b/ffffff?text=${doctor.name}`;
                   }}

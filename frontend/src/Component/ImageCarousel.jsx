@@ -21,7 +21,7 @@ export default function ImageCarousel() {
       <div className="img-carousel__track">
         {track.map((item, i) => (
           <div key={i} className="img-carousel__item">
-            <img src={item.img} alt={item.alt} className="img-carousel__img" />
+            <img src={item.img} alt={item.alt} className="img-carousel__img" loading="lazy" decoding="async" />
             <span className="img-carousel__label">{item.label}</span>
           </div>
         ))}

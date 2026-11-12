@@ -199,7 +199,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
                     <div key={idx} className="product-rec-card">
                       <div className="product-number">{idx + 1}</div>
                       {product.img && (
-                        <img src={product.img} alt={product.name} className="product-rec-image" />
+                        <img src={product.img} alt={product.name} className="product-rec-image" loading="lazy" decoding="async" />
                       )}
                       <h4>{product.name}</h4>
                       <p className="product-size">{product.size}</p>
@@ -250,7 +250,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
                     <div key={idx} className="product-rec-card">
                       <div className="product-number">{idx + 1}</div>
                       {product.img && (
-                        <img src={product.img} alt={product.name} className="product-rec-image" />
+                        <img src={product.img} alt={product.name} className="product-rec-image" loading="lazy" decoding="async" />
                       )}
                       <h4>{product.name}</h4>
                       <p className="product-size">{product.size}</p>
@@ -300,7 +300,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
                   {recommendations.optional.map((product, idx) => (
                     <div key={idx} className="product-rec-card">
                       {product.img && (
-                        <img src={product.img} alt={product.name} className="product-rec-image" />
+                        <img src={product.img} alt={product.name} className="product-rec-image" loading="lazy" decoding="async" />
                       )}
                       <h4>{product.name}</h4>
                       <p className="product-size">{product.size}</p>
@@ -350,7 +350,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
                   {recommendations.lip.map((product, idx) => (
                     <div key={idx} className="product-rec-card">
                       <div className="product-number">{idx + 1}</div>
-                      {product.img && <img src={product.img} alt={product.name} className="product-rec-image" />}
+                      {product.img && <img src={product.img} alt={product.name} className="product-rec-image" loading="lazy" decoding="async" />}
                       <h4>{product.name}</h4>
                       <p className="product-size">{product.size}</p>
                       <p className="product-purpose">{product.purpose}</p>
@@ -379,7 +379,7 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
                   {recommendations.tattoo.map((product, idx) => (
                     <div key={idx} className="product-rec-card">
                       <div className="product-number">{idx + 1}</div>
-                      {product.img && <img src={product.img} alt={product.name} className="product-rec-image" />}
+                      {product.img && <img src={product.img} alt={product.name} className="product-rec-image" loading="lazy" decoding="async" />}
                       <h4>{product.name}</h4>
                       <p className="product-size">{product.size}</p>
                       <p className="product-purpose">{product.purpose}</p>

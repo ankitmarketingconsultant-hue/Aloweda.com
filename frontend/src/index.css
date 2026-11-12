@@ -91,3 +91,81 @@ img {
 ::-webkit-scrollbar-track { background: var(--cream); }
 ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
 
+
+/* ─────────────────────────────────────────────────────────
+   PERFORMANCE OPTIMIZATIONS
+   ───────────────────────────────────────────────────────── */
+
+/* GPU-accelerate elements that animate or transform */
+.marquee-track,
+.announcement-bar__marquee,
+.img-carousel__track,
+.hero__slide,
+.cat-slider__track {
+  will-change: transform;
+}
+
+/* Promote animated cards to their own compositor layer only on hover */
+.bestseller-card:hover,
+.product-card:hover,
+.sp-card:hover,
+.related-card:hover,
+.product-rec-card:hover {
+  will-change: transform;
+}
+
+/* Reset will-change when not hovered — avoids permanent memory overhead */
+.bestseller-card,
+.product-card,
+.sp-card,
+.related-card,
+.product-rec-card {
+  will-change: auto;
+}
+
+/* content-visibility: auto — skip rendering of off-screen sections entirely.
+   contain-intrinsic-size prevents layout shift while unmeasured. */
+.routine-section,
+.related-products,
+.product-reviews__container,
+.lookbook-section,
+.aloweda-intro,
+.categories-section,
+.why-aloweda,
+.our-values,
+.testimonials-section,
+.build-regimen-cta,
+.feature-list-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* Smooth rendering for all images */
+img {
+  image-rendering: auto;
+  /* Eliminate layout shift — reserve space for images in known-ratio containers */
+  height: auto;
+}
+
+/* Prevent paint flashing on scroll-fixed elements */
+.navbar,
+.announcement-bar {
+  will-change: auto; /* Only activate during transitions via JS if needed */
+  transform: translateZ(0); /* Force own layer — avoids repaints from scroll */
+  backface-visibility: hidden;
+}
+
+/* Optimize transition performance on interactive elements */
+button,
+a,
+.nav-btn,
+.add-to-cart-btn,
+.next-btn {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Font display optimization — already using Google Fonts with display=swap in @import,
+   but add local fallback stack to avoid FOUT on slow connections */
+body {
+  font-family: 'Comfortaa', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}

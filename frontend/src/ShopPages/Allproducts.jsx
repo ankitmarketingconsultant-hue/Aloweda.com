@@ -210,7 +210,7 @@ export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick 
                   // Grid View
                   <>
                     <div className="product-card__img-wrap">
-                      <img src={product.img} alt={product.name} className="product-card__img" />
+                      <img src={product.img} alt={product.name} className="product-card__img" loading="lazy" decoding="async" />
                     </div>
                     <div className="product-card__body">
                       <p className="product-card__category">{product.category}</p>
@@ -258,7 +258,7 @@ export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick 
                   // List View (Flipkart Style)
                   <>
                     <div className="product-list-card__image">
-                      <img src={product.img} alt={product.name} />
+                      <img src={product.img} alt={product.name} loading="lazy" decoding="async" />
                     </div>
                     <div className="product-list-card__content">
                       <div className="product-list-card__header">

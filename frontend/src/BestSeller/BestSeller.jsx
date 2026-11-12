@@ -107,7 +107,7 @@ export default function BestSellerPage({ onNavigate, onLoginClick, cartCount }) 
               style={{ '--i': i }}
               onClick={() => onNavigate(item.nav)}
             >
-              <img src={item.img} alt={item.label} />
+              <img src={item.img} alt={item.label} loading="lazy" decoding="async" />
               <div className="hero-product__label">{item.label}</div>
             </div>
           ))}
@@ -169,7 +169,7 @@ export default function BestSellerPage({ onNavigate, onLoginClick, cartCount }) 
               <div className="product-tag">{product.tag}</div>
             )}
             <div className="bestseller-card__img-wrap">
-              <img src={product.img} alt={product.name} className="bestseller-card__img" />
+              <img src={product.img} alt={product.name} className="bestseller-card__img" loading="lazy" decoding="async" />
             </div>
             <div className="bestseller-card__body">
               <p className="bestseller-card__category">{product.category}</p>

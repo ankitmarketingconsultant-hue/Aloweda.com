@@ -104,7 +104,7 @@ export default function LipCarePage({ onNavigate, searchQuery, onLoginClick }) {
               onMouseLeave={() => setHoveredProduct(null)}
             >
               <div className="sp-card__img-wrap">
-                <img src={p.img} alt={p.name} className="sp-card__img" />
+                <img src={p.img} alt={p.name} className="sp-card__img" loading="lazy" decoding="async" />
               </div>
               <div className="sp-card__body">
                 <p className="sp-card__category">{p.category}</p>

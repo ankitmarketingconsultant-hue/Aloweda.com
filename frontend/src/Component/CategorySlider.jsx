@@ -30,7 +30,7 @@ export default function CategorySlider({ onNavigate }) {
             onClick={() => handleCardClick(cat.targetPage)}
           >
             <div className="cat-slider__img-wrap">
-              <img src={cat.img} alt={cat.title} className="cat-slider__img" />
+              <img src={cat.img} alt={cat.title} className="cat-slider__img" loading="lazy" decoding="async" />
             </div>
             <div className="cat-slider__label">
               <h3 className="cat-slider__title">{cat.title}</h3>

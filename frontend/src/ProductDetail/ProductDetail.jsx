@@ -7,6 +7,7 @@ import './ProductDetail.css'
 import { handleNavigation } from '../utils/navigation'
 import { trackViewContent, trackAddToCart } from '../utils/metaPixel'
 import ProductReviews from '../Components/Reviews/ProductReviews'
+import LazySection from '../Component/LazySection'
 
 // Lazy load 3D viewer - only loads when user clicks 3D View button
 const Model3DViewer = lazy(() => import('../Component/Model3DViewer'))
@@ -83,7 +84,7 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
         <div className="product-gallery">
           {/* Image Gallery */}
           <div className="product-gallery__main">
-                <img src={images[currentImageIndex]} alt={product.name} />
+                <img src={images[currentImageIndex]} alt={product.name} decoding="async" />
 
                 {images.length > 1 && (
                   <>
@@ -112,7 +113,7 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
                       className={`thumb ${idx === currentImageIndex ? 'thumb--active' : ''}`}
                       onClick={() => setCurrentImageIndex(idx)}
                     >
-                      <img src={img} alt={`View ${idx + 1}`} />
+                      <img src={img} alt={`View ${idx + 1}`} loading="lazy" decoding="async" />
                     </button>
                   ))}
                 </div>
@@ -339,7 +340,9 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
       </div>
 
       {/* Customer Reviews — product-specific, fetched by product id */}
-      <ProductReviews productId={product.id} productName={product.name} onLoginClick={onLoginClick} />
+      <LazySection rootMargin="200px 0px">
+        <ProductReviews productId={product.id} productName={product.name} onLoginClick={onLoginClick} />
+      </LazySection>
 
       {/* Tattoo Quiz Banner — only on tattoo products */}
       {product.category === 'Tattoo' && (
@@ -372,7 +375,7 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
                 onMouseLeave={() => setHoveredProduct(null)}
               >
                 <div className="related-card__img-wrap">
-                  <img src={p.img} alt={p.name} />
+                  <img src={p.img} alt={p.name} loading="lazy" decoding="async" />
                 </div>
                 <div className="related-card__body">
                   <p className="related-card__name">{p.name}</p>

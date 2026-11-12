@@ -16,7 +16,7 @@ export default function Footer({ onLoginClick }) {
 
           {/* Col 1 — Brand */}
           <div className="footer__brand">
-            <img src={AlowedaLogo} alt="Aloweda" className="footer__logo" />
+            <img src={AlowedaLogo} alt="Aloweda" className="footer__logo" loading="lazy" decoding="async" />
             <p className="footer__bio">
               At Aloweda, we believe wellness starts with conscious choices. From skincare
               and haircare to nutrition, our mission is to deliver high-quality, nature-inspired

@@ -502,7 +502,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
               {safeCart.map((item) => (
                 <div key={item.id} className={`cart-item ${item.stock === 0 ? 'out-of-stock-item' : ''}`}>
                   <div className="cart-item__image">
-                    <img src={item.img} alt={item.name} />
+                    <img src={item.img} alt={item.name} loading="lazy" decoding="async" />
                     {item.stock === 0 && (
                       <div className="out-of-stock-overlay">
                         <span>OUT OF STOCK</span>

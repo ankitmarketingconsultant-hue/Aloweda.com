@@ -57,7 +57,9 @@ export default function ProductCard3D({
           <img 
             src={product.img} 
             alt={product.name} 
-            className="product-card-3d__img" 
+            className="product-card-3d__img"
+            loading="lazy"
+            decoding="async"
           />
           {showTag && product.tag && (
             <span className="product-card-3d__tag">{product.tag}</span>
