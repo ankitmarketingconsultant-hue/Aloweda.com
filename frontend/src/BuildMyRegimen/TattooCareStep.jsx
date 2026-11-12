@@ -8,7 +8,7 @@ export default function TattooCareStep({ selected, onSelect }) {
       onSelect(['none'])
       return
     }
-
+ś
     // Any real concern selected — remove "none" first
     let newSelected = selected.filter(id => id !== 'none')
 
