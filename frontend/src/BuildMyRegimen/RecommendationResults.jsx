@@ -6,7 +6,7 @@ import { skinConcerns, bundles, skinTypes, hairConcerns, lipConcerns } from '../
 import './RecommendationResults.css'
 
 export default function RecommendationResults({ formData, onNavigate, onAddToCart }) {
-  const [recommendations, setRecommendations] = useState({ morning: [], evening: [], optional: [] })
+  const [recommendations, setRecommendations] = useState({ morning: [], evening: [], optional: [], lip: [], tattoo: [] })
   const [success, setSuccess] = useState(false)
   const [addedProducts, setAddedProducts] = useState(new Set())
 
@@ -63,6 +63,25 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
       })
     }
 
+    // Score products based on tattoo concerns
+    if (formData.tattooConcerns && formData.tattooConcerns.length > 0) {
+      formData.tattooConcerns.forEach(concern => {
+        const products = concernToProducts[concern] || []
+        products.forEach(productId => {
+          productScores[productId] = (productScores[productId] || 0) + 3
+        })
+      })
+      // Always ensure tattoo products are scored if tattoo concerns selected
+      ;['tattoo-cleanser', 'tattoo-butter'].forEach(id => {
+        productScores[id] = (productScores[id] || 0) + 5
+      })
+    }
+
+    // Always ensure lip-butter is scored if lip concerns selected
+    if (formData.lipConcerns && formData.lipConcerns.length > 0 && formData.lipConcerns[0] !== 'none') {
+      productScores['lip-butter'] = (productScores['lip-butter'] || 0) + 5
+    }
+
     // Sort by score and categorize
     const sortedProducts = Object.entries(productScores)
       .sort(([, a], [, b]) => b - a)
@@ -75,11 +94,21 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
       })
       .filter(Boolean)
 
-    const morning = sortedProducts.filter(p => p.routine === 'morning').slice(0, 3)
-    const evening = sortedProducts.filter(p => p.routine === 'evening').slice(0, 3)
-    const optional = sortedProducts.filter(p => p.routine === 'optional' || p.routine === 'special').slice(0, 2)
+    const morning  = sortedProducts.filter(p => p.routine === 'morning').slice(0, 3)
+    const evening  = sortedProducts.filter(p => p.routine === 'evening').slice(0, 3)
+    const optional = sortedProducts.filter(p => p.routine === 'optional').slice(0, 2)
 
-    setRecommendations({ morning, evening, optional })
+    // Always include lip-butter if user selected any lip concerns
+    const lip = (formData.lipConcerns && formData.lipConcerns.length > 0 && formData.lipConcerns[0] !== 'none')
+      ? sortedProducts.filter(p => p.routine === 'special')
+      : []
+
+    // Always include tattoo products if user selected any tattoo concerns
+    const tattoo = (formData.tattooConcerns && formData.tattooConcerns.length > 0 && formData.tattooConcerns[0] !== 'none')
+      ? sortedProducts.filter(p => p.routine === 'tattoo')
+      : []
+
+    setRecommendations({ morning, evening, optional, lip, tattoo })
   }
 
   const handleAddToCart = (product) => {
@@ -307,6 +336,64 @@ export default function RecommendationResults({ formData, onNavigate, onAddToCar
                                 Add to Cart
                               </>
                             )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {recommendations.lip.length > 0 && (
+              <div className="routine-section">
+                <h3 className="routine-heading">Lip Care</h3>
+                <div className="product-grid">
+                  {recommendations.lip.map((product, idx) => (
+                    <div key={idx} className="product-rec-card">
+                      <div className="product-number">{idx + 1}</div>
+                      {product.img && <img src={product.img} alt={product.name} className="product-rec-image" />}
+                      <h4>{product.name}</h4>
+                      <p className="product-size">{product.size}</p>
+                      <p className="product-purpose">{product.purpose}</p>
+                      <p className="product-ingredients"><strong>Key Ingredients:</strong> {product.ingredients}</p>
+                      {product.price && (
+                        <div className="product-price-section">
+                          <div className="product-pricing">
+                            <span className="product-price">₹{product.price}</span>
+                            {product.mrp && <span className="product-mrp">₹{product.mrp}</span>}
+                          </div>
+                          <button className={`add-to-cart-btn ${addedProducts.has(product.id) ? 'added' : ''}`} onClick={() => handleAddToCart(product)} disabled={addedProducts.has(product.id)}>
+                            {addedProducts.has(product.id) ? (<><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Added</>) : (<><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Add to Cart</>)}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {recommendations.tattoo.length > 0 && (
+              <div className="routine-section">
+                <h3 className="routine-heading">Tattoo Care</h3>
+                <div className="product-grid">
+                  {recommendations.tattoo.map((product, idx) => (
+                    <div key={idx} className="product-rec-card">
+                      <div className="product-number">{idx + 1}</div>
+                      {product.img && <img src={product.img} alt={product.name} className="product-rec-image" />}
+                      <h4>{product.name}</h4>
+                      <p className="product-size">{product.size}</p>
+                      <p className="product-purpose">{product.purpose}</p>
+                      <p className="product-ingredients"><strong>Key Ingredients:</strong> {product.ingredients}</p>
+                      {product.price && (
+                        <div className="product-price-section">
+                          <div className="product-pricing">
+                            <span className="product-price">₹{product.price}</span>
+                            {product.mrp && <span className="product-mrp">₹{product.mrp}</span>}
+                          </div>
+                          <button className={`add-to-cart-btn ${addedProducts.has(product.id) ? 'added' : ''}`} onClick={() => handleAddToCart(product)} disabled={addedProducts.has(product.id)}>
+                            {addedProducts.has(product.id) ? (<><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Added</>) : (<><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Add to Cart</>)}
                           </button>
                         </div>
                       )}
