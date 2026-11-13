@@ -3,13 +3,11 @@ import './StepStyles.css'
 
 export default function TattooCareStep({ selected, onSelect }) {
   const toggleConcern = (concernId) => {
-    // If "No Tattoo Concerns" selected, clear all and select only "none"
     if (concernId === 'none') {
       onSelect(['none'])
       return
     }
 
-    // Any real concern selected — remove "none" first
     let newSelected = selected.filter(id => id !== 'none')
 
     if (newSelected.includes(concernId)) {
@@ -35,7 +33,7 @@ export default function TattooCareStep({ selected, onSelect }) {
           >
             <span className="card-label">{concern.label}</span>
             {selected.includes(concern.id) && (
-              <span className="card-check">✓</span>
+              <span className="card-check">&#10003;</span>
             )}
           </button>
         ))}
