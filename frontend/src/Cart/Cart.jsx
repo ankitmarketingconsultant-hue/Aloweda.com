@@ -90,7 +90,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
   const couponDiscount = appliedCoupon ? parseFloat(appliedCoupon.discount) || 0 : 0
 
   const bundleDiscount = appliedBundle ? parseFloat(appliedBundle.discount) || 0 : 0
-  const shipping = 0 // temp: free shipping for payment testing
+  const shipping = subtotal > 999 ? 0 : 50
   const total = subtotal - bundleDiscount - multiBuyDiscount - serumBundleDiscount - onlinePaymentDiscount - couponDiscount + shipping
 
   // Debug logs
