@@ -56,7 +56,7 @@ const doctors = [
     patients: '10,000+',
     achievements: '10,000+ Successful Treatments · Published Research · Clinical Excellence Award',
     expertise: ['Acne & Pigmentation', 'Anti-Aging & Aesthetics', 'Sensitive Skin Disorders', 'Clinical Research'],
-    availability: 'Mon–Fri, 10 AM–6 PM',
+    availability: 'Mon–Fri, 10 AM–8 PM',
   },
 ];
 
