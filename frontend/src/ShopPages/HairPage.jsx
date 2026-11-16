@@ -153,6 +153,13 @@ export default function HairCarePage({ onNavigate, searchQuery, onLoginClick }) 
         </div>
       )}
 
+      <div className="shop-page__info">
+        <h2 className="shop-page__info-title">Hair Care</h2>
+        <p className="shop-page__info-desc">
+          Strengthen, nourish and revive your hair with our scientifically-formulated hair care range.
+          Enhanced by Biotin, Argan Oil and proven botanicals for healthy, lustrous hair.
+        </p>
+      </div>
       <BuildRegimenCTA onNavigate={onNavigate} />
       <Footer onLoginClick={onLoginClick} />
     </div>

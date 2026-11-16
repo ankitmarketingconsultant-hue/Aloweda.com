@@ -163,6 +163,13 @@ export default function LipCarePage({ onNavigate, searchQuery, onLoginClick }) {
         </div>
       )}
 
+      <div className="shop-page__info">
+        <h2 className="shop-page__info-title">Lip Care</h2>
+        <p className="shop-page__info-desc">
+          Nourish, protect and beautify your lips with our range of effective lip care products.
+          Formulated with Shea Butter, Vitamin E and beneficial botanicals for soft, supple lips every day.
+        </p>
+      </div>
       <BuildRegimenCTA onNavigate={onNavigate} />
       <Footer onLoginClick={onLoginClick} />
     </div>
