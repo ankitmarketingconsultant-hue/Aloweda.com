@@ -12,6 +12,8 @@ const OrdersManagement = () => {
   const [actionReason, setActionReason] = useState('');
   const [refundAmount, setRefundAmount] = useState('');
   const [processing, setProcessing] = useState(false);
+  // Tracking inputs — keyed by order._id
+  const [trackingInputs, setTrackingInputs] = useState({});
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -169,6 +171,43 @@ const OrdersManagement = () => {
     } catch (err) {
       console.error('Invoice download error:', err);
       alert('Failed to download invoice. Please try again.');
+    }
+  };
+
+  const handleTrackingUpdate = async (orderId) => {
+    const { trackingNumber = '', courier = '' } = trackingInputs[orderId] || {};
+    if (!trackingNumber.trim()) {
+      alert('Please enter a tracking number.');
+      return;
+    }
+    try {
+      setProcessing(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/admin/orders/${orderId}/tracking`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ trackingNumber: trackingNumber.trim(), courier: courier.trim() }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Reflect saved values back into local orders state
+        setOrders(prev => prev.map(o =>
+          o._id === orderId
+            ? { ...o, trackingInfo: { ...o.trackingInfo, trackingNumber: trackingNumber.trim(), courier: courier.trim() } }
+            : o
+        ));
+        alert('Tracking info saved!');
+      } else {
+        alert(data.message || 'Failed to save tracking info');
+      }
+    } catch (err) {
+      console.error('Tracking update error:', err);
+      alert('Failed to save tracking info');
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -351,6 +390,37 @@ const OrdersManagement = () => {
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* ── Tracking Number ── */}
+              <div className="order-tracking-row">
+                <input
+                  className="tracking-input"
+                  type="text"
+                  placeholder="Tracking Number"
+                  value={trackingInputs[order._id]?.trackingNumber ?? (order.trackingInfo?.trackingNumber || '')}
+                  onChange={e => setTrackingInputs(prev => ({
+                    ...prev,
+                    [order._id]: { ...prev[order._id], trackingNumber: e.target.value }
+                  }))}
+                />
+                <input
+                  className="tracking-input"
+                  type="text"
+                  placeholder="Courier (e.g. Delhivery)"
+                  value={trackingInputs[order._id]?.courier ?? (order.trackingInfo?.courier || '')}
+                  onChange={e => setTrackingInputs(prev => ({
+                    ...prev,
+                    [order._id]: { ...prev[order._id], courier: e.target.value }
+                  }))}
+                />
+                <button
+                  className="action-btn tracking-btn"
+                  onClick={() => handleTrackingUpdate(order._id)}
+                  disabled={processing}
+                >
+                  📦 Save Tracking
+                </button>
               </div>
 
               <div className="order-actions">

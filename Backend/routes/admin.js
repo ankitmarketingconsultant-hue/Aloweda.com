@@ -365,6 +365,42 @@ router.put('/orders/:id/replace', auth, admin, async (req, res) => {
   }
 });
 
+// Update tracking number for an order
+router.put('/orders/:id/tracking', auth, admin, async (req, res) => {
+  try {
+    const { trackingNumber, courier } = req.body;
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    // Store on trackingInfo subdocument (schema-validated field)
+    if (!order.trackingInfo) order.trackingInfo = {};
+    if (trackingNumber !== undefined) order.trackingInfo.trackingNumber = trackingNumber;
+    if (courier !== undefined) order.trackingInfo.courier = courier;
+
+    // Auto-advance status to shipped if still in early stage
+    if (trackingNumber && (order.orderStatus === 'Pending' || order.orderStatus === 'Confirmed' || order.orderStatus === 'Processing')) {
+      order.orderStatus = 'Shipped';
+      order.trackingInfo.shippedAt = new Date();
+    }
+
+    order.markModified('trackingInfo');
+    await order.save();
+
+    res.json({
+      success: true,
+      message: 'Tracking info updated successfully',
+      order
+    });
+  } catch (error) {
+    console.error('Error updating tracking info:', error);
+    res.status(500).json({ success: false, message: 'Failed to update tracking info' });
+  }
+});
+
 // Get sales analytics
 router.get('/analytics', auth, admin, async (req, res) => {
   try {

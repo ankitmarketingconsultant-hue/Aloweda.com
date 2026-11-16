@@ -141,21 +141,20 @@ export default function MyOrders({ onNavigate, onLoginClick, cartCount }) {
               )}
 
               {/* Tracking info */}
-              {order.trackingInfo?.trackingNumber && (
-                <div className="mo-tracking">
-                  <span className="mo-label">Tracking: </span>
-                  <strong>{order.trackingInfo.trackingNumber}</strong>
-                  {order.trackingInfo.courier && <span> via {order.trackingInfo.courier}</span>}
-                </div>
-              )}
-
-              {/* Payment method */}
+              {/* Payment method + tracking / payment status */}
               <div className="mo-footer">
                 <span className="mo-payment">{order.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Payment'}</span>
-                {order.paymentStatus && (
-                  <span className={`mo-pay-status ${order.paymentStatus === 'Paid' ? 'mo-pay-status--paid' : ''}`}>
-                    {order.paymentStatus}
+                {order.trackingInfo?.trackingNumber ? (
+                  <span className="mo-pay-status">
+                    🚚 {order.trackingInfo.trackingNumber}
+                    {order.trackingInfo.courier && ` · ${order.trackingInfo.courier}`}
                   </span>
+                ) : (
+                  order.paymentStatus && (
+                    <span className={`mo-pay-status ${order.paymentStatus === 'Paid' ? 'mo-pay-status--paid' : ''}`}>
+                      {order.paymentStatus}
+                    </span>
+                  )
                 )}
               </div>
             </div>
