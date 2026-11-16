@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import Navbar from '../Navbar/navbar'
 import Footer from '../Footer/Footer'
+import BuildRegimenCTA from '../Component/BuildRegimenCTA'
 import './ShopPage.css'
 import './LipCare.css'
 import { handleNavigation } from '../utils/navigation'
@@ -162,14 +163,7 @@ export default function LipCarePage({ onNavigate, searchQuery, onLoginClick }) {
         </div>
       )}
 
-      <div className="shop-page__info">
-        <h2 className="shop-page__info-title">Lip Care</h2>
-        <p className="shop-page__info-desc">
-          Nourish, protect and beautify your lips with our range of effective lip care products.
-          Formulated with Shea Butter, Vitamin E and beneficial botanicals for soft, supple lips every day.
-        </p>
-        <button className="shop-page__quiz-btn">Start Quiz</button>
-      </div>
+      <BuildRegimenCTA onNavigate={onNavigate} />
       <Footer onLoginClick={onLoginClick} />
     </div>
   )
