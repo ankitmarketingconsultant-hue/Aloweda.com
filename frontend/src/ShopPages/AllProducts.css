@@ -928,6 +928,8 @@
 .build-routine-banner {
   background: linear-gradient(135deg, #4a7fbd 0%, #3567a6 100%);
   padding: 72px 24px;
+  content-visibility: visible;
+}
   text-align: center;
 }
 
