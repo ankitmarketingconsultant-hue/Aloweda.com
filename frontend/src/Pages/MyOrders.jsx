@@ -8,15 +8,15 @@ import './MyOrders.css'
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const STATUS_COLORS = {
-  Confirmed:  { bg: '#e8f5e9', color: '#2e7d32' },
-  Processing: { bg: '#e3f2fd', color: '#1565c0' },
-  Shipped:    { bg: '#fff3e0', color: '#e65100' },
-  Delivered:  { bg: '#e8f5e9', color: '#1b5e20' },
-  Cancelled:  { bg: '#fce4ec', color: '#b71c1c' },
-  Pending:    { bg: '#f3e5f5', color: '#6a1b9a' },
+  Confirmed:    { bg: '#e8f5e9', color: '#2e7d32' },
+  Shipped:      { bg: '#fff3e0', color: '#e65100' },
+  'In Transit': { bg: '#e3f2fd', color: '#1565c0' },
+  Delivered:    { bg: '#e8f5e9', color: '#1b5e20' },
+  Cancelled:    { bg: '#fce4ec', color: '#b71c1c' },
+  Pending:      { bg: '#f3e5f5', color: '#6a1b9a' },
 }
 
-const STATUS_STEPS = ['Confirmed', 'Processing', 'Shipped', 'Delivered']
+const STATUS_STEPS = ['Confirmed', 'Shipped', 'In Transit', 'Delivered']
 
 export default function MyOrders({ onNavigate, onLoginClick, cartCount }) {
   useSEO({

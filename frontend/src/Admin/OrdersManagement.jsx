@@ -305,8 +305,9 @@ const OrdersManagement = () => {
         >
           <option value="all">All Status</option>
           <option value="pending">Pending</option>
-          <option value="processing">Processing</option>
+          <option value="confirmed">Confirmed</option>
           <option value="shipped">Shipped</option>
+          <option value="in transit">In Transit</option>
           <option value="delivered">Delivered</option>
           <option value="cancelled">Cancelled</option>
           <option value="refunded">Refunded</option>
@@ -431,8 +432,9 @@ const OrdersManagement = () => {
                   disabled={processing || order.status === 'delivered'}
                 >
                   <option value="pending">Pending</option>
-                  <option value="processing">Processing</option>
+                  <option value="confirmed">Confirmed</option>
                   <option value="shipped">Shipped</option>
+                  <option value="in transit">In Transit</option>
                   <option value="delivered">Delivered</option>
                 </select>
 
