@@ -39,7 +39,7 @@ function CalendlyEmbed({ url, prefillName, prefillEmail }) {
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ─── Consultation fee (change here to update everywhere) ───────────────────
-const CONSULTATION_FEE = 250; // INR
+const CONSULTATION_FEE = 1; // INR — testing ke liye (baad mein 250 karna hai)
 
 // ─── Calendly booking link ─────────────────────────────────────────────────
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/aloweda1/30min';
