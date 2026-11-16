@@ -42,7 +42,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const CONSULTATION_FEE = 1; // INR — testing (baad mein 250 karna hai)
 
 // ─── Calendly booking link ─────────────────────────────────────────────────
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/aloweda1/30min';
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/aloweda1/15min';
 
 const doctors = [
   {
@@ -382,7 +382,7 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
             </div>
 
             <div className="aw-modal-includes">
-              {['30-minute video consultation', 'Personalized skincare plan', 'Product recommendations', 'Written follow-up summary'].map((item) => (
+              {['15-minute video consultation', 'Personalized skincare plan', 'Product recommendations', 'Written follow-up summary'].map((item) => (
                 <div key={item} className="aw-modal-include-item">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
