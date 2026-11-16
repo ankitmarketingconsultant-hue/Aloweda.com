@@ -1,18 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../Navbar/navbar';
 import Footer from '../Footer/Footer';
 import useSEO from '../utils/useSEO';
 import './Consultation.css';
+
+// Calendly widget loader — injects Calendly's embed script once
+function CalendlyEmbed({ url, prefillName, prefillEmail }) {
+  useEffect(() => {
+    // Load Calendly widget script if not already present
+    if (!document.getElementById('calendly-script')) {
+      const script = document.createElement('script');
+      script.id  = 'calendly-script';
+      script.src = 'https://assets.calendly.com/assets/external/widget.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  // Build URL with prefill so customer's name + email are auto-filled
+  const params = new URLSearchParams({
+    name:  prefillName  || '',
+    email: prefillEmail || '',
+    hide_landing_page_details: '1',
+    hide_gdpr_banner: '1',
+    primary_color: '1f4d3d',
+  });
+  const embedUrl = `${url}?${params.toString()}`;
+
+  return (
+    <div
+      className="calendly-inline-widget"
+      data-url={embedUrl}
+      style={{ minWidth: '100%', height: '630px' }}
+    />
+  );
+}
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ─── Consultation fee (change here to update everywhere) ───────────────────
 const CONSULTATION_FEE = 250; // INR
 
-// ─── Google Calendar appointment link ─────────────────────────────────────
-// Replace the calendarUrl below with your actual Google Calendar appointment
-// scheduling link from calendar.google.com → "Create appointment schedule"
-const CALENDAR_URL = 'https://calendar.google.com/calendar/appointments';
+// ─── Calendly booking link ─────────────────────────────────────────────────
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/aloweda1/30min';
 
 const doctors = [
   {
@@ -171,7 +201,7 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
 
   // ── Step 4: open Google Calendar to pick a slot ──────────────────────
   const handleBookSlot = () => {
-    window.open(CALENDAR_URL, '_blank', 'noopener,noreferrer');
+    window.open(CALENDLY_URL, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -406,51 +436,43 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
 
       {/* ════════════════════════════════════════════════════════════════
           SUCCESS MODAL — shown after payment is verified
+          Contains inline Calendly widget so user books slot immediately
       ════════════════════════════════════════════════════════════════ */}
       {paymentDone && (
         <div className="aw-modal-overlay" onClick={() => setPaymentDone(false)}>
-          <div className="aw-modal aw-modal--success" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="aw-modal aw-modal--success aw-modal--calendly"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '720px', width: '95vw' }}
+          >
             <button className="aw-modal-close" onClick={() => setPaymentDone(false)} aria-label="Close">✕</button>
 
-            <div className="aw-success-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
+            {/* ── Header ── */}
+            <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+              <div className="aw-success-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <h2 className="aw-success-title" style={{ marginBottom: '4px' }}>Payment Successful!</h2>
+              <p className="aw-success-sub" style={{ marginBottom: '4px' }}>
+                Now pick a date &amp; time for your consultation with Dr. Ajay Patwardhan.
+              </p>
+              <p style={{ fontSize: '12px', color: '#6b6b63', margin: '0 0 16px' }}>
+                A confirmation email has been sent to <strong>{customerEmail}</strong>
+              </p>
             </div>
 
-            <h2 className="aw-success-title">Payment Successful!</h2>
-            <p className="aw-success-sub">
-              Your consultation fee has been received. Now pick a date and time that works for you.
-            </p>
+            {/* ── Calendly inline widget ── */}
+            <CalendlyEmbed
+              url={CALENDLY_URL}
+              prefillName={customerName}
+              prefillEmail={customerEmail}
+            />
 
-            <div className="aw-success-steps">
-              <div className="aw-success-step">
-                <span className="aw-success-step-num">1</span>
-                <span>Click the button below to open our booking calendar</span>
-              </div>
-              <div className="aw-success-step">
-                <span className="aw-success-step-num">2</span>
-                <span>Choose a slot that works for you (Mon–Fri, 10 AM–6 PM)</span>
-              </div>
-              <div className="aw-success-step">
-                <span className="aw-success-step-num">3</span>
-                <span>You'll receive a calendar invite with the video call link</span>
-              </div>
-            </div>
-
-            <button className="aw-modal-calendar-btn" onClick={handleBookSlot}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-              Book My Slot on Google Calendar
-            </button>
-
-            <p className="aw-success-help">
-              Confirmation email sent to <strong>{customerEmail}</strong>
+            <p style={{ fontSize: '11px', color: '#9b9b93', textAlign: 'center', marginTop: '12px', marginBottom: 0 }}>
+              After booking you'll receive a Google Meet link on your email and calendar.
             </p>
           </div>
         </div>

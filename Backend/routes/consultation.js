@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const { sendConsultationEmail } = require('../utils/emailService');
 
 const razorpay = process.env.RAZORPAY_KEY_ID
   ? new Razorpay({
@@ -87,6 +88,16 @@ router.post('/verify', async (req, res) => {
     };
     consultationBookings.push(booking);
     console.log('✅ Consultation payment verified:', booking);
+
+    // Send confirmation email to customer + notification to owner (non-blocking)
+    const calendlyUrl = process.env.CALENDLY_URL || 'https://calendly.com/aloweda1/30min';
+    sendConsultationEmail({
+      customerName: customerName || '',
+      customerEmail: customerEmail || '',
+      amount,
+      paymentId: razorpay_payment_id,
+      calendlyUrl,
+    }).catch(err => console.error('⚠️  Consultation email error (non-critical):', err.message));
 
     res.json({
       success: true,
