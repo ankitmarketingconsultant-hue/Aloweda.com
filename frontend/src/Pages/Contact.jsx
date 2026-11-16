@@ -29,20 +29,24 @@ export default function Contact({ onNavigate, onLoginClick, cartCount }) {
 
     setSending(true);
     try {
-      const w3 = new FormData();
-      w3.append('access_key', 'w3f_71a559958310c0c54c6e8de352afd5730a9ba12899d75839');
-      w3.append('subject',  `New Contact Message from ${form.name.trim()} — Aloweda`);
-      w3.append('name',     form.name.trim());
-      w3.append('email',    form.email.trim());
-      w3.append('message',
-        `Name: ${form.name.trim()}\n` +
-        `Email: ${form.email.trim()}\n` +
-        `Phone: ${form.phone.trim() || 'Not provided'}\n\n` +
-        `Message:\n${form.message.trim()}`
-      );
-      w3.append('_gotcha', ''); // honeypot
+      const payload = {
+        access_key: 'w3f_71a559958310c0c54c6e8de352afd5730a9ba12899d75839',
+        subject:  `New Contact Message from ${form.name.trim()} — Aloweda`,
+        name:     form.name.trim(),
+        email:    form.email.trim(),
+        message:
+          `Name: ${form.name.trim()}\n` +
+          `Email: ${form.email.trim()}\n` +
+          `Phone: ${form.phone.trim() || 'Not provided'}\n\n` +
+          `Message:\n${form.message.trim()}`,
+        botcheck: '',
+      };
 
-      const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 });
+      const res = await fetch('https://api.w3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
       const data = await res.json();
 
       if (data.success) {
