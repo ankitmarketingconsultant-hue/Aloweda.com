@@ -371,7 +371,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
         const res = await fetch(`${API_URL}/api/payment/create-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: total, currency: 'INR' }),
+          body: JSON.stringify({ amount: Math.max(total, 1), currency: 'INR' }),
         })
         const data = await res.json()
         if (!data.success) throw new Error(data.message || 'Failed to create order')
