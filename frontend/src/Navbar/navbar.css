@@ -34,7 +34,7 @@
 .navbar__left { display: flex; align-items: center; gap: 40px; flex: 1; }
 
 .navbar__logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; flex: 1; text-align: center; }
-.navbar__logo { height: 54px; width: auto; object-fit: contain; }
+.navbar__logo { height: 70px; width: auto; object-fit: contain; }
 .navbar__tagline { font-size: 10px; letter-spacing: 2.5px; color: var(--text-light); text-transform: uppercase; font-weight: 400; }
 
 .navbar__link {
