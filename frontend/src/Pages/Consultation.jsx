@@ -161,7 +161,7 @@ export default function Consultation({ onNavigate, onLoginClick, cartCount }) {
               // W3Forms — notify ajay@aloweda.com about consultation booking
               try {
                 const w3 = new FormData();
-                w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976');
+                w3.append('access_key', 'w3f_71a559958310c0c54c6e8de352afd5730a9ba12899d75839');
                 w3.append('subject', `New Consultation Booking — ${customerName} — ₹${CONSULTATION_FEE}`);
                 w3.append('name', customerName.trim());
                 w3.append('email', customerEmail.trim());

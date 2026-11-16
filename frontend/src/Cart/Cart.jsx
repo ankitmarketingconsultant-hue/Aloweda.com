@@ -336,7 +336,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
           // W3Forms — notify ajay@aloweda.com
           try {
             const w3 = new FormData()
-            w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976')
+            w3.append('access_key', 'w3f_71a559958310c0c54c6e8de352afd5730a9ba12899d75839')
             w3.append('subject', `New Order #${data.orderId} — ₹${total} (COD)`)
             w3.append('name', checkoutForm.name)
             w3.append('email', checkoutForm.email || 'guest@aloweda.com')
@@ -433,7 +433,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
               // W3Forms — notify ajay@aloweda.com
               try {
                 const w3 = new FormData()
-                w3.append('access_key', 'a265dfd6-a653-447e-8610-698cb9547976')
+                w3.append('access_key', 'w3f_71a559958310c0c54c6e8de352afd5730a9ba12899d75839')
                 w3.append('subject', `New Order #${orderId} — ₹${total} (Online Payment)`)
                 w3.append('name', checkoutForm.name)
                 w3.append('email', checkoutForm.email || 'guest@aloweda.com')
