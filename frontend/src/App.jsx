@@ -23,6 +23,7 @@ const Login             = lazy(() => import('./Auth/Login'))
 const NotFound          = lazy(() => import('./Pages/NotFound'))
 const About             = lazy(() => import('./Pages/About'))
 const Consultation      = lazy(() => import('./Pages/Consultation'))
+const Contact           = lazy(() => import('./Pages/Contact'))
 const TermsAndConditions= lazy(() => import('./Pages/TermsAndConditions'))
 const Gifting           = lazy(() => import('./Pages/Gifting'))
 const MyOrders          = lazy(() => import('./Pages/MyOrders'))
@@ -866,6 +867,12 @@ function AppContent() {
         <Route 
           path="/consultation" 
           element={<Consultation onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />} 
+        />
+
+        {/* Contact Route */}
+        <Route
+          path="/contact"
+          element={<Contact onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />}
         />
 
         {/* Gifting Route */}

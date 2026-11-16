@@ -39,7 +39,7 @@ export default function Footer({ onLoginClick }) {
             <h4 className="footer__col-title">Quick Links</h4>
             <Link to="/about" className="footer__link">About Us</Link>
             <a href="#" className="footer__link">Blogs</a>
-            <a href="#" className="footer__link">Contact us</a>
+            <Link to="/contact" className="footer__link">Contact us</Link>
             <a href="#" className="footer__link">Shipping Policy</a>
             <a href="#" className="footer__link">Cancellation/Refund Policy</a>
             <a href="#" className="footer__link">Privacy policy</a>
