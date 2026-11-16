@@ -246,10 +246,20 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
     const API_URL = import.meta.env.VITE_API_URL || 'https://aloweda-com.vercel.app'
     const KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID
 
+    // Generate orderId same format as COD
+    const date = new Date()
+    const year = date.getFullYear().toString().slice(-2)
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    const generatedOrderId = `ALD${year}${month}${day}${random}`
+
     const orderItems = safeCart.map(item => ({
+      productId: String(item.id),
       name: item.name,
       quantity: item.quantity || 1,
-      price: item.price,
+      price: parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0,
+      image: item.img || '',
     }))
 
     if (paymentMethod === 'cod') {
@@ -387,9 +397,29 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
                 orderData: {
-                  customer: checkoutForm,
+                  orderId: generatedOrderId,
+                  customerInfo: {
+                    name: checkoutForm.name,
+                    email: checkoutForm.email || 'guest@aloweda.com',
+                    phone: checkoutForm.phone,
+                    address: {
+                      street: checkoutForm.address,
+                      city: checkoutForm.city,
+                      state: checkoutForm.state,
+                      pincode: checkoutForm.pincode,
+                    }
+                  },
                   items: orderItems,
-                  total: total.toFixed(2),
+                  pricing: {
+                    subtotal: subtotal,
+                    bundleDiscount: bundleDiscount,
+                    couponDiscount: couponDiscount,
+                    onlinePaymentDiscount: onlinePaymentDiscount,
+                    shippingCharges: shipping,
+                    total: parseFloat(total),
+                  },
+                  paymentMethod: 'Online',
+                  orderStatus: 'Confirmed',
                 },
               }),
             })
