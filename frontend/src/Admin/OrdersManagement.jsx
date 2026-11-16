@@ -66,7 +66,7 @@ const OrdersManagement = () => {
       if (data.success) {
         // Update local state
         setOrders(orders.map(o => 
-          o._id === orderId ? { ...o, status: newStatus } : o
+          o._id === orderId ? { ...o, status: newStatus, orderStatus: newStatus.charAt(0).toUpperCase() + newStatus.slice(1) } : o
         ));
         alert('Order status updated successfully!');
       } else {

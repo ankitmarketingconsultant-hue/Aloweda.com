@@ -218,31 +218,48 @@ router.get('/orders', auth, admin, async (req, res) => {
 router.put('/orders/:id/status', auth, admin, async (req, res) => {
   try {
     const { status } = req.body;
-    
-    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded', 'replaced'];
-    
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid status'
-      });
+
+    // Map lowercase admin values → schema-validated Capitalized enum values
+    const statusMap = {
+      'pending':    'Pending',
+      'confirmed':  'Confirmed',
+      'processing': 'Processing',
+      'shipped':    'Shipped',
+      'in transit': 'In Transit',
+      'delivered':  'Delivered',
+      'cancelled':  'Cancelled',
+      'refunded':   'Refunded',
+      'replaced':   'Replaced',
+    };
+
+    const mappedStatus = statusMap[status?.toLowerCase()];
+    if (!mappedStatus) {
+      return res.status(400).json({ success: false, message: `Invalid status: ${status}` });
     }
 
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { 
-        status,
-        updatedAt: Date.now()
-      },
-      { new: true }
-    ).populate('user', 'name email phone');
-
+    const order = await Order.findById(req.params.id);
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
+      return res.status(404).json({ success: false, message: 'Order not found' });
     }
+
+    order.orderStatus = mappedStatus;
+    order.updatedAt   = Date.now();
+
+    // Auto-set timestamps
+    if (mappedStatus === 'Shipped' && !order.trackingInfo?.shippedAt) {
+      if (!order.trackingInfo) order.trackingInfo = {};
+      order.trackingInfo.shippedAt = new Date();
+      order.markModified('trackingInfo');
+    }
+    if (mappedStatus === 'Delivered' && !order.trackingInfo?.deliveredAt) {
+      if (!order.trackingInfo) order.trackingInfo = {};
+      order.trackingInfo.deliveredAt = new Date();
+      order.markModified('trackingInfo');
+    }
+
+    await order.save();
+
+    res.json({ success: true, message: 'Order status updated successfully', order });
 
     res.json({
       success: true,

@@ -258,7 +258,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       productId: String(item.id),
       name: item.name,
       quantity: item.quantity || 1,
-      price: parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0,
+      price: parseFloat(String(item.price).replace(/[^0-9]/g, '.').match(/\d+(\.\d+)?/)?.[0]) || 0,
       image: item.img || '',
     }))
 
