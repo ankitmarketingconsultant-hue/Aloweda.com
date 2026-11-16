@@ -127,7 +127,7 @@ export default function MyOrders({ onNavigate, onLoginClick, cartCount }) {
                   {STATUS_STEPS.map((step, i) => (
                     <div key={step} className="mo-tracker__step">
                       <div className={`mo-tracker__dot ${i <= stepIndex ? 'mo-tracker__dot--done' : ''}`}>
-                        {i <= stepIndex ? '&#10003;' : i + 1}
+                        {i <= stepIndex ? '✓' : ''}
                       </div>
                       <span className={`mo-tracker__label ${i <= stepIndex ? 'mo-tracker__label--done' : ''}`}>
                         {step}

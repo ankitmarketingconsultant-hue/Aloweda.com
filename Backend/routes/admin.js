@@ -261,11 +261,6 @@ router.put('/orders/:id/status', auth, admin, async (req, res) => {
 
     res.json({ success: true, message: 'Order status updated successfully', order });
 
-    res.json({
-      success: true,
-      message: 'Order status updated successfully',
-      order
-    });
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({
