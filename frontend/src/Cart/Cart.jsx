@@ -218,8 +218,8 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
       alert('⚠️ Maximum 5 items allowed per order!\n\nYou currently have ' + totalItems + ' items in cart.\nPlease reduce the quantity to proceed to checkout.')
       return
     }
-    // Check login
-    if (!user) {
+    // Check login — COD ke liye zaroori, Online ke liye nahi
+    if (!user && paymentMethod === 'cod') {
       onLoginClick()
       return
     }
@@ -1024,7 +1024,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                   cursor: totalItems > 5 ? 'not-allowed' : 'pointer'
                 }}
               >
-                {totalItems > 5 ? '⚠️ Reduce Items to Checkout' : !user ? '🔒 Login to Checkout' : 'Proceed to Checkout'}
+                {totalItems > 5 ? '⚠️ Reduce Items to Checkout' : (!user && paymentMethod === 'cod') ? '🔒 Login to Checkout' : 'Proceed to Checkout'}
               </button>
 
               <button className="continue-shopping-btn" onClick={() => onNavigate('shop')}>
