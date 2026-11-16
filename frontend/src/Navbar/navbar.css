@@ -274,3 +274,95 @@
   .navbar { top: 34px; } /* Match announcement bar height on small mobile */
 }
 
+
+/* ── User Account Avatar & Dropdown ── */
+.navbar__account-wrap {
+  position: relative;
+}
+
+.navbar__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #2d5f3f;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Comfortaa', sans-serif;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.navbar__avatar:hover {
+  background: #1e4229;
+}
+
+.navbar__account-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #fff;
+  border: 1px solid rgba(180, 165, 140, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(44, 36, 22, 0.12);
+  min-width: 180px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeInDown 0.15s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.navbar__account-name {
+  padding: 12px 16px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2c2416;
+  border-bottom: 1px solid #f0ebe3;
+  font-family: 'Comfortaa', sans-serif;
+}
+
+.navbar__account-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: #2c2416;
+  font-family: 'Comfortaa', sans-serif;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.navbar__account-item:hover {
+  background: #faf8f4;
+}
+
+.navbar__account-logout {
+  color: #c0392b;
+  border-top: 1px solid #f0ebe3;
+}
+
+/* Mobile logout button */
+.navbar__mobile-logout {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  color: #c0392b;
+  cursor: pointer;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-family: 'Comfortaa', sans-serif;
+}

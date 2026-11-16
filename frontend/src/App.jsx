@@ -25,6 +25,7 @@ const About             = lazy(() => import('./Pages/About'))
 const Consultation      = lazy(() => import('./Pages/Consultation'))
 const TermsAndConditions= lazy(() => import('./Pages/TermsAndConditions'))
 const Gifting           = lazy(() => import('./Pages/Gifting'))
+const MyOrders          = lazy(() => import('./Pages/MyOrders'))
 
 // Admin Panel — lazily loaded (heavy, rarely visited)
 const AdminLogin          = lazy(() => import('./Admin/AdminLogin'))
@@ -871,6 +872,12 @@ function AppContent() {
         <Route
           path="/gifting"
           element={<Gifting onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />}
+        />
+
+        {/* My Orders Route */}
+        <Route
+          path="/my-orders"
+          element={<MyOrders onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />}
         />
 
         {/* Terms & Conditions Route */}

@@ -56,8 +56,54 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [hasAnnouncementBar, setHasAnnouncementBar] = useState(true)
+  const [user, setUser] = useState(null)
+  const [accountOpen, setAccountOpen] = useState(false)
+  const accountRef = useRef(null)
   const searchRef = useRef(null)
   const dropdownRef = useRef(null)
+
+  // Load user from localStorage
+  useEffect(() => {
+    const checkUser = () => {
+      const token = localStorage.getItem('token')
+      const userName = localStorage.getItem('userName')
+      if (token && userName) {
+        setUser({ name: userName })
+      } else {
+        setUser(null)
+      }
+    }
+    checkUser()
+    window.addEventListener('storage', checkUser)
+    window.addEventListener('userLoggedIn', checkUser)
+    window.addEventListener('userLoggedOut', checkUser)
+    return () => {
+      window.removeEventListener('storage', checkUser)
+      window.removeEventListener('userLoggedIn', checkUser)
+      window.removeEventListener('userLoggedOut', checkUser)
+    }
+  }, [])
+
+  // Close account dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) {
+        setAccountOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userName')
+    localStorage.removeItem('userEmail')
+    setUser(null)
+    setAccountOpen(false)
+    window.dispatchEvent(new Event('userLoggedOut'))
+    onNavigate?.('home')
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -266,11 +312,38 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
               </svg>
             </button>
           )}
-          <button className="navbar__icon-btn" aria-label="Account" onClick={onLoginClick}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-            </svg>
-          </button>
+          {/* Account — avatar when logged in, icon when not */}
+          {user ? (
+            <div className="navbar__account-wrap" ref={accountRef}>
+              <button
+                className="navbar__avatar"
+                onClick={() => setAccountOpen(v => !v)}
+                aria-label="Account menu"
+                title={user.name}
+              >
+                {user.name.charAt(0).toUpperCase()}
+              </button>
+              {accountOpen && (
+                <div className="navbar__account-dropdown">
+                  <div className="navbar__account-name">{user.name}</div>
+                  <Link to="/my-orders" className="navbar__account-item" onClick={() => setAccountOpen(false)}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                    My Orders
+                  </Link>
+                  <button className="navbar__account-item navbar__account-logout" onClick={handleLogout}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button className="navbar__icon-btn" aria-label="Account" onClick={onLoginClick}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+              </svg>
+            </button>
+          )}
           <Link to="/cart" className="navbar__icon-btn navbar__cart-btn" aria-label="Cart" onClick={() => { setMenuOpen(false); setShopOpen(false); }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
@@ -293,6 +366,12 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
           <Link to="/bestsellers" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Best Sellers</Link>
           <Link to="/gifting" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Gifting</Link>
           <Link to="/consultation" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>Specialist Consultation</Link>
+          {user && (
+            <>
+              <Link to="/my-orders" className="navbar__mobile-link" onClick={() => setMenuOpen(false)}>My Orders</Link>
+              <button className="navbar__mobile-link navbar__mobile-logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>Logout</button>
+            </>
+          )}
           <div className="navbar__mobile-divider">Smart Skincare</div>
           {CATEGORIES.filter(c => c.parent === 'skincare').map((c) => (
             <Link 
