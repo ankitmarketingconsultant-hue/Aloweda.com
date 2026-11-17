@@ -29,8 +29,9 @@ const ProductsManagement = () => {
   const [editModal, setEditModal]       = useState(false);
   const [editProduct, setEditProduct]   = useState(null);
   const [editForm, setEditForm]         = useState(emptyEdit);
-  const [imageFile, setImageFile]       = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [imageFiles, setImageFiles]     = useState([]);   // multiple new uploads
+  const [imagePreviews, setImagePreviews] = useState([]); // previews for new uploads
+  const [currentImages, setCurrentImages] = useState([]); // existing DB images (can remove individually)
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -127,8 +128,9 @@ const ProductsManagement = () => {
       shippingReturns: product.shippingReturns || '',
       images:          (product.images || []).join(', '),
     });
-    setImageFile(null);
-    setImagePreview('');
+    setCurrentImages(product.images || []);
+    setImageFiles([]);
+    setImagePreviews([]);
     setEditModal(true);
   };
 
@@ -136,21 +138,36 @@ const ProductsManagement = () => {
     setEditModal(false);
     setEditProduct(null);
     setEditForm(emptyEdit);
-    setImageFile(null);
-    setImagePreview('');
+    setCurrentImages([]);
+    setImageFiles([]);
+    setImagePreviews([]);
   };
 
   const handleEditFormChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  const handleEditImageFile = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setImageFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result);
-    reader.readAsDataURL(file);
+  // Handle multiple image file selection
+  const handleEditImageFiles = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setImageFiles(prev => [...prev, ...files]);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreviews(prev => [...prev, reader.result]);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Remove an existing DB image
+  const removeCurrentImage = (idx) => {
+    setCurrentImages(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  // Remove a newly selected (not yet uploaded) image
+  const removeNewImage = (idx) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== idx));
+    setImagePreviews(prev => prev.filter((_, i) => i !== idx));
   };
 
   const handleSaveEdit = async () => {
@@ -159,29 +176,23 @@ const ProductsManagement = () => {
       setUpdating(true);
       const token = localStorage.getItem('token');
 
-      // Upload new image if chosen
-      let uploadedUrl = '';
-      if (imageFile) {
+      // Upload all new image files
+      let uploadedUrls = [];
+      for (const file of imageFiles) {
         const fd = new FormData();
-        fd.append('image', imageFile);
+        fd.append('image', file);
         const upRes = await fetch(`${API_URL}/api/upload`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: fd,
         });
         const upData = await upRes.json();
-        if (upRes.ok) uploadedUrl = upData.imageUrl;
-        else throw new Error('Image upload failed');
+        if (upRes.ok && upData.imageUrl) uploadedUrls.push(upData.imageUrl);
+        else throw new Error('Image upload failed: ' + (upData.message || ''));
       }
 
-      // Build images array: if new image uploaded it REPLACES all old ones, else keep URL input
-      const urlsFromInput = editForm.images
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean);
-      const finalImages = uploadedUrl
-        ? [uploadedUrl]           // new upload replaces everything
-        : urlsFromInput;
+      // Final images = remaining existing + newly uploaded
+      const finalImages = [...currentImages, ...uploadedUrls];
 
       const payload = {
         name:            editForm.name,
@@ -350,6 +361,7 @@ const ProductsManagement = () => {
         <table className="products-table">
           <thead>
             <tr>
+              <th style={{ width: 60 }}>Image</th>
               <th>Product Name</th>
               <th>Category</th>
               <th>Price (₹)</th>
@@ -359,10 +371,24 @@ const ProductsManagement = () => {
           </thead>
           <tbody>
             {filteredProducts.length === 0 ? (
-              <tr><td colSpan="5" className="no-data">No products found</td></tr>
+              <tr><td colSpan="6" className="no-data">No products found</td></tr>
             ) : (
               filteredProducts.map((product) => (
                 <tr key={product._id}>
+                  <td>
+                    {product.images?.[0] ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb', display: 'block' }}
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div style={{ width: 52, height: 52, background: '#f3f4f6', borderRadius: 6, border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
+                        📦
+                      </div>
+                    )}
+                  </td>
                   <td>
                     <div className="product-info">
                       <strong>{product.name}</strong>
@@ -523,43 +549,93 @@ const ProductsManagement = () => {
               </div>
 
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Image URLs <span style={{ fontWeight: 400, color: '#6b7280' }}>(comma-separated)</span></label>
-                <input
-                  name="images"
-                  value={editForm.images}
-                  onChange={handleEditFormChange}
-                  placeholder="https://…, https://…"
-                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
-                />
-              </div>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                  Product Images
+                </label>
 
-              <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Upload New Image <span style={{ fontWeight: 400, color: '#6b7280' }}>(replaces current image)</span></label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleEditImageFile}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
-                />
-              </div>
-
-              {imagePreview && (
-                <div style={{ textAlign: 'center', marginBottom: 14 }}>
-                  <img src={imagePreview} alt="Preview" style={{ maxWidth: 160, maxHeight: 160, borderRadius: 8, border: '2px solid #e5e7eb' }} />
-                </div>
-              )}
-
-              {/* Show current images */}
-              {editProduct.images?.length > 0 && (
-                <div style={{ marginBottom: 14 }}>
-                  <label style={{ fontWeight: 600, display: 'block', marginBottom: 6, fontSize: 13, color: '#6b7280' }}>Current Images:</label>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {editProduct.images.map((img, i) => (
-                      <img key={i} src={img} alt="" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
-                    ))}
+                {/* Current images with remove button */}
+                {currentImages.length > 0 && (
+                  <div style={{ marginBottom: 10 }}>
+                    <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>Current images (click ✕ to remove):</p>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {currentImages.map((img, i) => (
+                        <div key={i} style={{ position: 'relative', display: 'inline-block' }}>
+                          <img
+                            src={img}
+                            alt={`img-${i}`}
+                            style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 6, border: '2px solid #e5e7eb', display: 'block' }}
+                            onError={e => { e.target.style.opacity = 0.3; }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeCurrentImage(i)}
+                            style={{
+                              position: 'absolute', top: -6, right: -6,
+                              width: 20, height: 20, borderRadius: '50%',
+                              background: '#ef4444', color: '#fff',
+                              border: 'none', cursor: 'pointer',
+                              fontSize: 11, fontWeight: 700,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              lineHeight: 1,
+                            }}
+                          >✕</button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* New image previews with remove button */}
+                {imagePreviews.length > 0 && (
+                  <div style={{ marginBottom: 10 }}>
+                    <p style={{ fontSize: 12, color: '#059669', marginBottom: 6 }}>New images to upload:</p>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {imagePreviews.map((src, i) => (
+                        <div key={i} style={{ position: 'relative', display: 'inline-block' }}>
+                          <img
+                            src={src}
+                            alt={`new-${i}`}
+                            style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 6, border: '2px solid #059669', display: 'block' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeNewImage(i)}
+                            style={{
+                              position: 'absolute', top: -6, right: -6,
+                              width: 20, height: 20, borderRadius: '50%',
+                              background: '#ef4444', color: '#fff',
+                              border: 'none', cursor: 'pointer',
+                              fontSize: 11, fontWeight: 700,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}
+                          >✕</button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload button */}
+                <label
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '8px 16px', background: '#1f4d3d', color: '#fff',
+                    borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                  }}
+                >
+                  📷 Add Images
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleEditImageFiles}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                <span style={{ marginLeft: 8, fontSize: 12, color: '#6b7280' }}>
+                  Select one or more images
+                </span>
+              </div>
             </div>
 
             <div className="modal-footer">
