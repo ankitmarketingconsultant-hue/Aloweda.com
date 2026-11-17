@@ -64,8 +64,10 @@ class InvoiceGenerator {
     // gst  = discounted - base  (18% GST component)
     const base = discounted / (1 + GST_RATE);
     const gst  = discounted - base;
-    const subtotal   = parseFloat(base.toFixed(2));   // base price (excl. GST) — no rounding
-    const gstAmt     = parseFloat(gst.toFixed(2));    // total GST — no rounding
+    const subtotal   = parseFloat(base.toFixed(2));
+    const cgst       = parseFloat((base * 0.09).toFixed(2));  // base × 9%
+    const sgst       = parseFloat((base * 0.09).toFixed(2));  // base × 9%
+    const gstAmt     = parseFloat((cgst + sgst).toFixed(2));
 
     // Shipping
     const shippingCharge = (pricing.shippingCharges !== undefined && pricing.shippingCharges !== null)
@@ -75,7 +77,7 @@ class InvoiceGenerator {
     // Grand total = GST-inclusive product price + shipping
     const grandTotal = parseFloat((discounted + shippingCharge).toFixed(2));
 
-    return { itemsTotal, discounted, subtotal, gst: gstAmt, grandTotal, shippingCharge };
+    return { itemsTotal, discounted, subtotal, cgst, sgst, gst: gstAmt, grandTotal, shippingCharge };
   }
 
   // ── Build ──
@@ -145,10 +147,10 @@ class InvoiceGenerator {
       const lineTotal = unitPrice * qty;   // GST-inclusive line total
 
       // Extract GST from GST-inclusive price
+      // base = lineTotal / 1.18, then CGST = base * 9%, SGST = base * 9%
       const lineBase = lineTotal / (1 + GST_RATE);
-      const lineGst  = lineTotal - lineBase;
-      const cgst     = parseFloat((lineGst / 2).toFixed(2));   // exact 2 decimals, no rounding
-      const sgst     = parseFloat((lineGst / 2).toFixed(2));
+      const cgst = parseFloat((lineBase * 0.09).toFixed(2));
+      const sgst = parseFloat((lineBase * 0.09).toFixed(2));
       const rowH = 58;
 
       this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
@@ -223,17 +225,19 @@ class InvoiceGenerator {
 
   // ── Payment Details ──
   _paymentDetails() {
-    const { subtotal, gst, grandTotal, shippingCharge } = this._computeTotals();
+    const { subtotal, cgst, sgst, gst, grandTotal, shippingCharge } = this._computeTotals();
 
     this.doc.fontSize(13).font('Helvetica-Bold').fillColor('#000')
       .text('Payment Details', this.L, this.doc.y);
     this.doc.moveDown(0.4);
 
     const rows = [
-      { label: 'Subtotal price:', value: `Rs. ${subtotal.toFixed(2)}`, bold: false },
-      { label: 'Total tax (CGST 9% + SGST 9%):', value: `Rs. ${gst.toFixed(2)}`,  bold: false },
-      { label: 'Shipping:',       value: shippingCharge === 0 ? 'FREE' : `Rs. ${shippingCharge.toFixed(2)}`, bold: false },
-      { label: 'Total price',     value: `Rs. ${grandTotal.toFixed(2)}`,bold: true  },
+      { label: 'Subtotal price (excl. tax):',  value: `Rs. ${subtotal.toFixed(2)}`, bold: false },
+      { label: 'CGST (9%):',                   value: `Rs. ${cgst.toFixed(2)}`,     bold: false },
+      { label: 'SGST (9%):',                   value: `Rs. ${sgst.toFixed(2)}`,     bold: false },
+      { label: 'Total Tax (CGST + SGST):',      value: `Rs. ${gst.toFixed(2)}`,     bold: false },
+      { label: 'Shipping:',                     value: shippingCharge === 0 ? 'FREE' : `Rs. ${shippingCharge.toFixed(2)}`, bold: false },
+      { label: 'Total price',                   value: `Rs. ${grandTotal.toFixed(2)}`, bold: true },
     ];
 
     let y = this.doc.y;
