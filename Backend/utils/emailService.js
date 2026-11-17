@@ -43,7 +43,7 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
   `).join('');
 
   // ── GST breakdown for email body ──
-  const GST_RATE = 0.18;
+  const CGST_RATE_EMAIL = 0.09;
   const SHIPPING_DEFAULT = 100;
   let itemsTotal = 0;
   items.forEach(i => {
@@ -51,12 +51,12 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
     const price = parseFloat(String(i.price).replace(/[^0-9.]/g, '')) || 0;
     itemsTotal += price * qty;
   });
-  const base      = Math.round(itemsTotal / (1 + GST_RATE));
-  const gst       = itemsTotal - base;
-  // Use actual shipping and total from the order if passed in; fall back to computed values
-  const shippingCharge = (typeof shippingCharges === 'number')
-    ? shippingCharges
-    : SHIPPING_DEFAULT;
+  // Client formula: CGST = price×9%, SGST = price×9%, base = price - CGST - SGST
+  const cgstEmail = parseFloat((itemsTotal * CGST_RATE_EMAIL).toFixed(2));
+  const sgstEmail = parseFloat((itemsTotal * CGST_RATE_EMAIL).toFixed(2));
+  const base      = parseFloat((itemsTotal - cgstEmail - sgstEmail).toFixed(2));
+  const gst       = parseFloat((cgstEmail + sgstEmail).toFixed(2));
+  const shippingCharge = (typeof shippingCharges === 'number') ? shippingCharges : SHIPPING_DEFAULT;
   const grandTotal = total || (itemsTotal + shippingCharge);
 
   // ── Admin email ──
@@ -107,7 +107,7 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
         <h3 style="color:#1f4d3d;margin-top:0;">Payment Summary</h3>
         <table style="width:100%;border-collapse:collapse;font-size:14px;">
           <tr><td style="padding:6px 0;">Subtotal (excl. GST)</td><td style="text-align:right;">₹${base}</td></tr>
-          <tr><td style="padding:6px 0;">GST @ 18% (CGST 9% = ₹${Math.round(gst/2)} + SGST 9% = ₹${Math.round(gst/2)})</td><td style="text-align:right;">₹${gst}</td></tr>
+          <tr><td style="padding:6px 0;">GST @ 18% (CGST 9% = ₹${cgstEmail} + SGST 9% = ₹${sgstEmail})</td><td style="text-align:right;">₹${gst}</td></tr>
           <tr><td style="padding:6px 0;">Shipping</td><td style="text-align:right;">${shippingCharge === 0 ? 'FREE' : `₹${shippingCharge}`}</td></tr>
           <tr style="border-top:2px solid #1f4d3d;font-weight:bold;font-size:16px;">
             <td style="padding:8px 0;">Total</td><td style="text-align:right;">₹${grandTotal}</td>
