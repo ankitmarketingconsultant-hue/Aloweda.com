@@ -111,6 +111,7 @@ router.post('/verify', async (req, res) => {
           paymentMethod: 'Online Payment',
           orderId: order.orderId,
           invoicePath,
+          shippingCharges: orderData.pricing?.shippingCharges,
         });
       } catch (emailErr) {
         console.error('⚠️  Email sending failed (non-critical):', emailErr.message);

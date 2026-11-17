@@ -25,6 +25,14 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
     return;
   }
 
+  // ── Normalise address (can be nested object OR flat string) ──
+  const addr = customer.address || {};
+  const street  = typeof addr === 'object' ? (addr.street  || addr.line1 || '') : String(addr);
+  const city    = typeof addr === 'object' ? (addr.city    || '') : (customer.city    || '');
+  const state   = typeof addr === 'object' ? (addr.state   || '') : (customer.state   || '');
+  const pincode = typeof addr === 'object' ? (addr.pincode || '') : (customer.pincode || '');
+  const fullAddress = [street, city, state, pincode].filter(Boolean).join(', ');
+
   // ── Build item rows ──
   const itemsHtml = items.map(item => `
     <tr>
@@ -52,20 +60,33 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
   const grandTotal = total || (itemsTotal + shippingCharge);
 
   // ── Admin email ──
+  const isCOD = paymentMethod.toUpperCase().includes('COD');
   const adminHtml = `
     <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;background:#faf8f4;padding:32px;border-radius:12px;">
+
+      <!-- Alert banner -->
+      <div style="background:${isCOD ? '#e67e22' : '#10b981'};padding:14px 24px;border-radius:8px;margin-bottom:20px;text-align:center;">
+        <p style="color:#fff;margin:0;font-size:13px;font-weight:600;letter-spacing:0.5px;">
+          ${isCOD ? '🔔 COD ORDER — ACTION REQUIRED' : '✅ PAID ONLINE — READY TO SHIP'}
+        </p>
+      </div>
+
       <div style="background:#1f4d3d;padding:20px 32px;border-radius:8px;margin-bottom:24px;">
         <h1 style="color:#fff;margin:0;font-size:22px;">🛒 New Order Received!</h1>
-        <p style="color:#cfe2d7;margin:4px 0 0;">Order ID: <strong>#${orderId}</strong></p>
+        <p style="color:#cfe2d7;margin:6px 0 0;font-size:14px;">Order ID: <strong>#${orderId}</strong> &nbsp;·&nbsp; ₹${grandTotal} &nbsp;·&nbsp; ${paymentMethod}</p>
       </div>
 
       <div style="background:#fff;padding:24px;border-radius:8px;margin-bottom:16px;">
         <h3 style="color:#1f4d3d;margin-top:0;">Customer Details</h3>
         <p style="margin:4px 0;"><strong>Name:</strong> ${customer.name}</p>
-        <p style="margin:4px 0;"><strong>Phone:</strong> ${customer.phone}</p>
-        <p style="margin:4px 0;"><strong>Email:</strong> ${customer.email || 'Not provided'}</p>
-        <p style="margin:4px 0;"><strong>Address:</strong> ${customer.address}, ${customer.city || ''}, ${customer.state || ''} - ${customer.pincode || ''}</p>
-        <p style="margin:4px 0;"><strong>Payment:</strong> <span style="color:${paymentMethod.includes('COD') ? '#e67e22' : '#27ae60'};font-weight:bold;">${paymentMethod}</span></p>
+        <p style="margin:4px 0;"><strong>Phone:</strong> <a href="tel:${customer.phone}" style="color:#1f4d3d;">${customer.phone}</a></p>
+        <p style="margin:4px 0;"><strong>Email:</strong> ${customer.email ? `<a href="mailto:${customer.email}" style="color:#1f4d3d;">${customer.email}</a>` : 'Not provided'}</p>
+        <p style="margin:4px 0;"><strong>Deliver to:</strong> ${fullAddress}</p>
+        <p style="margin:8px 0 0;">
+          <span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${isCOD ? '#fef3c7' : '#d1fae5'};color:${isCOD ? '#92400e' : '#065f46'};">
+            ${paymentMethod}
+          </span>
+        </p>
       </div>
 
       <div style="background:#fff;padding:24px;border-radius:8px;margin-bottom:16px;">
@@ -95,7 +116,7 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
       </div>
 
       <p style="color:#6b6b63;font-size:12px;text-align:center;">
-        Order placed on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+        Order placed on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST
         ${invoicePath ? '<br/>📎 Invoice PDF attached.' : ''}
       </p>
     </div>
@@ -113,7 +134,7 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
         <p>Hi <strong>${customer.name}</strong>,</p>
         <p>Your order <strong>#${orderId}</strong> has been placed successfully!</p>
         <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-        <p><strong>Delivering to:</strong> ${customer.address}, ${customer.city || ''}, ${customer.state || ''} - ${customer.pincode || ''}</p>
+        <p><strong>Delivering to:</strong> ${fullAddress}</p>
       </div>
 
       <div style="background:#fff;padding:24px;border-radius:8px;margin-bottom:16px;">
