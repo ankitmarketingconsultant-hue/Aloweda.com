@@ -4,18 +4,18 @@ const path = require('path');
 const os = require('os');
 
 // ── GST helpers ────────────────────────────────────────────────────────────
-// Client formula: price = base + CGST + SGST
-// CGST = round(price × 9%), SGST = round(price × 9%), base = price - CGST - SGST
-// Example: 499 → CGST=45, SGST=45, base=409, total=499
+// Client formula: CGST = price × 9% (2 decimals), SGST = price × 9% (2 decimals), base = price - CGST - SGST
+// Example: 499 → CGST=44.91, SGST=44.91, base=409.18
 const CGST_RATE        = 0.09;
 const SGST_RATE        = 0.09;
 const SHIPPING_DEFAULT = 100;
 
 function calcGST(inclusivePrice) {
-  const cgst = Math.round(inclusivePrice * CGST_RATE);
-  const sgst = Math.round(inclusivePrice * SGST_RATE);
-  const base = inclusivePrice - cgst - sgst;
-  return { base, gst: cgst + sgst, cgst, sgst };
+  const cgst = parseFloat((inclusivePrice * CGST_RATE).toFixed(2));
+  const sgst = parseFloat((inclusivePrice * SGST_RATE).toFixed(2));
+  const base = parseFloat((inclusivePrice - cgst - sgst).toFixed(2));
+  const gst  = parseFloat((cgst + sgst).toFixed(2));
+  return { base, gst, cgst, sgst };
 }
 
 // ── Invoice generator ──────────────────────────────────────────────────────
@@ -61,11 +61,11 @@ class InvoiceGenerator {
     // discounted = GST-inclusive items amount after all discounts
     const discounted = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
 
-    // Client formula: CGST = round(price×9%), SGST = round(price×9%), Base = price - CGST - SGST
-    const cgst     = Math.round(discounted * CGST_RATE);
-    const sgst     = Math.round(discounted * SGST_RATE);
-    const subtotal = discounted - cgst - sgst;   // base price excl. tax
-    const gstAmt   = cgst + sgst;
+    // Client formula: CGST = price×9% (2 decimals), SGST = price×9% (2 decimals), base = price-CGST-SGST
+    const cgst     = parseFloat((discounted * CGST_RATE).toFixed(2));
+    const sgst     = parseFloat((discounted * SGST_RATE).toFixed(2));
+    const subtotal = parseFloat((discounted - cgst - sgst).toFixed(2));
+    const gstAmt   = parseFloat((cgst + sgst).toFixed(2));
 
     // Shipping
     const shippingCharge = (pricing.shippingCharges !== undefined && pricing.shippingCharges !== null)
@@ -144,9 +144,9 @@ class InvoiceGenerator {
       const unitPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
       const lineTotal = unitPrice * qty;   // GST-inclusive line total
 
-      // Client formula: CGST = round(price×9%), SGST = round(price×9%)
-      const cgst = Math.round(lineTotal * CGST_RATE);
-      const sgst = Math.round(lineTotal * SGST_RATE);
+      // CGST = price×9% (2 decimals), SGST = price×9% (2 decimals)
+      const cgst = parseFloat((lineTotal * CGST_RATE).toFixed(2));
+      const sgst = parseFloat((lineTotal * SGST_RATE).toFixed(2));
       const rowH = 58;
 
       this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
