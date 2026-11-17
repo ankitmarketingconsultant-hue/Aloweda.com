@@ -318,8 +318,8 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
               </div>
             </div>
             {(product.stock === 0 || product.outOfStock) ? (
-              <button className="add-to-cart-btn low-opacity-btn" onClick={handleAddToCart}>
-                Add to Cart (Out of Stock)
+              <button className="add-to-cart-btn low-opacity-btn" disabled>
+                Out of Stock
               </button>
             ) : (
               <button className="add-to-cart-btn" onClick={handleAddToCart}>
