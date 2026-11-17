@@ -273,21 +273,7 @@ const ALL_PRODUCTS = [
     shipping: 'We process all domestic orders within 1 business day. Delivery typically takes 5–7 business days, while remote or interior locations may require 7–10 business days.',
     packaging: '50 Grams in Recyclable, Environment Friendly glass cream jar with HDPE Cap'
   },
-  { 
-    id: 6, 
-    img: SaffronEssentialOilDetail, // Changed to new detail image
-    images: [SaffronEssentialOilDetail], // Only show new image
-    name: 'Saffron Face Oil 30 ml: Saffron Essential Oil, Sweet Almond oil, Grape Seed Oil, Honey & Ghee', 
-    category: 'Oil', 
-    keywords: 'saffron face oil almond grape seed honey ghee natural glow hydrate tone luxurious nourish sesame jojoba no preservatives no chemicals', 
-    price: 'Rs. 799.00',
-    model3D: '/models/SaffronFaceOilBott.glb', 
-    description: "Aloweda's Saffron Face Oil: Glow | Hydrate | Tone during your sleep!\n\nA luxurious facial oil crafted to deeply nourish and enhance skin vitality. Infused with saffron and a blend of essential oils including sweet almond, this formula replenishes moisture, improves skin softness, and promotes a naturally radiant complexion. Rich yet lightweight, it absorbs effortlessly, leaving skin supple, smooth, and glowing without heaviness.\n\nHow to Use: Take a small amount and warm it between your fingertips. Gently massage onto clean skin until absorbed.\n\nWhen to Use: Night use is recommended, or anytime skin feels dry, dull, or in need of intensive nourishment.\n\nTip to Improve Effect: Apply on slightly damp skin after cleansing to help lock in moisture. For enhanced results, use as an overnight skin nourishment mask and rinse gently in the morning if desired.", 
-    ingredients: 'Saffron Essential Oil 1%, Sweet Almond oil, Grape Seed Oil, Sesame Oil, Jojoba Oil, Ghee & Fig Honey. NO PRESERVATIVES, NO CHEMICALS, NO ADDED FRAGRANCE', 
-    howToUse: 'Take a small amount and warm it between your fingertips. Gently massage onto clean skin until absorbed. Night use is recommended, or anytime skin feels dry, dull, or in need of intensive nourishment. Tip: Apply on slightly damp skin after cleansing to help lock in moisture. For enhanced results, use as an overnight skin nourishment mask and rinse gently in the morning if desired.',
-    shipping: 'We process all domestic orders within 1 business day. Delivery typically takes 5–7 business days, while remote or interior locations may require 7–10 business days.',
-    packaging: '30 ml in glass bottle with pump'
-  },
+
   { 
     id: 7, 
     img: ComplexionCreamDetail, // Changed to new detail image
