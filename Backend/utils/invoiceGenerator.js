@@ -50,26 +50,32 @@ class InvoiceGenerator {
       const price = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
       itemsTotal += price * qty;
     });
+
     const pricing        = this.order.pricing || {};
     const bundleDiscount = pricing.bundleDiscount || 0;
     const couponDiscount = pricing.couponDiscount || 0;
     const onlineDiscount = pricing.onlinePaymentDiscount || 0;
-    const discounted     = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
 
-    // Extract GST from the discounted (GST-inclusive) items amount
-    const { base: subtotal, gst } = calcGST(discounted);
+    // discounted = GST-inclusive items amount after all discounts
+    const discounted = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
 
-    // Use actual shipping from order, fall back to default ₹100
+    // Extract GST from the GST-inclusive discounted amount
+    // base = discounted / 1.18  (pre-tax price)
+    // gst  = discounted - base  (18% GST component)
+    const base = discounted / (1 + GST_RATE);
+    const gst  = discounted - base;
+    const subtotal = Math.round(base * 100) / 100;    // base price (excl. GST)
+    const gstAmt   = Math.round(gst  * 100) / 100;   // total GST (CGST+SGST)
+
+    // Shipping
     const shippingCharge = (pricing.shippingCharges !== undefined && pricing.shippingCharges !== null)
       ? pricing.shippingCharges
       : SHIPPING_DEFAULT;
 
-    // Use stored grand total if available, otherwise compute
-    const grandTotal = pricing.total
-      ? pricing.total
-      : discounted + shippingCharge;
+    // Grand total = GST-inclusive product price + shipping
+    const grandTotal = Math.round((discounted + shippingCharge) * 100) / 100;
 
-    return { itemsTotal, discounted, subtotal, gst, grandTotal, shippingCharge };
+    return { itemsTotal, discounted, subtotal, gst: gstAmt, grandTotal, shippingCharge };
   }
 
   // ── Build ──
@@ -136,8 +142,13 @@ class InvoiceGenerator {
     (this.order.items || []).forEach(item => {
       const qty       = item.quantity || 1;
       const unitPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
-      const lineTotal = unitPrice * qty;
-      const { cgst, sgst } = calcGST(lineTotal);
+      const lineTotal = unitPrice * qty;   // GST-inclusive line total
+
+      // Extract GST from GST-inclusive price
+      const lineBase = lineTotal / (1 + GST_RATE);
+      const lineGst  = lineTotal - lineBase;
+      const cgst     = Math.round((lineGst / 2) * 100) / 100;
+      const sgst     = Math.round((lineGst / 2) * 100) / 100;
       const rowH = 58;
 
       this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
