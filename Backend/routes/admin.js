@@ -16,7 +16,7 @@ const fs = require('fs');
 router.get('/products/public', async (req, res) => {
   try {
     const products = await Product.find({ isActive: true })
-      .select('name category price mrp stock description')
+      .select('name category price mrp stock description ingredients howToUse shippingReturns images')
       .sort({ createdAt: -1 });
     
     res.json({

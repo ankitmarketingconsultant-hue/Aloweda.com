@@ -604,17 +604,18 @@ function AppContent() {
               
               // If match found, sync stock and images from database
               if (dbProduct) {
+                // Format price number from DB → "Rs. 599.00" string for frontend
+                const fmtPrice = (num) => num ? `Rs. ${Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : null;
                 const updatedProduct = { 
                   ...product, 
-                  stock: dbProduct.stock,
-                  _dbId: dbProduct._id,
-                  // Sync all editable fields from DB if admin changed them
-                  name:            dbProduct.name        || product.name,
-                  price:           dbProduct.price       ? `Rs. ${dbProduct.price.toLocaleString('en-IN')}.00`  : product.price,
-                  mrp:             dbProduct.mrp         ? `Rs. ${dbProduct.mrp.toLocaleString('en-IN')}.00`    : product.mrp,
-                  description:     dbProduct.description || product.description,
-                  ingredients:     dbProduct.ingredients || product.ingredients,
-                  howToUse:        dbProduct.howToUse    || product.howToUse,
+                  stock:           dbProduct.stock,
+                  _dbId:           dbProduct._id,
+                  name:            dbProduct.name            || product.name,
+                  price:           fmtPrice(dbProduct.price) || product.price,
+                  mrp:             fmtPrice(dbProduct.mrp)   || product.mrp,
+                  description:     dbProduct.description     || product.description,
+                  ingredients:     dbProduct.ingredients     || product.ingredients,
+                  howToUse:        dbProduct.howToUse        || product.howToUse,
                   shippingReturns: dbProduct.shippingReturns || product.shippingReturns || product.shipping,
                   // If DB has images uploaded via admin, use those; else keep static bundled images
                   ...(dbProduct.images && dbProduct.images.length > 0 && { images: dbProduct.images, img: dbProduct.images[0] }),
