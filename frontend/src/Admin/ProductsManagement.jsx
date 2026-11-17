@@ -14,7 +14,7 @@ const CATEGORIES = [
   { value: 'tattoo',   label: '🖊 Tattoo Care' },
 ];
 
-const emptyEdit = { name: '', category: 'cream', price: '', description: '', ingredients: '', howToUse: '', shippingReturns: '', images: '' };
+const emptyEdit = { name: '', category: 'cream', price: '', mrp: '', stock: '', description: '', ingredients: '', howToUse: '', shippingReturns: '', images: '' };
 
 const ProductsManagement = () => {
   const navigate = useNavigate();
@@ -93,12 +93,34 @@ const ProductsManagement = () => {
   };
 
   // ── Edit modal helpers ──────────────────────────────────────────────────
+  // Normalize category value from DB to match select option values
+  const normalizeCategoryValue = (cat) => {
+    if (!cat) return 'cream';
+    const map = {
+      'cream':       'cream',
+      'serum':       'serum',
+      'oil':         'oil',
+      'facewash':    'facewash',
+      'face wash':   'facewash',
+      'haircare':    'haircare',
+      'hair care':   'haircare',
+      'lipcare':     'lipcare',
+      'lip care':    'lipcare',
+      'combo':       'combo',
+      'tattoo':      'tattoo',
+      'tattoo care': 'tattoo',
+    };
+    return map[cat.toLowerCase()] || cat.toLowerCase();
+  };
+
   const openEditModal = (product) => {
     setEditProduct(product);
     setEditForm({
       name:            product.name            || '',
-      category:        product.category        || 'cream',
+      category:        normalizeCategoryValue(product.category),
       price:           product.price           ?? '',
+      mrp:             product.mrp             ?? '',
+      stock:           product.stock           ?? '',
       description:     product.description     || '',
       ingredients:     product.ingredients     || '',
       howToUse:        product.howToUse        || '',
@@ -165,6 +187,8 @@ const ProductsManagement = () => {
         name:            editForm.name,
         category:        editForm.category,
         price:           parseFloat(editForm.price),
+        mrp:             editForm.mrp !== '' ? parseFloat(editForm.mrp) : undefined,
+        stock:           editForm.stock !== '' ? parseInt(editForm.stock) : undefined,
         description:     editForm.description,
         ingredients:     editForm.ingredients,
         howToUse:        editForm.howToUse,
@@ -415,7 +439,7 @@ const ProductsManagement = () => {
                 </select>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginBottom: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div>
                   <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Price (₹)</label>
                   <input
@@ -423,6 +447,28 @@ const ProductsManagement = () => {
                     type="number"
                     min="0"
                     value={editForm.price}
+                    onChange={handleEditFormChange}
+                    style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>MRP (₹)</label>
+                  <input
+                    name="mrp"
+                    type="number"
+                    min="0"
+                    value={editForm.mrp}
+                    onChange={handleEditFormChange}
+                    style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Stock</label>
+                  <input
+                    name="stock"
+                    type="number"
+                    min="0"
+                    value={editForm.stock}
                     onChange={handleEditFormChange}
                     style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
                   />

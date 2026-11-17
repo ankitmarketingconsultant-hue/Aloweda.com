@@ -93,11 +93,12 @@ router.get('/products', auth, admin, async (req, res) => {
 // Update full product details (price, mrp, description, images)
 router.put('/products/:id', auth, admin, async (req, res) => {
   try {
-    const { price, mrp, description, images, name, category, ingredients, howToUse, shippingReturns } = req.body;
+    const { price, mrp, stock, description, images, name, category, ingredients, howToUse, shippingReturns } = req.body;
 
     const updateFields = {};
     if (price !== undefined)           updateFields.price           = parseFloat(price);
     if (mrp !== undefined)             updateFields.mrp             = parseFloat(mrp);
+    if (stock !== undefined)           updateFields.stock           = parseInt(stock);
     if (description !== undefined)     updateFields.description     = description;
     if (images !== undefined)          updateFields.images          = images;
     if (name !== undefined)            updateFields.name            = name;
