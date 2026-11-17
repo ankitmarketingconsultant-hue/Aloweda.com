@@ -24,18 +24,23 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
   const [viewMode, setViewMode] = useState('image') // 'image' or '3d'
   const [hoveredProduct, setHoveredProduct] = useState(null)
   const [load3DViewer, setLoad3DViewer] = useState(false) // Control when to load 3D viewer
+  const [expandedSection, setExpandedSection] = useState(null)
 
   const handleAddToCart = () => {
     onAddToCart(product, quantity)
     trackAddToCart(product, quantity)
     alert(`Added ${quantity} ${quantity > 1 ? 'items' : 'item'} to cart!`)
   }
-  const [expandedSection, setExpandedSection] = useState(null)
 
-  const images = product.images || [product.img]
+  // Safe image list: falls back to the single `img` if `images` is missing or empty
+  const images = product.images && product.images.length > 0 ? product.images : [product.img]
 
-  // Scroll to top and track view whenever the product changes
+  // Whenever the product changes: reset gallery/quantity/sections, scroll to top, track view
   useEffect(() => {
+    setCurrentImageIndex(0)
+    setQuantity(1)
+    setExpandedSection(null)
+    setViewMode('image')
     window.scrollTo({ top: 0, behavior: 'smooth' })
     trackViewContent(product)
   }, [product.id])
@@ -90,40 +95,45 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
         <div className="product-gallery">
           {/* Image Gallery */}
           <div className="product-gallery__main">
-                <img src={images[currentImageIndex]} alt={product.name} decoding="async" />
+            <img
+              src={images[currentImageIndex] || images[0]}
+              alt={product.name}
+              decoding="async"
+            />
 
-                {images.length > 1 && (
-                  <>
-                    <button className="gallery-arrow gallery-arrow--prev" onClick={prevImage}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M15 18l-6-6 6-6" />
-                      </svg>
-                    </button>
-                    <button className="gallery-arrow gallery-arrow--next" onClick={nextImage}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </button>
-                  </>
-                )}
+            {images.length > 1 && (
+              <>
+                <button className="gallery-arrow gallery-arrow--prev" onClick={prevImage} aria-label="Previous image">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </button>
+                <button className="gallery-arrow gallery-arrow--next" onClick={nextImage} aria-label="Next image">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+              </>
+            )}
 
-                {/* 3D View button removed */}
-              </div>
+            {/* 3D View button removed */}
+          </div>
 
-              {/* Thumbnail Navigation */}
-              {images.length > 1 && (
-                <div className="product-gallery__thumbs">
-                  {images.map((img, idx) => (
-                    <button
-                      key={idx}
-                      className={`thumb ${idx === currentImageIndex ? 'thumb--active' : ''}`}
-                      onClick={() => setCurrentImageIndex(idx)}
-                    >
-                      <img src={img} alt={`View ${idx + 1}`} loading="lazy" decoding="async" />
-                    </button>
-                  ))}
-                </div>
-              )}
+          {/* Thumbnail Navigation */}
+          {images.length > 1 && (
+            <div className="product-gallery__thumbs">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  className={`thumb ${idx === currentImageIndex ? 'thumb--active' : ''}`}
+                  onClick={() => setCurrentImageIndex(idx)}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  <img src={img} alt={`View ${idx + 1}`} loading="lazy" decoding="async" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Product Info */}
@@ -282,8 +292,8 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
             <div className="quantity-selector">
               <label htmlFor="quantity">Quantity</label>
               <div className="quantity-controls">
-                <button 
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   aria-label="Decrease"
                 >−</button>
                 <input
@@ -301,7 +311,7 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
                   onClick={() => setQuantity(Math.min(4, quantity + 1))}
                   aria-label="Increase"
                   disabled={quantity >= 4}
-                  style={{opacity: quantity >= 4 ? 0.5 : 1, cursor: quantity >= 4 ? 'not-allowed' : 'pointer'}}
+                  style={{ opacity: quantity >= 4 ? 0.5 : 1, cursor: quantity >= 4 ? 'not-allowed' : 'pointer' }}
                 >
                   +
                 </button>

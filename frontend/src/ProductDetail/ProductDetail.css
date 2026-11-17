@@ -14,7 +14,8 @@
 .product-detail {
   min-height: 100vh;
   background: #ffffff;
-  padding-top: 20px; /* Match navbar height - CANNOT REDUCE, navbar is fixed */
+  padding-top: 0; /* body already handles this via App.css */
+  overflow-x: clip; /* safety: nothing can push the page sideways */
 }
 
 /* Breadcrumb - NO gap between navbar and breadcrumb */
@@ -28,7 +29,6 @@
   font-size: 0.8rem;
   letter-spacing: 0.3px;
   background: white;
-  margin-top: -8px; /* Pull up to reduce gap */
   border-bottom: 1px solid var(--border, #e7e2d8);
 }
 
@@ -60,18 +60,28 @@
   max-width: 400px;
 }
 
-/* Main Container - NO gap between breadcrumb and content */
+/* Main Container
+   FIX: minmax(0, 1fr) instead of 1fr, so a column can never grow
+   wider than its half just because its content (many thumbnails,
+   big image) is wide. This was the cause of the broken product 9 layout. */
 .product-detail__container {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 48px 48px 32px; /* generous, even breathing room */
+  padding: 48px 48px 32px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 3rem;
   align-items: start;
   background: white;
   border-radius: 0;
   box-shadow: none;
+}
+
+@media (max-width: 1100px) {
+  .product-detail__container {
+    padding: 32px 24px;
+    gap: 2rem;
+  }
 }
 
 /* ==========================================
@@ -79,19 +89,24 @@
    ========================================== */
 .product-gallery {
   position: sticky;
-  top: 100px;
+  top: 20px;
+  align-self: start;
   height: fit-content;
-  padding-top: 0; /* Align with product title */
+  margin: 0;
+  padding-top: 0;
+  min-width: 0;      /* FIX: lets the column shrink below content width */
+  max-width: 100%;
 }
 
 .product-gallery__main {
   position: relative;
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 4/5;
   border-radius: 0;
   overflow: hidden;
   background: #ffffff;
-  margin: 0 0 1rem 0; /* Back to original margin */
+  margin: 0 0 1rem 0;
   padding: 0;
   border: none;
 }
@@ -99,7 +114,10 @@
 .product-gallery__main img {
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
+  object-position: top center; /* image starts right at the top, aligned with the title */
   padding: 24px;
   box-sizing: border-box;
 }
@@ -156,9 +174,12 @@
   }
 }
 
+/* FIX: thumbnails scroll inside the column instead of stretching it */
 .product-gallery__thumbs {
   display: flex;
   gap: 0.6rem;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   padding-bottom: 0.5rem;
   scrollbar-width: thin;
@@ -234,6 +255,8 @@
   flex-direction: column;
   gap: 1rem;
   padding-top: 0;
+  min-width: 0;      /* FIX */
+  max-width: 100%;
 }
 
 .product-info__header {
@@ -242,6 +265,10 @@
   align-items: flex-start;
   gap: 1rem;
   padding-bottom: 0.25rem;
+}
+
+.product-info__header > div {
+  min-width: 0;      /* FIX: title wraps properly next to the Share button */
 }
 
 .product-brand {
@@ -260,6 +287,7 @@
   line-height: 1.3;
   margin: 0;
   letter-spacing: -0.2px;
+  overflow-wrap: anywhere;
 }
 
 .share-btn {
@@ -276,6 +304,7 @@
   color: var(--text-mid, #6f6a5f);
   transition: all 0.2s;
   white-space: nowrap;
+  flex-shrink: 0;    /* FIX: Share button never gets squeezed/pushed out */
 }
 
 .share-btn:hover {
@@ -410,6 +439,7 @@
   line-height: 1.7;
   font-size: 0.9rem;
   animation: slideDown 0.2s ease;
+  overflow-wrap: anywhere;
 }
 
 .pd-section-content p {
@@ -537,19 +567,6 @@
   box-shadow: none;
 }
 
-.out-of-stock-btn {
-  background: #e7e2d8 !important;
-  color: #6f6a5f !important;
-  border-color: #e7e2d8 !important;
-  cursor: not-allowed !important;
-}
-
-.out-of-stock-btn:hover {
-  background: #e7e2d8 !important;
-  border-color: #e7e2d8 !important;
-  transform: none !important;
-}
-
 /* ==========================================
    FEATURES
    ========================================== */
@@ -601,7 +618,7 @@
 
 .related-products__grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.75rem;
 }
 
@@ -679,8 +696,14 @@
    RESPONSIVE
    ========================================== */
 @media (max-width: 1024px) {
+  .related-products__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
   .product-detail__container {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr); /* single column stays single column */
     gap: 2rem;
   }
 
@@ -688,15 +711,11 @@
     position: relative;
     top: 0;
   }
-
-  .related-products__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 @media (max-width: 768px) {
   .product-detail {
-    padding-top: 70px;
+    padding-top: 0; /* body already handles this via App.css */
   }
 
   .breadcrumb {
@@ -794,7 +813,7 @@
   }
 
   .related-products__grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
   }
 
@@ -1338,7 +1357,7 @@
   position: relative;
   display: flex;
   gap: 36px;
-  margin-bottom: 12px; /* Back to original spacing */
+  margin-bottom: 12px;
   margin-top: 0;
   background: transparent;
   padding: 0;
@@ -1449,7 +1468,7 @@
 
 @media (max-width: 768px) {
   .view-mode-toggle {
-    margin-bottom: 0; /* No gap on mobile too */
+    margin-bottom: 0;
     gap: 28px;
   }
 
@@ -1645,8 +1664,6 @@
 
 /* ==========================================
    3D VIEW — OVERLAY BUTTON ON IMAGE
-   (Replaces the old .view-mode-toggle tabs.
-   Add this block to ProductDetail.css)
    ========================================== */
 
 .gallery-3d-overlay-btn {
@@ -1740,34 +1757,13 @@
   }
 }
 
-/* ─── FIX: remove gap above product image so it aligns with heading ─── */
-
-.product-gallery {
-  position: sticky;
-  top: 20px;          /* CHANGED: was 100px — the large offset was creating
-                          the gap you saw before any scrolling happened.
-                          20px keeps a small breathing margin but starts
-                          the gallery right at the top of the row. */
-  align-self: start;  /* ADDED: forces this column to the top of the grid
-                          row regardless of the other column's height */
-  height: fit-content;
-  margin: 0;           /* ADDED: kill any inherited margin */
-}
-
-.product-detail__container {
-  align-items: start;  /* Confirms both columns start at the same top line */
-}
-
 /* ── Tattoo Quiz Banner on Product Detail Page ── */
 .pd-tattoo-quiz-banner {
   background: linear-gradient(135deg, #2b2620 0%, #3d3028 60%, #1e1a16 100%);
-  margin: 0 0 48px;
   border-radius: 16px;
   overflow: hidden;
   max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 48px;
+  margin: 0 auto 48px;
 }
 
 .pd-tattoo-quiz-banner__inner {
@@ -1862,22 +1858,27 @@
 
 .out-of-stock-btn {
   background: #9ca3af !important;
+  color: #fff !important;
+  border-color: #9ca3af !important;
   cursor: not-allowed !important;
   opacity: 0.7;
 }
 
 .out-of-stock-btn:hover {
   background: #9ca3af !important;
+  border-color: #9ca3af !important;
   transform: none !important;
 }
 
 .low-opacity-btn {
   background: #f59e0b !important;
+  border-color: #f59e0b !important;
   position: relative;
 }
 
 .low-opacity-btn:hover {
   background: #d97706 !important;
+  border-color: #d97706 !important;
 }
 
 .low-opacity-btn::after {
