@@ -602,12 +602,14 @@ function AppContent() {
                 }
               }
               
-              // If match found, sync stock from database
+              // If match found, sync stock and images from database
               if (dbProduct) {
                 const updatedProduct = { 
                   ...product, 
                   stock: dbProduct.stock,
-                  _dbId: dbProduct._id // Store database ID for reference
+                  _dbId: dbProduct._id,
+                  // If DB has images uploaded via admin, use those; else keep static bundled images
+                  ...(dbProduct.images && dbProduct.images.length > 0 && { images: dbProduct.images, img: dbProduct.images[0] }),
                 }
                 console.log('📦 Updated product:', product.id, product.name.substring(0, 40), 'stock:', updatedProduct.stock)
                 return updatedProduct
