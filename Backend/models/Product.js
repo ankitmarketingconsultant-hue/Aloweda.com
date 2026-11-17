@@ -30,6 +30,18 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  ingredients: {
+    type: String,
+    default: ''
+  },
+  howToUse: {
+    type: String,
+    default: ''
+  },
+  shippingReturns: {
+    type: String,
+    default: 'We process all domestic orders within 1 business day. Delivery typically takes 5–7 business days, while remote or interior locations may require 7–10 business days.'
+  },
   images: [{
     type: String
   }],

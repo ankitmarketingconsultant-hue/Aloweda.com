@@ -14,7 +14,7 @@ const CATEGORIES = [
   { value: 'tattoo',   label: '🖊 Tattoo Care' },
 ];
 
-const emptyEdit = { name: '', category: 'cream', price: '', description: '', images: '' };
+const emptyEdit = { name: '', category: 'cream', price: '', description: '', ingredients: '', howToUse: '', shippingReturns: '', images: '' };
 
 const ProductsManagement = () => {
   const navigate = useNavigate();
@@ -96,11 +96,14 @@ const ProductsManagement = () => {
   const openEditModal = (product) => {
     setEditProduct(product);
     setEditForm({
-      name:        product.name        || '',
-      category:    product.category    || 'cream',
-      price:       product.price       ?? '',
-      description: product.description || '',
-      images:      (product.images || []).join(', '),
+      name:            product.name            || '',
+      category:        product.category        || 'cream',
+      price:           product.price           ?? '',
+      description:     product.description     || '',
+      ingredients:     product.ingredients     || '',
+      howToUse:        product.howToUse        || '',
+      shippingReturns: product.shippingReturns || '',
+      images:          (product.images || []).join(', '),
     });
     setImageFile(null);
     setImagePreview('');
@@ -159,11 +162,14 @@ const ProductsManagement = () => {
         : urlsFromInput;
 
       const payload = {
-        name:        editForm.name,
-        category:    editForm.category,
-        price:       parseFloat(editForm.price),
-        description: editForm.description,
-        images:      finalImages,
+        name:            editForm.name,
+        category:        editForm.category,
+        price:           parseFloat(editForm.price),
+        description:     editForm.description,
+        ingredients:     editForm.ingredients,
+        howToUse:        editForm.howToUse,
+        shippingReturns: editForm.shippingReturns,
+        images:          finalImages,
       };
 
       const response = await fetch(`${API_URL}/api/admin/products/${editProduct._id}`, {
@@ -430,6 +436,42 @@ const ProductsManagement = () => {
                   value={editForm.description}
                   onChange={handleEditFormChange}
                   rows={4}
+                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, resize: 'vertical', fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '14px' }}>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Key Ingredients</label>
+                <textarea
+                  name="ingredients"
+                  value={editForm.ingredients}
+                  onChange={handleEditFormChange}
+                  rows={3}
+                  placeholder="e.g. Aloe Vera, Vitamin E, Salicylic Acid 2%..."
+                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, resize: 'vertical', fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '14px' }}>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>How to Use</label>
+                <textarea
+                  name="howToUse"
+                  value={editForm.howToUse}
+                  onChange={handleEditFormChange}
+                  rows={3}
+                  placeholder="e.g. Apply a small amount to clean skin..."
+                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, resize: 'vertical', fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '14px' }}>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Shipping & Returns</label>
+                <textarea
+                  name="shippingReturns"
+                  value={editForm.shippingReturns}
+                  onChange={handleEditFormChange}
+                  rows={2}
+                  placeholder="e.g. Delivered in 5–7 business days..."
                   style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, resize: 'vertical', fontFamily: 'inherit' }}
                 />
               </div>

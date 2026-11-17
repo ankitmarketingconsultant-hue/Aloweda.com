@@ -93,15 +93,18 @@ router.get('/products', auth, admin, async (req, res) => {
 // Update full product details (price, mrp, description, images)
 router.put('/products/:id', auth, admin, async (req, res) => {
   try {
-    const { price, mrp, description, images, name, category } = req.body;
+    const { price, mrp, description, images, name, category, ingredients, howToUse, shippingReturns } = req.body;
 
     const updateFields = {};
-    if (price !== undefined)       updateFields.price       = parseFloat(price);
-    if (mrp !== undefined)         updateFields.mrp         = parseFloat(mrp);
-    if (description !== undefined) updateFields.description = description;
-    if (images !== undefined)      updateFields.images      = images;
-    if (name !== undefined)        updateFields.name        = name;
-    if (category !== undefined)    updateFields.category    = category;
+    if (price !== undefined)           updateFields.price           = parseFloat(price);
+    if (mrp !== undefined)             updateFields.mrp             = parseFloat(mrp);
+    if (description !== undefined)     updateFields.description     = description;
+    if (images !== undefined)          updateFields.images          = images;
+    if (name !== undefined)            updateFields.name            = name;
+    if (category !== undefined)        updateFields.category        = category;
+    if (ingredients !== undefined)     updateFields.ingredients     = ingredients;
+    if (howToUse !== undefined)        updateFields.howToUse        = howToUse;
+    if (shippingReturns !== undefined) updateFields.shippingReturns = shippingReturns;
 
     if (Object.keys(updateFields).length === 0) {
       return res.status(400).json({ success: false, message: 'No fields to update' });
