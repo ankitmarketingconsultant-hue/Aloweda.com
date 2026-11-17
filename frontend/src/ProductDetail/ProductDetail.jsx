@@ -280,8 +280,7 @@ export default function ProductDetail({ product, onNavigate, onBack, relatedProd
               </button>
               {expandedSection === 'shipping' && (
                 <div className="pd-section-content">
-                  <p><strong>Shipping:</strong> Free shipping on orders above ₹999. Standard delivery in 5-7 business days.</p>
-                  <p><strong>Returns:</strong> 30-day hassle-free return policy. Products must be unused and in original packaging.</p>
+                  <p>{product.shippingReturns || product.shipping || 'Free shipping on orders above ₹999. Standard delivery in 5–7 business days. 30-day hassle-free return policy. Products must be unused and in original packaging.'}</p>
                 </div>
               )}
             </div>
