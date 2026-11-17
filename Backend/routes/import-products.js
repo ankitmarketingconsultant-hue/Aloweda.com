@@ -262,7 +262,8 @@ router.post('/add-tattoo', async (req, res) => {
   }
 });
 
-
+// Get import status
+router.get('/status', async (req, res) => {
   try {
     const count = await Product.countDocuments();
     res.json({
