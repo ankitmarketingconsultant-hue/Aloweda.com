@@ -4,16 +4,19 @@ const path = require('path');
 const os = require('os');
 
 // ── GST helpers ────────────────────────────────────────────────────────────
-// All website prices are INCLUSIVE of 18% GST
-// Formula: base = price / 1.18,  gst = price - base
-// CGST = SGST = gst / 2
-const GST_RATE    = 0.18;
-const SHIPPING_DEFAULT = 100; // default shipping if not stored on order
+// Website prices are GST-inclusive.
+// Client formula: CGST = price × 9%, SGST = price × 9%, Base = price - CGST - SGST
+// Example: ₹499 → CGST=44.91, SGST=44.91, Base=409.18, Total=499
+const CGST_RATE       = 0.09;
+const SGST_RATE       = 0.09;
+const SHIPPING_DEFAULT = 100;
 
 function calcGST(inclusivePrice) {
-  const base = Math.round(inclusivePrice / (1 + GST_RATE));
-  const gst  = inclusivePrice - base;
-  return { base, gst, cgst: Math.round(gst / 2), sgst: Math.round(gst / 2) };
+  const cgst    = parseFloat((inclusivePrice * CGST_RATE).toFixed(2));
+  const sgst    = parseFloat((inclusivePrice * SGST_RATE).toFixed(2));
+  const base    = parseFloat((inclusivePrice - cgst - sgst).toFixed(2));
+  const gst     = parseFloat((cgst + sgst).toFixed(2));
+  return { base, gst, cgst, sgst };
 }
 
 // ── Invoice generator ──────────────────────────────────────────────────────
@@ -59,15 +62,11 @@ class InvoiceGenerator {
     // discounted = GST-inclusive items amount after all discounts
     const discounted = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
 
-    // Extract GST from the GST-inclusive discounted amount
-    // base = discounted / 1.18  (pre-tax price)
-    // gst  = discounted - base  (18% GST component)
-    const base = discounted / (1 + GST_RATE);
-    const gst  = discounted - base;
-    const subtotal   = parseFloat(base.toFixed(2));
-    const cgst       = parseFloat((base * 0.09).toFixed(2));  // base × 9%
-    const sgst       = parseFloat((base * 0.09).toFixed(2));  // base × 9%
-    const gstAmt     = parseFloat((cgst + sgst).toFixed(2));
+    // Client formula: CGST = price×9%, SGST = price×9%, Base = price - CGST - SGST
+    const cgst     = parseFloat((discounted * CGST_RATE).toFixed(2));
+    const sgst     = parseFloat((discounted * SGST_RATE).toFixed(2));
+    const subtotal = parseFloat((discounted - cgst - sgst).toFixed(2));  // base price excl. tax
+    const gstAmt   = parseFloat((cgst + sgst).toFixed(2));
 
     // Shipping
     const shippingCharge = (pricing.shippingCharges !== undefined && pricing.shippingCharges !== null)
@@ -146,11 +145,9 @@ class InvoiceGenerator {
       const unitPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
       const lineTotal = unitPrice * qty;   // GST-inclusive line total
 
-      // Extract GST from GST-inclusive price
-      // base = lineTotal / 1.18, then CGST = base * 9%, SGST = base * 9%
-      const lineBase = lineTotal / (1 + GST_RATE);
-      const cgst = parseFloat((lineBase * 0.09).toFixed(2));
-      const sgst = parseFloat((lineBase * 0.09).toFixed(2));
+      // Client formula: CGST = price×9%, SGST = price×9%, Base = price - CGST - SGST
+      const cgst = parseFloat((lineTotal * CGST_RATE).toFixed(2));
+      const sgst = parseFloat((lineTotal * SGST_RATE).toFixed(2));
       const rowH = 58;
 
       this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
