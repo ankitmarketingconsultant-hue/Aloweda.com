@@ -64,8 +64,8 @@ class InvoiceGenerator {
     // gst  = discounted - base  (18% GST component)
     const base = discounted / (1 + GST_RATE);
     const gst  = discounted - base;
-    const subtotal = Math.round(base * 100) / 100;    // base price (excl. GST)
-    const gstAmt   = Math.round(gst  * 100) / 100;   // total GST (CGST+SGST)
+    const subtotal   = parseFloat(base.toFixed(2));   // base price (excl. GST) — no rounding
+    const gstAmt     = parseFloat(gst.toFixed(2));    // total GST — no rounding
 
     // Shipping
     const shippingCharge = (pricing.shippingCharges !== undefined && pricing.shippingCharges !== null)
@@ -73,7 +73,7 @@ class InvoiceGenerator {
       : SHIPPING_DEFAULT;
 
     // Grand total = GST-inclusive product price + shipping
-    const grandTotal = Math.round((discounted + shippingCharge) * 100) / 100;
+    const grandTotal = parseFloat((discounted + shippingCharge).toFixed(2));
 
     return { itemsTotal, discounted, subtotal, gst: gstAmt, grandTotal, shippingCharge };
   }
@@ -147,8 +147,8 @@ class InvoiceGenerator {
       // Extract GST from GST-inclusive price
       const lineBase = lineTotal / (1 + GST_RATE);
       const lineGst  = lineTotal - lineBase;
-      const cgst     = Math.round((lineGst / 2) * 100) / 100;
-      const sgst     = Math.round((lineGst / 2) * 100) / 100;
+      const cgst     = parseFloat((lineGst / 2).toFixed(2));   // exact 2 decimals, no rounding
+      const sgst     = parseFloat((lineGst / 2).toFixed(2));
       const rowH = 58;
 
       this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
