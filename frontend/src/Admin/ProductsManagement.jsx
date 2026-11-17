@@ -181,14 +181,19 @@ const ProductsManagement = () => {
       for (const file of imageFiles) {
         const fd = new FormData();
         fd.append('image', file);
-        const upRes = await fetch(`${API_URL}/api/upload`, {
+        const upRes = await fetch(`${API_URL}/api/upload/image`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: fd,
         });
         const upData = await upRes.json();
-        if (upRes.ok && upData.imageUrl) uploadedUrls.push(upData.imageUrl);
-        else throw new Error('Image upload failed: ' + (upData.message || ''));
+        if (upRes.ok && upData.imageUrl) {
+          // Make absolute URL if relative
+          const imgUrl = upData.imageUrl.startsWith('http')
+            ? upData.imageUrl
+            : `${API_URL}${upData.imageUrl}`;
+          uploadedUrls.push(imgUrl);
+        } else throw new Error('Image upload failed: ' + (upData.message || ''));
       }
 
       // Final images = remaining existing + newly uploaded
