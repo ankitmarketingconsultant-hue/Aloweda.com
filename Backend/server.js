@@ -18,7 +18,8 @@ const importProductsRoutes = require('./routes/import-products');
 const contentRoutes = require('./routes/content');
 const uploadRoutes = require('./routes/upload');
 const metaCapiTestRoutes = require('./routes/meta-capi-test');
-const consultationRoutes = require('./routes/consultation');
+const consultationRoutes     = require('./routes/consultation');
+const calendlyWebhookRoutes  = require('./routes/calendly-webhook');
 const protect = require('./middleware/auth');
 const User = require('./models/User');
 
@@ -129,6 +130,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/meta-capi-test', metaCapiTestRoutes);
 app.use('/api/consultation', consultationRoutes);
+app.use('/api/calendly-webhook', calendlyWebhookRoutes);
 
 app.get('/api/profile', protect, async (req, res) => {
   const user = await User.findById(req.userId).select('-password');
