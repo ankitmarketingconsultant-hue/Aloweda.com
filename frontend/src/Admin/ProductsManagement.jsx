@@ -384,8 +384,8 @@ const ProductsManagement = () => {
                         onError={e => { e.target.style.display = 'none'; }}
                       />
                     ) : (
-                      <div style={{ width: 52, height: 52, background: '#f3f4f6', borderRadius: 6, border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                        📦
+                      <div style={{ width: 52, height: 52, background: '#f3f4f6', borderRadius: 6, border: '1px dashed #d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#9ca3af', textAlign: 'center', lineHeight: 1.2 }}>
+                        No<br/>Image
                       </div>
                     )}
                   </td>
