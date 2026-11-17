@@ -114,6 +114,7 @@ router.post('/place-order', async (req, res) => {
         paymentMethod: 'Cash on Delivery (COD)',
         orderId: order.orderId,
         invoicePath,
+        shippingCharges: pricing.shippingCharges,
       });
     } catch (emailError) {
       console.error('Email sending failed:', emailError);

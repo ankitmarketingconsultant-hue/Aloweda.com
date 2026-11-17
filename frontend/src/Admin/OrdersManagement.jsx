@@ -355,7 +355,7 @@ const OrdersManagement = () => {
                   </div>
                   <div className="info-item">
                     <span className="info-label">Total Amount:</span>
-                    <span className="info-value amount">₹{order.totalAmount || 0}</span>
+                    <span className="info-value amount">₹{order.pricing?.total || order.totalAmount || 0}</span>
                   </div>
                   <div className="info-item">
                     <span className="info-label">Payment Method:</span>

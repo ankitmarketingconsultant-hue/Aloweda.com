@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
  * @param {string} opts.orderId
  * @param {string} [opts.invoicePath]  - absolute path to generated PDF
  */
-async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, invoicePath }) {
+async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, invoicePath, shippingCharges }) {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.log('⚠️  Email not configured — skipping notification.');
     return;
@@ -36,7 +36,7 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
 
   // ── GST breakdown for email body ──
   const GST_RATE = 0.18;
-  const SHIPPING = 80;
+  const SHIPPING_DEFAULT = 100;
   let itemsTotal = 0;
   items.forEach(i => {
     const qty   = i.quantity || 1;
@@ -45,7 +45,11 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
   });
   const base      = Math.round(itemsTotal / (1 + GST_RATE));
   const gst       = itemsTotal - base;
-  const grandTotal = itemsTotal + SHIPPING;
+  // Use actual shipping and total from the order if passed in; fall back to computed values
+  const shippingCharge = (typeof shippingCharges === 'number')
+    ? shippingCharges
+    : SHIPPING_DEFAULT;
+  const grandTotal = total || (itemsTotal + shippingCharge);
 
   // ── Admin email ──
   const adminHtml = `
@@ -82,8 +86,8 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
         <h3 style="color:#1f4d3d;margin-top:0;">Payment Summary</h3>
         <table style="width:100%;border-collapse:collapse;font-size:14px;">
           <tr><td style="padding:6px 0;">Subtotal (excl. GST)</td><td style="text-align:right;">₹${base}</td></tr>
-          <tr><td style="padding:6px 0;">GST @ 18% (CGST ₹${Math.round(gst/2)} + SGST ₹${Math.round(gst/2)})</td><td style="text-align:right;">₹${gst}</td></tr>
-          <tr><td style="padding:6px 0;">Shipping</td><td style="text-align:right;">₹${SHIPPING}</td></tr>
+          <tr><td style="padding:6px 0;">GST @ 18% (CGST 9% = ₹${Math.round(gst/2)} + SGST 9% = ₹${Math.round(gst/2)})</td><td style="text-align:right;">₹${gst}</td></tr>
+          <tr><td style="padding:6px 0;">Shipping</td><td style="text-align:right;">${shippingCharge === 0 ? 'FREE' : `₹${shippingCharge}`}</td></tr>
           <tr style="border-top:2px solid #1f4d3d;font-weight:bold;font-size:16px;">
             <td style="padding:8px 0;">Total</td><td style="text-align:right;">₹${grandTotal}</td>
           </tr>
@@ -129,8 +133,8 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
       <div style="background:#fff;padding:24px;border-radius:8px;margin-bottom:16px;">
         <table style="width:100%;font-size:14px;border-collapse:collapse;">
           <tr><td style="padding:6px 0;">Subtotal (excl. GST)</td><td style="text-align:right;">₹${base}</td></tr>
-          <tr><td style="padding:6px 0;">GST @ 18%</td><td style="text-align:right;">₹${gst}</td></tr>
-          <tr><td style="padding:6px 0;">Shipping</td><td style="text-align:right;">₹${SHIPPING}</td></tr>
+          <tr><td style="padding:6px 0;">GST @ 18% (CGST 9% + SGST 9%)</td><td style="text-align:right;">₹${gst}</td></tr>
+          <tr><td style="padding:6px 0;">Shipping</td><td style="text-align:right;">${shippingCharge === 0 ? 'FREE' : `₹${shippingCharge}`}</td></tr>
           <tr style="border-top:2px solid #1f4d3d;font-weight:bold;font-size:16px;">
             <td style="padding:8px 0;">Total</td><td style="text-align:right;">₹${grandTotal}</td>
           </tr>

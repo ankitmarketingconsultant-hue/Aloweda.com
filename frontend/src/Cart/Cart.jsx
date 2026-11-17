@@ -90,7 +90,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
   const couponDiscount = appliedCoupon ? parseFloat(appliedCoupon.discount) || 0 : 0
 
   const bundleDiscount = appliedBundle ? parseFloat(appliedBundle.discount) || 0 : 0
-  const shipping = subtotal > 999 ? 0 : 50
+  const shipping = subtotal > 999 ? 0 : 100
   const total = subtotal - bundleDiscount - multiBuyDiscount - serumBundleDiscount - onlinePaymentDiscount - couponDiscount + shipping
 
   // Debug logs
@@ -348,7 +348,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
               `Phone: ${checkoutForm.phone}\n` +
               `Address: ${checkoutForm.address}, ${checkoutForm.city}, ${checkoutForm.state} - ${checkoutForm.pincode}\n\n` +
               `ITEMS:\n${orderItems.map(i => `• ${i.name} x${i.quantity} — ${i.price}`).join('\n')}\n\n` +
-              `TOTAL: ₹${total} (incl. ₹80 shipping)`
+              `TOTAL: ₹${total} (incl. ₹100 shipping)`
             )
             await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 })
           } catch (w3Err) {
@@ -445,7 +445,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
                   `Phone: ${checkoutForm.phone}\n` +
                   `Address: ${checkoutForm.address}, ${checkoutForm.city}, ${checkoutForm.state} - ${checkoutForm.pincode}\n\n` +
                   `ITEMS:\n${orderItems.map(i => `• ${i.name} x${i.quantity} — ${i.price}`).join('\n')}\n\n` +
-                  `TOTAL: ₹${total} (incl. ₹80 shipping)`
+                  `TOTAL: ₹${total} (incl. ₹100 shipping)`
                 )
                 await fetch('https://api.web3forms.com/submit', { method: 'POST', body: w3 })
               } catch (w3Err) {

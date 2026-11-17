@@ -104,7 +104,7 @@ exports.validateAndCalculatePayment = (paymentMethod, subtotal) => {
  * @returns {object} Shipping info
  */
 exports.calculateShippingCharges = (subtotal, threshold = 999) => {
-  const SHIPPING_CHARGES = 50; // Default shipping charges
+  const SHIPPING_CHARGES = 100; // Default shipping charges
 
   if (subtotal >= threshold) {
     return {

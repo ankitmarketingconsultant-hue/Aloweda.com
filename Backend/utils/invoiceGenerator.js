@@ -7,8 +7,8 @@ const os = require('os');
 // All website prices are INCLUSIVE of 18% GST
 // Formula: base = price / 1.18,  gst = price - base
 // CGST = SGST = gst / 2
-const GST_RATE   = 0.18;
-const SHIPPING   = 80; // fixed for all orders
+const GST_RATE    = 0.18;
+const SHIPPING_DEFAULT = 100; // default shipping if not stored on order
 
 function calcGST(inclusivePrice) {
   const base = Math.round(inclusivePrice / (1 + GST_RATE));
@@ -55,9 +55,21 @@ class InvoiceGenerator {
     const couponDiscount = pricing.couponDiscount || 0;
     const onlineDiscount = pricing.onlinePaymentDiscount || 0;
     const discounted     = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
+
+    // Extract GST from the discounted (GST-inclusive) items amount
     const { base: subtotal, gst } = calcGST(discounted);
-    const grandTotal     = discounted + SHIPPING;
-    return { itemsTotal, discounted, subtotal, gst, grandTotal };
+
+    // Use actual shipping from order, fall back to default ₹100
+    const shippingCharge = (pricing.shippingCharges !== undefined && pricing.shippingCharges !== null)
+      ? pricing.shippingCharges
+      : SHIPPING_DEFAULT;
+
+    // Use stored grand total if available, otherwise compute
+    const grandTotal = pricing.total
+      ? pricing.total
+      : discounted + shippingCharge;
+
+    return { itemsTotal, discounted, subtotal, gst, grandTotal, shippingCharge };
   }
 
   // ── Build ──
@@ -137,9 +149,9 @@ class InvoiceGenerator {
       // Taxes column
       this.doc
         .text(`Rs. ${cgst.toFixed(2)}`, colTax, y + 8)
-        .text('CGST',                   colTax, y + 19)
+        .text('CGST 9%',                colTax, y + 19)
         .text(`Rs. ${sgst.toFixed(2)}`, colTax, y + 30)
-        .text('SGST',                   colTax, y + 41);
+        .text('SGST 9%',                colTax, y + 41);
 
       // Price column
       this.doc
@@ -200,7 +212,7 @@ class InvoiceGenerator {
 
   // ── Payment Details ──
   _paymentDetails() {
-    const { subtotal, gst, grandTotal } = this._computeTotals();
+    const { subtotal, gst, grandTotal, shippingCharge } = this._computeTotals();
 
     this.doc.fontSize(13).font('Helvetica-Bold').fillColor('#000')
       .text('Payment Details', this.L, this.doc.y);
@@ -208,8 +220,8 @@ class InvoiceGenerator {
 
     const rows = [
       { label: 'Subtotal price:', value: `Rs. ${subtotal.toFixed(2)}`, bold: false },
-      { label: 'Total tax',       value: `Rs. ${gst.toFixed(2)}`,      bold: false },
-      { label: 'Shipping:',       value: `Rs. ${SHIPPING.toFixed(2)}`, bold: false },
+      { label: 'Total tax (CGST 9% + SGST 9%):', value: `Rs. ${gst.toFixed(2)}`,  bold: false },
+      { label: 'Shipping:',       value: shippingCharge === 0 ? 'FREE' : `Rs. ${shippingCharge.toFixed(2)}`, bold: false },
       { label: 'Total price',     value: `Rs. ${grandTotal.toFixed(2)}`,bold: true  },
     ];
 
@@ -294,5 +306,5 @@ exports.generateInvoice = async (order, outputDir) => {
   return outputPath;
 };
 
-exports.SHIPPING_CHARGE = SHIPPING;
+exports.SHIPPING_CHARGE = SHIPPING_DEFAULT;
 exports.calcGST = calcGST;

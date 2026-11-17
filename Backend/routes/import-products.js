@@ -138,6 +138,33 @@ const SAMPLE_PRODUCTS = [
     stock: 150,
     description: 'Nourishing lip butter',
     isActive: true
+  },
+  {
+    name: 'Tattoo Aftercare Butter 50G',
+    category: 'tattoo',
+    price: 499,
+    mrp: 549,
+    stock: 100,
+    description: 'Nourishing tattoo aftercare butter to keep ink vibrant and skin hydrated post-tattoo',
+    isActive: true
+  },
+  {
+    name: 'Tattoo Brightening Face Wash 150ml',
+    category: 'tattoo',
+    price: 349,
+    mrp: 399,
+    stock: 100,
+    description: 'Gentle sulfate-free face wash specially formulated for tattooed skin',
+    isActive: true
+  },
+  {
+    name: 'Tattoo Care Serum 30ml',
+    category: 'tattoo',
+    price: 599,
+    mrp: 649,
+    stock: 100,
+    description: 'Healing serum with aloe vera and vitamin E to protect and nourish tattooed skin',
+    isActive: true
   }
 ];
 
@@ -183,8 +210,59 @@ async function importProducts(req, res) {
   }
 }
 
-// Get import status
-router.get('/status', async (req, res) => {
+// Upsert tattoo products (adds them if not present, safe to call multiple times)
+router.post('/add-tattoo', async (req, res) => {
+  try {
+    const tattooProducts = [
+      {
+        name: 'Tattoo Aftercare Butter 50G',
+        category: 'tattoo',
+        price: 499,
+        mrp: 549,
+        stock: 100,
+        description: 'Nourishing tattoo aftercare butter to keep ink vibrant and skin hydrated post-tattoo',
+        isActive: true
+      },
+      {
+        name: 'Tattoo Brightening Face Wash 150ml',
+        category: 'tattoo',
+        price: 349,
+        mrp: 399,
+        stock: 100,
+        description: 'Gentle sulfate-free face wash specially formulated for tattooed skin',
+        isActive: true
+      },
+      {
+        name: 'Tattoo Care Serum 30ml',
+        category: 'tattoo',
+        price: 599,
+        mrp: 649,
+        stock: 100,
+        description: 'Healing serum with aloe vera and vitamin E to protect and nourish tattooed skin',
+        isActive: true
+      }
+    ];
+
+    const added = [];
+    for (const p of tattooProducts) {
+      const exists = await Product.findOne({ name: p.name });
+      if (!exists) {
+        const created = await Product.create(p);
+        added.push(created.name);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: added.length > 0 ? `Added ${added.length} tattoo product(s)` : 'Tattoo products already exist',
+      added
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
   try {
     const count = await Product.countDocuments();
     res.json({

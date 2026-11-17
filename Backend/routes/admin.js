@@ -90,6 +90,40 @@ router.get('/products', auth, admin, async (req, res) => {
   }
 });
 
+// Update full product details (price, mrp, description, images)
+router.put('/products/:id', auth, admin, async (req, res) => {
+  try {
+    const { price, mrp, description, images, name, category } = req.body;
+
+    const updateFields = {};
+    if (price !== undefined)       updateFields.price       = parseFloat(price);
+    if (mrp !== undefined)         updateFields.mrp         = parseFloat(mrp);
+    if (description !== undefined) updateFields.description = description;
+    if (images !== undefined)      updateFields.images      = images;
+    if (name !== undefined)        updateFields.name        = name;
+    if (category !== undefined)    updateFields.category    = category;
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields to update' });
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      updateFields,
+      { new: true, runValidators: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    res.json({ success: true, message: 'Product updated successfully', product });
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).json({ success: false, message: 'Failed to update product' });
+  }
+});
+
 // Update product price
 router.put('/products/:id/price', auth, admin, async (req, res) => {
   try {
@@ -420,8 +454,8 @@ router.get('/analytics', auth, admin, async (req, res) => {
     
     // Total sales calculation
     const totalSales = orders.reduce((sum, order) => {
-      if (order.status !== 'cancelled' && order.status !== 'refunded') {
-        return sum + (order.totalAmount || 0);
+      if (order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Refunded') {
+        return sum + (order.pricing?.total || order.totalAmount || 0);
       }
       return sum;
     }, 0);
