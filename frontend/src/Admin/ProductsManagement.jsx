@@ -14,7 +14,7 @@ const CATEGORIES = [
   { value: 'tattoo',   label: '🖊 Tattoo Care' },
 ];
 
-const emptyEdit = { name: '', category: 'cream', price: '', mrp: '', description: '', images: '' };
+const emptyEdit = { name: '', category: 'cream', price: '', description: '', images: '' };
 
 const ProductsManagement = () => {
   const navigate = useNavigate();
@@ -99,7 +99,6 @@ const ProductsManagement = () => {
       name:        product.name        || '',
       category:    product.category    || 'cream',
       price:       product.price       ?? '',
-      mrp:         product.mrp         ?? '',
       description: product.description || '',
       images:      (product.images || []).join(', '),
     });
@@ -150,20 +149,19 @@ const ProductsManagement = () => {
         else throw new Error('Image upload failed');
       }
 
-      // Build images array: combine existing URL inputs + newly uploaded
+      // Build images array: if new image uploaded it REPLACES all old ones, else keep URL input
       const urlsFromInput = editForm.images
         .split(',')
         .map(s => s.trim())
         .filter(Boolean);
       const finalImages = uploadedUrl
-        ? [uploadedUrl, ...urlsFromInput]
+        ? [uploadedUrl]           // new upload replaces everything
         : urlsFromInput;
 
       const payload = {
         name:        editForm.name,
         category:    editForm.category,
         price:       parseFloat(editForm.price),
-        mrp:         parseFloat(editForm.mrp),
         description: editForm.description,
         images:      finalImages,
       };
@@ -325,14 +323,13 @@ const ProductsManagement = () => {
               <th>Product Name</th>
               <th>Category</th>
               <th>Price (₹)</th>
-              <th>MRP (₹)</th>
               <th>Stock Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredProducts.length === 0 ? (
-              <tr><td colSpan="6" className="no-data">No products found</td></tr>
+              <tr><td colSpan="5" className="no-data">No products found</td></tr>
             ) : (
               filteredProducts.map((product) => (
                 <tr key={product._id}>
@@ -350,7 +347,6 @@ const ProductsManagement = () => {
                     </span>
                   </td>
                   <td><span className="price-display">₹{product.price || 0}</span></td>
-                  <td><span style={{ color: '#9ca3af', textDecoration: 'line-through' }}>₹{product.mrp || 0}</span></td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <label className="stock-toggle">
@@ -413,7 +409,7 @@ const ProductsManagement = () => {
                 </select>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginBottom: 14 }}>
                 <div>
                   <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Price (₹)</label>
                   <input
@@ -421,17 +417,6 @@ const ProductsManagement = () => {
                     type="number"
                     min="0"
                     value={editForm.price}
-                    onChange={handleEditFormChange}
-                    style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>MRP (₹)</label>
-                  <input
-                    name="mrp"
-                    type="number"
-                    min="0"
-                    value={editForm.mrp}
                     onChange={handleEditFormChange}
                     style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
                   />
@@ -461,7 +446,7 @@ const ProductsManagement = () => {
               </div>
 
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Upload New Image <span style={{ fontWeight: 400, color: '#6b7280' }}>(replaces first slot)</span></label>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>Upload New Image <span style={{ fontWeight: 400, color: '#6b7280' }}>(replaces current image)</span></label>
                 <input
                   type="file"
                   accept="image/*"
