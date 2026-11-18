@@ -547,69 +547,65 @@ function AppContent() {
         const data = await response.json()
         
         if (data.success && data.products && data.products.length > 0) {
-          console.log('📦 Syncing stock from database:', data.products.length, 'products')
+          console.log('📦 Syncing from database:', data.products.length, 'products')
           
-          // Log all database products with their stock
-          console.log('Database products:', data.products.map(p => ({ 
-            name: p.name, 
-            stock: p.stock,
-            outOfStock: p.stock === 0 
-          })))
-          
-          // Create a map of database products for faster lookup
-          const dbProductMap = new Map()
+          // ── Build a lookup map keyed by the numeric `frontendId` stored in DB.
+          // Admin saves products with a `frontendId` field that matches the
+          // hardcoded numeric id in ALL_PRODUCTS. This is a stable key that
+          // survives name changes, so renaming a product in admin no longer
+          // breaks the merge.
+          const dbById = new Map()      // frontendId  → dbProduct
+          const dbByName = new Map()    // normalised name → dbProduct (fallback)
+
           data.products.forEach(dbProduct => {
+            if (dbProduct.frontendId) {
+              dbById.set(Number(dbProduct.frontendId), dbProduct)
+            }
+            // keep name-based fallback for products that don't yet have frontendId
             const normalizedName = dbProduct.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
-            dbProductMap.set(normalizedName, dbProduct)
-            console.log('Mapped:', normalizedName, '→ stock:', dbProduct.stock)
+            dbByName.set(normalizedName, dbProduct)
           })
           
-          // Update products state with stock from database
+          // Format a numeric price from DB → "Rs. 599.00" display string
+          const fmtPrice = (num) =>
+            num ? `Rs. ${Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : null
+
+          // Update products state with everything from database
           setProducts(prevProducts => {
-            console.log('Frontend products count:', prevProducts.length)
-            
             const updated = prevProducts.map(product => {
-              const normalizedProductName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
-              console.log('Checking:', product.name, '→ normalized:', normalizedProductName.substring(0, 30))
-            
-              // Try exact match first
-              let dbProduct = dbProductMap.get(normalizedProductName)
-              
-              if (dbProduct) {
-                console.log('✅ EXACT MATCH:', product.name, '→ stock:', dbProduct.stock)
-              }
-              
-              // If no exact match, try partial matching
+              // 1️⃣ Primary: match by stable numeric id
+              let dbProduct = dbById.get(product.id)
+
+              // 2️⃣ Fallback: name-based matching for products not yet assigned frontendId
               if (!dbProduct) {
-                for (const [dbName, dbProd] of dbProductMap.entries()) {
-                  // Check if one name contains the other (minimum 15 chars for match)
-                  if (normalizedProductName.length >= 15 && dbName.length >= 15) {
-                    if (normalizedProductName.includes(dbName) || dbName.includes(normalizedProductName)) {
+                const normalizedProductName = product.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim()
+                dbProduct = dbByName.get(normalizedProductName)
+
+                if (!dbProduct) {
+                  // substring / prefix fallback
+                  for (const [dbName, dbProd] of dbByName.entries()) {
+                    if (normalizedProductName.length >= 15 && dbName.length >= 15) {
+                      if (normalizedProductName.includes(dbName) || dbName.includes(normalizedProductName)) {
+                        dbProduct = dbProd
+                        break
+                      }
+                    }
+                    const prodStart = normalizedProductName.substring(0, 20)
+                    const dbStart = dbName.substring(0, 20)
+                    if (prodStart === dbStart && prodStart.length >= 15) {
                       dbProduct = dbProd
-                      console.log('✅ PARTIAL MATCH:', product.name, '→', dbProd.name, '→ stock:', dbProd.stock)
                       break
                     }
-                  }
-                  
-                  // Try matching first 20 characters
-                  const prodStart = normalizedProductName.substring(0, 20)
-                  const dbStart = dbName.substring(0, 20)
-                  if (prodStart === dbStart && prodStart.length >= 15) {
-                    dbProduct = dbProd
-                    console.log('✅ PREFIX MATCH:', product.name, '→', dbProd.name, '→ stock:', dbProd.stock)
-                    break
                   }
                 }
               }
               
-              // If match found, sync stock and images from database
               if (dbProduct) {
-                // Format price number from DB → "Rs. 599.00" string for frontend
-                const fmtPrice = (num) => num ? `Rs. ${Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}` : null;
                 const updatedProduct = { 
                   ...product, 
                   stock:           dbProduct.stock,
                   _dbId:           dbProduct._id,
+                  // Always use the DB value so admin edits (name, price, etc.) show immediately
                   name:            dbProduct.name            || product.name,
                   price:           fmtPrice(dbProduct.price) || product.price,
                   mrp:             fmtPrice(dbProduct.mrp)   || product.mrp,
@@ -617,25 +613,16 @@ function AppContent() {
                   ingredients:     dbProduct.ingredients     || product.ingredients,
                   howToUse:        dbProduct.howToUse        || product.howToUse,
                   shippingReturns: dbProduct.shippingReturns || product.shippingReturns || product.shipping,
-                  // If DB has images uploaded via admin, use those; else keep static bundled images
                   ...(dbProduct.images && dbProduct.images.length > 0 && { images: dbProduct.images, img: dbProduct.images[0] }),
                 }
-                console.log('📦 Updated product:', product.id, product.name.substring(0, 40), 'stock:', updatedProduct.stock)
                 return updatedProduct
               }
               
-              // No match found - keep existing stock or default to 100
-              console.log('❌ NO MATCH for:', product.name)
               return { ...product, stock: product.stock ?? 100 }
             })
             
             const matchedCount = updated.filter(p => p._dbId).length
             console.log(`✅ Synced ${matchedCount}/${prevProducts.length} products with database`)
-            
-            // Log products with stock = 0
-            const oosProducts = updated.filter(p => p.stock === 0)
-            console.log('🔴 OUT OF STOCK products:', oosProducts.map(p => ({ id: p.id, name: p.name, stock: p.stock })))
-            
             return updated
           })
         } else {
@@ -775,7 +762,7 @@ function AppContent() {
               onLoginClick={() => setShowLogin(true)} 
               cartCount={cartCount} 
               onAddToCart={addToCart} 
-              allProducts={ALL_PRODUCTS}
+              allProducts={products}
               cart={cart}
             />
           } 
@@ -790,37 +777,37 @@ function AppContent() {
         {/* Shop Routes */}
         <Route 
           path="/shop" 
-          element={<AllProductsPage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} />} 
+          element={<AllProductsPage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
 
         {/* Skin Care Routes */}
         <Route 
           path="/skincare" 
-          element={<SkinCarePage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
         <Route 
           path="/serums" 
-          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="serums" pageTitle="Serums" onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="serums" pageTitle="Serums" onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
         <Route 
           path="/creams" 
-          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="creams" pageTitle="Creams" onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="creams" pageTitle="Creams" onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
         <Route 
           path="/moisturisers" 
-          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="moisturisers" pageTitle="Moisturisers" onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="moisturisers" pageTitle="Moisturisers" onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
         <Route 
           path="/tattoo" 
-          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="tattoo" pageTitle="Tattoo Care" onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="tattoo" pageTitle="Tattoo Care" onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
         <Route 
           path="/rituals" 
-          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="rituals" pageTitle="Skin Rituals" onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="rituals" pageTitle="Skin Rituals" onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
         <Route 
           path="/facewash" 
-          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="facewash" pageTitle="Face Wash" onLoginClick={() => setShowLogin(true)} />} 
+          element={<SkinCarePage onNavigate={handleNavigate} categoryFilter="facewash" pageTitle="Face Wash" onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
 
         {/* Hair Care Route */}
@@ -838,7 +825,7 @@ function AppContent() {
         {/* Best Sellers Route */}
         <Route 
           path="/bestsellers" 
-          element={<BestSellerPage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} />} 
+          element={<BestSellerPage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} cartCount={cartCount} products={products} />} 
         />
 
         {/* Build My Regimen Route */}

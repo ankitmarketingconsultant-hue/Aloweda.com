@@ -28,7 +28,7 @@ import TattooCleanser from '../assets/TattooCleanser.png'
 import TattooButter from '../assets/TattooButter.png'
 import WinterCombo from '../assets/WinterComboMobileView.png'
 
-const products = [
+const productsFallback = [
   { id:1,  img:SC1,  name:'YOUR SIMPLE ROUTINE: The Day Cream + The Night Cream + Lip Butter', category: 'Combo', keywords: 'day cream night cream lip butter routine combo kit', price:'Rs. 899.00', mrp:'Rs. 1,199.00' },
   { id:2,  img:SC2,  name:'PERFECT COMPLEXION RITUAL: Pigment Control Serum + The Day Cream + Complexion Cream + Smooth Perfection Serum', category: 'Combo', keywords: 'pigment control serum day cream complexion smooth perfection ritual combo kit', price:'Rs. 1,299.00', mrp:'Rs. 1,599.00' },
   { id:3,  img:SC3,  name:'RITUAL OF RADIANCE: Super Glow Serum 30 ml + The Day Cream + Radiance Cream 50 gram', category: 'Combo', keywords: 'super glow serum day cream radiance ritual combo kit glow', price:'Rs. 1,149.00', mrp:'Rs. 1,299.00' },
@@ -50,12 +50,14 @@ const products = [
   { id:21, img:WinterCombo, name:'Winter Combo : The Day Cream 50 Gram + The Night Cream 50 Gram + Lip Butter 15 Gram', category: 'Combo', keywords: 'winter combo day cream night cream lip butter routine spf hyaluronic acid retinol niacinamide hydration winter care', price:'Rs. 699.00' },
 ]
 
-export default function SkinCarePage({ onNavigate, searchQuery, categoryFilter, pageTitle, showAllProducts, onLoginClick }) {
+export default function SkinCarePage({ onNavigate, searchQuery, categoryFilter, pageTitle, showAllProducts, onLoginClick, products: productsProp }) {
   useSEO({
     title: `${pageTitle || 'Skincare'} | Aloweda`,
     description: `Shop Aloweda ${pageTitle || 'skincare'} — science-based formulas with Vitamin C, Niacinamide, Retinol, Alpha Arbutin & more. Free shipping above ₹999.`,
     canonical: categoryFilter ? `/${categoryFilter}` : '/skincare',
   })
+  // Use live products from App (reflects admin edits), fall back to hardcoded list
+  const products = productsProp && productsProp.length > 0 ? productsProp : productsFallback
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '')
   const [hoveredProduct, setHoveredProduct] = useState(null)
 

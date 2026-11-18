@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 // Sample products data
 const SAMPLE_PRODUCTS = [
   {
+    frontendId: 1,
     name: 'YOUR SIMPLE ROUTINE: The Day Cream + The Night Cream + Lip Butter',
     category: 'combo',
     price: 899,
@@ -14,6 +15,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 2,
     name: 'PERFECT COMPLEXION RITUAL',
     category: 'combo',
     price: 1299,
@@ -23,6 +25,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 3,
     name: 'RITUAL OF RADIANCE',
     category: 'combo',
     price: 1149,
@@ -32,6 +35,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 4,
     name: 'The Day Cream 50G',
     category: 'cream',
     price: 499,
@@ -41,6 +45,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 5,
     name: 'The Night Cream 50G',
     category: 'cream',
     price: 549,
@@ -50,6 +55,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 6,
     name: 'Saffron Face Oil 30ml',
     category: 'oil',
     price: 799,
@@ -59,6 +65,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 7,
     name: 'Complexion Cream 50G',
     category: 'cream',
     price: 499,
@@ -68,6 +75,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 8,
     name: 'Super Glow Serum 30ml',
     category: 'serum',
     price: 649,
@@ -77,6 +85,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 9,
     name: 'Pigment Control Serum 30ml',
     category: 'serum',
     price: 599,
@@ -86,6 +95,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 13,
     name: 'Smooth Perfection Serum 30ml',
     category: 'serum',
     price: 599,
@@ -95,6 +105,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 14,
     name: 'Radiance Cream 50G',
     category: 'cream',
     price: 549,
@@ -104,6 +115,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 11,
     name: 'Lines & Wrinkles Serum 30ml',
     category: 'serum',
     price: 649,
@@ -113,6 +125,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 15,
     name: 'Anti Acne Face Wash 150ml',
     category: 'facewash',
     price: 349,
@@ -122,6 +135,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 16,
     name: 'Hair Therapy Serum 50ml',
     category: 'haircare',
     price: 699,
@@ -131,6 +145,7 @@ const SAMPLE_PRODUCTS = [
     isActive: true
   },
   {
+    frontendId: 18,
     name: 'Lip Butter 15G',
     category: 'lipcare',
     price: 299,

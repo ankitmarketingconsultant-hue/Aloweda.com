@@ -16,7 +16,7 @@ const fs = require('fs');
 router.get('/products/public', async (req, res) => {
   try {
     const products = await Product.find({ isActive: true })
-      .select('name category price mrp stock description ingredients howToUse shippingReturns images')
+      .select('name category price mrp stock description ingredients howToUse shippingReturns images frontendId')
       .sort({ createdAt: -1 });
     
     res.json({
@@ -106,6 +106,7 @@ router.put('/products/:id', auth, admin, async (req, res) => {
     if (ingredients !== undefined)     updateFields.ingredients     = ingredients;
     if (howToUse !== undefined)        updateFields.howToUse        = howToUse;
     if (shippingReturns !== undefined) updateFields.shippingReturns = shippingReturns;
+    if (req.body.frontendId !== undefined) updateFields.frontendId = req.body.frontendId !== null ? parseInt(req.body.frontendId) : null;
 
     if (Object.keys(updateFields).length === 0) {
       return res.status(400).json({ success: false, message: 'No fields to update' });

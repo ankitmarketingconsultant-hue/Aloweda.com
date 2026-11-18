@@ -16,7 +16,11 @@ import HairCareHeroImg from '../assets/HairCareFeaturedList.png'
 import LipCareImg from '../assets/FeaturedListLipCare.jpg'
 import SmartSkinCareImg from '../assets/FeaturedListSkinCare.png'
 
-const BEST_SELLER_PRODUCTS = [
+// Stable list of best-seller product IDs — order matters (determines display order)
+const BEST_SELLER_IDS = [1, 2, 3, 8, 12, 16]
+
+// Fallback data used only when the live products list isn't available yet
+const BEST_SELLER_FALLBACK = [
   { id: 1,  img: SC1,  name: 'YOUR SIMPLE ROUTINE: The Day Cream + The Night Cream + Lip Butter', category: 'Combo', price: 'Rs. 899.00', mrp: 'Rs. 1,199.00', tag: 'Best Seller' },
   { id: 2,  img: SC2,  name: 'PERFECT COMPLEXION RITUAL: Pigment Control Serum + The Day Cream + Complexion Cream + Smooth Perfection Serum', category: 'Combo', price: 'Rs. 1,299.00', mrp: 'Rs. 1,599.00', tag: 'Best Seller' },
   { id: 3,  img: SC3,  name: 'RITUAL OF RADIANCE: Super Glow Serum 30 ml + The Day Cream + Radiance Cream 50 gram', category: 'Combo', price: 'Rs. 1,149.00', mrp: 'Rs. 1,299.00', tag: 'Best Seller' },
@@ -31,7 +35,7 @@ const HERO_ITEMS = [
   { key: 'skincare', img: SmartSkinCareImg, label: 'Smart Skincare', nav: 'skincare' },
 ]
 
-export default function BestSellerPage({ onNavigate, onLoginClick, cartCount }) {
+export default function BestSellerPage({ onNavigate, onLoginClick, cartCount, products: productsProp }) {
   useSEO({
     title: 'Best Sellers | Top Rated Skincare | Aloweda',
     description: 'Shop Aloweda\'s best-selling skincare products — Vitamin C serums, SPF day cream, retinol night cream, niacinamide serum and more. Free shipping above ₹999.',
@@ -39,6 +43,19 @@ export default function BestSellerPage({ onNavigate, onLoginClick, cartCount }) 
   })
   const [sortBy, setSortBy] = useState('featured')
   const [hoveredProduct, setHoveredProduct] = useState(null)
+
+  // Build best-seller list from live products (reflects admin name/price edits).
+  // Preserve the curated display order from BEST_SELLER_IDS.
+  const BEST_SELLER_PRODUCTS = useMemo(() => {
+    if (!productsProp || productsProp.length === 0) return BEST_SELLER_FALLBACK
+    return BEST_SELLER_IDS
+      .map(id => {
+        const live = productsProp.find(p => p.id === id)
+        if (!live) return null
+        return { ...live, tag: 'Best Seller' }
+      })
+      .filter(Boolean)
+  }, [productsProp])
 
   const sortedProducts = useMemo(() => {
     let sorted = [...BEST_SELLER_PRODUCTS]

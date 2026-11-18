@@ -48,6 +48,12 @@ const productSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  // Stable numeric ID matching the frontend's hardcoded ALL_PRODUCTS array.
+  // Used as a join key so name changes in admin don't break the merge.
+  frontendId: {
+    type: Number,
+    default: null
   }
 }, {
   timestamps: true

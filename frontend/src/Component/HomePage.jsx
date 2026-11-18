@@ -514,7 +514,9 @@ function AlowedaIntro({ onNavigate }) {
 function LookBookSlider({ onNavigate, onAddToCart, allProducts, cart = [] }) {
   const [currentSlide, setCurrentSlide] = useState(0)
 
-  const lookBookSlides = [
+  // Slide definitions use only stable IDs and fallback static data.
+  // When allProducts (live from DB) is available, names/prices are overridden.
+  const lookBookSlidesDef = [
     {
       id: 1,
       background: SmartSkinCareLookBook,
@@ -556,6 +558,21 @@ function LookBookSlider({ onNavigate, onAddToCart, allProducts, cart = [] }) {
       ]
     },
   ]
+
+  // Override name/price/img from live allProducts so admin edits show immediately
+  const lookBookSlides = lookBookSlidesDef.map(slide => ({
+    ...slide,
+    products: slide.products.map(p => {
+      const live = allProducts && allProducts.find(ap => ap.id === p.id)
+      if (!live) return p
+      return {
+        ...p,
+        name: live.name || p.name,
+        price: live.price || p.price,
+        img: live.img || p.img,
+      }
+    })
+  }))
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % lookBookSlides.length)

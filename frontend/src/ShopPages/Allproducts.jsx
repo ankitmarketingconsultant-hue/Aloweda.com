@@ -34,8 +34,8 @@ import RadianceCreamDetail from '../ProductDetailsImages/RadianceCream.png'
 import SmoothPerfectionSerumDetail from '../ProductDetailsImages/alowedasmoothperfectionserum.png'
 import WrinklesLinesCreamDetail from '../ProductDetailsImages/Lines&WrinklesSerum.png'
 
-// All products - using high quality detail images
-const allProducts = [
+// All products - using high quality detail images (fallback if DB not reachable)
+const allProductsFallback = [
   { id:1,  img:YourSimpleRoutineDetail,    name:'YOUR SIMPLE ROUTINE: The Day Cream + The Night Cream + Lip Butter', category: 'Combo', keywords: 'day cream night cream lip butter routine combo kit', price:'Rs. 899.00', mrp:'Rs. 1,199.00' },
   { id:2,  img:PerfectComplexionDetail,    name:'PERFECT COMPLEXION RITUAL: Pigment Control Serum + The Day Cream + Complexion Cream + Smooth Perfection Serum', category: 'Combo', keywords: 'pigment control serum day cream complexion smooth perfection ritual combo kit', price:'Rs. 1,299.00', mrp:'Rs. 1,599.00' },
   { id:3,  img:RitualOfRadianceDetail,     name:'RITUAL OF RADIANCE: Super Glow Serum 30 ml + The Day Cream + Radiance Cream 50 gram', category: 'Combo', keywords: 'super glow serum day cream radiance ritual combo kit glow', price:'Rs. 1,149.00', mrp:'Rs. 1,299.00' },
@@ -58,7 +58,9 @@ const allProducts = [
   { id:21, img:WinterCombo,              name:'Winter Combo : The Day Cream 50 Gram + The Night Cream 50 Gram + Lip Butter 15 Gram', category: 'Combo', keywords: 'winter combo day cream night cream lip butter routine spf hyaluronic acid retinol niacinamide hydration winter care', price:'Rs. 699.00' },
 ]
 
-export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick }) {
+export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick, products: productsProp }) {
+  // Use live products from App (reflects admin edits), fall back to hardcoded list
+  const allProducts = productsProp && productsProp.length > 0 ? productsProp : allProductsFallback
   useSEO({
     title: 'All Skincare Products | Shop Aloweda',
     description: 'Browse all Aloweda skincare products — serums, creams, face oils, lip butter, hair & tattoo care. Science-based formulas with clinically proven ingredients.',
@@ -81,7 +83,7 @@ export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick 
   const categories = useMemo(() => {
     const cats = ['All', ...new Set(allProducts.map(p => p.category))]
     return cats
-  }, [])
+  }, [allProducts])
 
   // Filter logic
   const filteredProducts = useMemo(() => {

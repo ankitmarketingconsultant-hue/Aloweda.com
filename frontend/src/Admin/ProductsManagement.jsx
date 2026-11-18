@@ -14,7 +14,7 @@ const CATEGORIES = [
   { value: 'tattoo',   label: '🖊 Tattoo Care' },
 ];
 
-const emptyEdit = { name: '', category: 'cream', price: '', mrp: '', stock: '', description: '', ingredients: '', howToUse: '', shippingReturns: '', images: '' };
+const emptyEdit = { name: '', category: 'cream', price: '', mrp: '', stock: '', description: '', ingredients: '', howToUse: '', shippingReturns: '', images: '', frontendId: '' };
 
 const ProductsManagement = () => {
   const navigate = useNavigate();
@@ -127,6 +127,7 @@ const ProductsManagement = () => {
       howToUse:        product.howToUse        || '',
       shippingReturns: product.shippingReturns || '',
       images:          (product.images || []).join(', '),
+      frontendId:      product.frontendId != null ? String(product.frontendId) : '',
     });
     setCurrentImages(product.images || []);
     setImageFiles([]);
@@ -210,6 +211,7 @@ const ProductsManagement = () => {
         howToUse:        editForm.howToUse,
         shippingReturns: editForm.shippingReturns,
         images:          finalImages,
+        frontendId:      editForm.frontendId !== '' ? parseInt(editForm.frontendId) : null,
       };
 
       const response = await fetch(`${API_URL}/api/admin/products/${editProduct._id}`, {
@@ -443,6 +445,21 @@ const ProductsManagement = () => {
                   name="name"
                   value={editForm.name}
                   onChange={handleEditFormChange}
+                  style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '14px' }}>
+                <label style={{ fontWeight: 600, display: 'block', marginBottom: 4 }}>
+                  Frontend ID <span style={{ fontWeight: 400, color: '#6b7280', fontSize: 12 }}>(1–21, links this product to the website listing)</span>
+                </label>
+                <input
+                  name="frontendId"
+                  type="number"
+                  min="1"
+                  value={editForm.frontendId}
+                  onChange={handleEditFormChange}
+                  placeholder="e.g. 4"
                   style={{ width: '100%', padding: '9px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14 }}
                 />
               </div>
