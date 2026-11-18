@@ -520,6 +520,7 @@ export default function App() {
 function AppContent() {
   const [showLogin, setShowLogin] = useState(false)
   const [products, setProducts] = useState(ALL_PRODUCTS) // Dynamic products with stock
+  const [productsReady, setProductsReady] = useState(false) // true once DB fetch completes
   
   // Initialize cart from localStorage or empty array
   const [cart, setCart] = useState(() => {
@@ -625,12 +626,14 @@ function AppContent() {
             console.log(`✅ Synced ${matchedCount}/${prevProducts.length} products with database`)
             return updated
           })
+          setProductsReady(true)
         } else {
           // No DB products, use default stock values
           setProducts(prevProducts => prevProducts.map(p => ({ 
             ...p, 
             stock: p.stock ?? 100 
           })))
+          setProductsReady(true)
         }
       } catch (error) {
         console.error('❌ Stock sync error:', error)
@@ -639,6 +642,7 @@ function AppContent() {
           ...p, 
           stock: p.stock ?? 100 
         })))
+        setProductsReady(true) // show page even on error, with fallback data
       }
     }
 
@@ -771,7 +775,7 @@ function AppContent() {
         {/* Product Detail Route */}
         <Route 
           path="/product/:productId" 
-          element={<ProductDetailWrapper products={products} onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} onAddToCart={addToCart} cartCount={cartCount} />} 
+          element={<ProductDetailWrapper products={products} productsReady={productsReady} onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} onAddToCart={addToCart} cartCount={cartCount} />} 
         />
 
         {/* Shop Routes */}
@@ -944,8 +948,14 @@ function AppContent() {
 }
 
 // Wrapper component for Product Detail to handle URL params
-function ProductDetailWrapper({ onNavigate, onLoginClick, onAddToCart, cartCount, products }) {
+function ProductDetailWrapper({ onNavigate, onLoginClick, onAddToCart, cartCount, products, productsReady }) {
   const { productId } = useParams()
+
+  // Wait for the DB fetch to complete so we show the admin-edited name, not the hardcoded one
+  if (!productsReady) {
+    return <PageLoader />
+  }
+
   // Use products state (with updated stock) instead of ALL_PRODUCTS
   const product = products.find(p => p.id === parseInt(productId))
   
