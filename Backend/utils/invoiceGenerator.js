@@ -149,9 +149,9 @@ class InvoiceGenerator {
       const unitPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
       const lineTotal = unitPrice * qty;   // GST-inclusive line total
 
-      // CGST = price×9% (2 decimals), SGST = price×9% (2 decimals)
-      const cgst = parseFloat((lineTotal * CGST_RATE).toFixed(2));
-      const sgst = parseFloat((lineTotal * SGST_RATE).toFixed(2));
+      // Correct backward GST: price is inclusive → base = price ÷ 1.18
+      const cgst = parseFloat((lineTotal / (1 + GST_RATE) * CGST_RATE).toFixed(2));
+      const sgst = parseFloat((lineTotal / (1 + GST_RATE) * SGST_RATE).toFixed(2));
       const rowH = 58;
 
       this.doc.rect(this.L, y, this.W, rowH).strokeColor('#bbb').stroke();
