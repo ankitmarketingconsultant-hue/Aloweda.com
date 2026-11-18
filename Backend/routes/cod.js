@@ -64,17 +64,34 @@ router.post('/place-order', async (req, res) => {
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     const orderId = `ALD${year}${month}${day}${random}`;
 
+    // Always recalculate shipping server-side — never trust the client value.
+    // Free shipping on orders ≥ ₹999 (after all discounts).
+    const itemsTotal = (items || []).reduce((sum, item) => {
+      const p = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+      return sum + p * (item.quantity || 1);
+    }, 0);
+    const discountedTotal = itemsTotal
+      - (pricing.bundleDiscount || 0)
+      - (pricing.couponDiscount || 0)
+      - (pricing.onlinePaymentDiscount || 0);
+    const correctShipping = discountedTotal >= 999 ? 0 : 100;
+
+    const verifiedPricing = {
+      ...pricing,
+      shippingCharges: correctShipping,
+    };
+
     // Create order in database
     const order = new Order({
-      orderId, // Manually set orderId
-      userId: userId || null, // Optional - guest checkout allowed
+      orderId,
+      userId: userId || null,
       customerInfo,
       items,
-      pricing,
+      pricing: verifiedPricing,
       appliedBundle,
       appliedCoupon,
       paymentMethod: 'COD',
-      paymentStatus: 'Pending', // COD = payment pending until delivery
+      paymentStatus: 'Pending',
       orderStatus: 'Confirmed',
       notes
     });

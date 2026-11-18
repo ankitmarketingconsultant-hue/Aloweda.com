@@ -319,7 +319,7 @@ export default function Cart({ cart = [], onNavigate, onUpdateQuantity, onRemove
               bundleDiscount: 0,
               couponDiscount: 0,
               onlinePaymentDiscount: 0,
-              shippingCharges: 0,
+              shippingCharges: shipping,
               tax: 0,
               total: parseFloat(total)
             },

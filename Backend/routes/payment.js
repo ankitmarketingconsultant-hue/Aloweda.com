@@ -69,8 +69,21 @@ router.post('/verify', async (req, res) => {
 
     // Payment verified — save order to DB if orderData provided
     if (orderData) {
+      // Recalculate shipping server-side — free on orders ≥ ₹999
+      const itemsTotal = (orderData.items || []).reduce((sum, item) => {
+        const p = parseFloat(String(item.price).replace(/[^0-9.]/g, '')) || 0;
+        return sum + p * (item.quantity || 1);
+      }, 0);
+      const pricing = orderData.pricing || {};
+      const discountedTotal = itemsTotal
+        - (pricing.bundleDiscount || 0)
+        - (pricing.couponDiscount || 0)
+        - (pricing.onlinePaymentDiscount || 0);
+      const correctShipping = discountedTotal >= 999 ? 0 : 100;
+
       const order = new Order({
         ...orderData,
+        pricing: { ...pricing, shippingCharges: correctShipping },
         paymentStatus: 'Paid',
         paymentMethod: 'Online',
         razorpayOrderId: razorpay_order_id,
