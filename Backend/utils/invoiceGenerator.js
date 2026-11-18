@@ -4,16 +4,20 @@ const path = require('path');
 const os = require('os');
 
 // ── GST helpers ────────────────────────────────────────────────────────────
-// Client formula: CGST = price × 9% (2 decimals), SGST = price × 9% (2 decimals), base = price - CGST - SGST
-// Example: 499 → CGST=44.91, SGST=44.91, base=409.18
+// Correct formula: price is GST-inclusive (18% total = 9% CGST + 9% SGST)
+// Base (taxable value) = price ÷ 1.18
+// CGST = base × 9%
+// SGST = base × 9%
+// Example: ₹549 → base = 549÷1.18 = 465.25, CGST = 41.87, SGST = 41.87, total tax = 83.74
+const GST_RATE         = 0.18;   // total GST
 const CGST_RATE        = 0.09;
 const SGST_RATE        = 0.09;
 const SHIPPING_DEFAULT = 100;
 
 function calcGST(inclusivePrice) {
-  const cgst = parseFloat((inclusivePrice * CGST_RATE).toFixed(2));
-  const sgst = parseFloat((inclusivePrice * SGST_RATE).toFixed(2));
-  const base = parseFloat((inclusivePrice - cgst - sgst).toFixed(2));
+  const base = parseFloat((inclusivePrice / (1 + GST_RATE)).toFixed(2));
+  const cgst = parseFloat((base * CGST_RATE).toFixed(2));
+  const sgst = parseFloat((base * SGST_RATE).toFixed(2));
   const gst  = parseFloat((cgst + sgst).toFixed(2));
   return { base, gst, cgst, sgst };
 }
@@ -61,10 +65,11 @@ class InvoiceGenerator {
     // discounted = GST-inclusive items amount after all discounts
     const discounted = itemsTotal - bundleDiscount - couponDiscount - onlineDiscount;
 
-    // Client formula: CGST = price×9% (2 decimals), SGST = price×9% (2 decimals), base = price-CGST-SGST
-    const cgst     = parseFloat((discounted * CGST_RATE).toFixed(2));
-    const sgst     = parseFloat((discounted * SGST_RATE).toFixed(2));
-    const subtotal = parseFloat((discounted - cgst - sgst).toFixed(2));
+    // Correct backward GST calculation: price is GST-inclusive
+    // base = discounted ÷ 1.18, CGST = base × 9%, SGST = base × 9%
+    const subtotal = parseFloat((discounted / (1 + GST_RATE)).toFixed(2));
+    const cgst     = parseFloat((subtotal * CGST_RATE).toFixed(2));
+    const sgst     = parseFloat((subtotal * SGST_RATE).toFixed(2));
     const gstAmt   = parseFloat((cgst + sgst).toFixed(2));
 
     // Shipping

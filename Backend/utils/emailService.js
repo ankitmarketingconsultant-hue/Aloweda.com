@@ -44,6 +44,7 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
 
   // ── GST breakdown for email body ──
   const CGST_RATE_EMAIL = 0.09;
+  const GST_RATE_EMAIL  = 0.18;
   const SHIPPING_DEFAULT = 100;
   let itemsTotal = 0;
   items.forEach(i => {
@@ -51,10 +52,10 @@ async function sendOrderEmail({ customer, items, total, paymentMethod, orderId, 
     const price = parseFloat(String(i.price).replace(/[^0-9.]/g, '')) || 0;
     itemsTotal += price * qty;
   });
-  // Client formula: CGST = price×9%, SGST = price×9%, base = price - CGST - SGST
-  const cgstEmail = parseFloat((itemsTotal * CGST_RATE_EMAIL).toFixed(2));
-  const sgstEmail = parseFloat((itemsTotal * CGST_RATE_EMAIL).toFixed(2));
-  const base      = parseFloat((itemsTotal - cgstEmail - sgstEmail).toFixed(2));
+  // Correct backward GST: price is GST-inclusive → base = price ÷ 1.18
+  const base      = parseFloat((itemsTotal / (1 + GST_RATE_EMAIL)).toFixed(2));
+  const cgstEmail = parseFloat((base * CGST_RATE_EMAIL).toFixed(2));
+  const sgstEmail = parseFloat((base * CGST_RATE_EMAIL).toFixed(2));
   const gst       = parseFloat((cgstEmail + sgstEmail).toFixed(2));
   const shippingCharge = (typeof shippingCharges === 'number') ? shippingCharges : SHIPPING_DEFAULT;
   const grandTotal = total || (itemsTotal + shippingCharge);
