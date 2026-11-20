@@ -624,7 +624,34 @@ function AppContent() {
             
             const matchedCount = updated.filter(p => p._dbId).length
             console.log(`✅ Synced ${matchedCount}/${prevProducts.length} products with database`)
-            return updated
+
+            // ── Append DB-only products (admin-added, not in hardcoded list) ──
+            const matchedDbIds = new Set(updated.map(p => p._dbId).filter(Boolean))
+            const newDbProducts = data.products
+              .filter(dbProduct => !matchedDbIds.has(dbProduct._id))
+              .map((dbProduct, i) => ({
+                id:              900000 + i, // synthetic id, won't clash with hardcoded
+                _dbId:           dbProduct._id,
+                name:            dbProduct.name,
+                category:        dbProduct.category,
+                price:           fmtPrice(dbProduct.price),
+                mrp:             fmtPrice(dbProduct.mrp),
+                stock:           dbProduct.stock,
+                description:     dbProduct.description || dbProduct.name,
+                ingredients:     dbProduct.ingredients || '',
+                howToUse:        dbProduct.howToUse || '',
+                shippingReturns: dbProduct.shippingReturns || '',
+                images:          dbProduct.images || [],
+                img:             dbProduct.images?.[0] || '',
+                keywords:        dbProduct.category,
+                isActive:        dbProduct.isActive !== false,
+              }))
+
+            if (newDbProducts.length > 0) {
+              console.log(`➕ Adding ${newDbProducts.length} new DB-only products to website`)
+            }
+
+            return [...updated, ...newDbProducts]
           })
           setProductsReady(true)
         } else {
