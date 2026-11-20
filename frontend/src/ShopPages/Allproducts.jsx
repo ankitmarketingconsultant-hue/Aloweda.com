@@ -79,9 +79,26 @@ export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick,
     }
   }, [searchQuery])
 
-  // Get unique categories
+  // Get unique categories with clean display names
   const categories = useMemo(() => {
-    const cats = ['All', ...new Set(allProducts.map(p => p.category))]
+    const catMap = {
+      'cream': 'Cream', 'serum': 'Serum', 'oil': 'Oil',
+      'facewash': 'Face Wash', 'face wash': 'Face Wash',
+      'moisturiser': 'Moisturiser', 'moisturizer': 'Moisturiser',
+      'haircare': 'Hair Care', 'hair care': 'Hair Care', 'hair serum': 'Hair Serum',
+      'lipcare': 'Lip Care', 'lip care': 'Lip Care', 'lip butter': 'Lip Butter',
+      'combo': 'Combo', 'tattoo': 'Tattoo', 'tattoo care': 'Tattoo',
+    }
+    const seen = new Set()
+    const cats = ['All']
+    allProducts.forEach(p => {
+      const raw = (p.category || '').toLowerCase()
+      const display = catMap[raw] || p.category
+      if (display && !seen.has(display)) {
+        seen.add(display)
+        cats.push(display)
+      }
+    })
     return cats
   }, [allProducts])
 
@@ -91,14 +108,27 @@ export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick,
 
     // Category filter
     if (selectedCategory !== 'All') {
-      result = result.filter(product => product.category === selectedCategory)
+      const selectedLower = selectedCategory.toLowerCase()
+      result = result.filter(product => {
+        const cat = (product.category || '').toLowerCase()
+        // Match display name to DB category variants
+        if (selectedLower === 'face wash') return cat === 'facewash' || cat === 'face wash'
+        if (selectedLower === 'hair care') return cat === 'haircare' || cat === 'hair care'
+        if (selectedLower === 'hair serum') return cat === 'hair serum'
+        if (selectedLower === 'lip care') return cat === 'lipcare' || cat === 'lip care'
+        if (selectedLower === 'lip butter') return cat === 'lip butter' || cat === 'lipcare'
+        if (selectedLower === 'moisturiser') return cat === 'moisturiser' || cat === 'moisturizer' || cat === 'moisturisers'
+        if (selectedLower === 'tattoo') return cat === 'tattoo' || cat === 'tattoo care'
+        if (selectedLower === 'combo') return cat === 'combo' || cat === 'rituals'
+        return cat === selectedLower
+      })
     }
 
     // Search filter
     const query = (localSearchQuery || searchQuery || '').toLowerCase().trim()
     if (query) {
       result = result.filter(product => {
-        const searchableText = `${product.name} ${product.category} ${product.keywords}`.toLowerCase()
+        const searchableText = `${product.name || ''} ${product.category || ''} ${product.keywords || ''} ${product.description || ''}`.toLowerCase()
         return searchableText.includes(query)
       })
     }
