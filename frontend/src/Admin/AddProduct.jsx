@@ -48,27 +48,28 @@ const AddProduct = () => {
     try {
       const token = localStorage.getItem('token');
       
-      // Upload image first if provided
+      // Upload image if provided — skip gracefully on failure (Vercel filesystem is read-only)
       let imageUrl = '';
       if (imageFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append('image', imageFile);
-        
-        const uploadResponse = await fetch(`${API_URL}/api/upload/image`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          body: uploadFormData
-        });
-        
-        const uploadData = await uploadResponse.json();
-        if (uploadResponse.ok && uploadData.imageUrl) {
-          imageUrl = uploadData.imageUrl.startsWith('http')
-            ? uploadData.imageUrl
-            : `${API_URL}${uploadData.imageUrl}`;
-        } else {
-          throw new Error('Image upload failed: ' + (uploadData.message || ''));
+        try {
+          const uploadFormData = new FormData();
+          uploadFormData.append('image', imageFile);
+          
+          const uploadResponse = await fetch(`${API_URL}/api/upload/image`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: uploadFormData
+          });
+          
+          const uploadData = await uploadResponse.json();
+          if (uploadResponse.ok && uploadData.imageUrl) {
+            imageUrl = uploadData.imageUrl.startsWith('http')
+              ? uploadData.imageUrl
+              : `${API_URL}${uploadData.imageUrl}`;
+          }
+          // If upload fails, continue without image — product still gets created
+        } catch (uploadErr) {
+          console.warn('Image upload failed (non-critical):', uploadErr.message);
         }
       }
       
@@ -237,7 +238,7 @@ const AddProduct = () => {
 
           {/* Image Upload */}
           <div className="form-group">
-            <label htmlFor="image">Product Image</label>
+            <label htmlFor="image">Product Image (Optional)</label>
             <input
               type="file"
               id="image"
@@ -253,22 +254,9 @@ const AddProduct = () => {
                 cursor: 'pointer'
               }}
             />
-            <small style={{ color: '#6b7280', display: 'block', marginTop: '8px' }}>
-              Or enter image URL below
+            <small style={{ color: '#6b7280', display: 'block', marginTop: '4px' }}>
+              Max 5MB. You can also add images later via Edit.
             </small>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="imageUrl">Image URL (Optional)</label>
-            <input
-              type="url"
-              id="imageUrl"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="https://example.com/product.jpg"
-              disabled={loading}
-            />
           </div>
 
           {/* Image Preview */}

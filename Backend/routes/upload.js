@@ -1,87 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../frontend/public/uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Use memory storage — no filesystem writes, works on Vercel serverless
+const storage = multer.memoryStorage();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    // Generate unique filename: timestamp-originalname
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    const nameWithoutExt = path.basename(file.originalname, ext);
-    cb(null, nameWithoutExt + '-' + uniqueSuffix + ext);
-  }
-});
-
-// File filter - allow images and videos
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = [
-    'image/jpeg', 
-    'image/jpg', 
-    'image/png', 
-    'image/gif', 
-    'image/webp',
-    'video/mp4',
-    'video/webm',
-    'video/ogg'
-  ];
-  
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type. Only images (JPEG, PNG, GIF, WebP) and videos (MP4, WebM, OGG) are allowed.'), false);
+    cb(new Error('Invalid file type. Only images (JPEG, PNG, GIF, WebP) are allowed.'), false);
   }
 };
 
 const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB limit (increased for videos)
-  },
-  fileFilter: fileFilter
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter
 });
 
-// @desc    Upload single image or video
+// @desc    Upload single image — returns base64 data URL stored directly in DB
 // @route   POST /api/upload/image
 // @access  Admin
 router.post('/image', auth, admin, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded'
-      });
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    // Return the URL path to access the file
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // Convert to base64 data URL — no external storage needed
+    const base64 = req.file.buffer.toString('base64');
+    const imageUrl = `data:${req.file.mimetype};base64,${base64}`;
 
     res.json({
       success: true,
-      message: 'File uploaded successfully',
-      imageUrl: imageUrl,
-      filename: req.file.filename
+      message: 'Image uploaded successfully',
+      imageUrl
     });
   } catch (error) {
     console.error('Upload error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to upload file',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to upload image', error: error.message });
   }
 });
 
@@ -91,13 +52,17 @@ router.post('/image', auth, admin, upload.single('image'), (req, res) => {
 router.post('/images', auth, admin, upload.array('images', 10), (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No files uploaded'
-      });
+      return res.status(400).json({ success: false, message: 'No files uploaded' });
     }
-
-    const imageUrls = req.files.map(file => ({
+    const imageUrls = req.files.map(file => {
+      const base64 = file.buffer.toString('base64');
+      return `data:${file.mimetype};base64,${base64}`;
+    });
+    res.json({ success: true, message: 'Images uploaded successfully', imageUrls });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to upload images', error: error.message });
+  }
+});
       url: `/uploads/${file.filename}`,
       filename: file.filename
     }));
