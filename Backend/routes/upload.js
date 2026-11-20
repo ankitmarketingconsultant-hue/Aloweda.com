@@ -4,7 +4,22 @@ const multer = require('multer');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
-// Memory storage — no filesystem writes, works on Vercel serverless
+// ── Cloudinary setup (used if env vars are set) ───────────────────────
+let cloudinary = null;
+let cloudinaryStorage = null;
+
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  const { v2: _cloudinary } = require('cloudinary');
+  _cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+  cloudinary = _cloudinary;
+}
+
+// Always use memory storage — if Cloudinary is configured we upload from buffer,
+// otherwise we return base64 data URL as fallback
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
@@ -22,14 +37,38 @@ const upload = multer({
   fileFilter
 });
 
-// POST /api/upload/image — single image, returns base64 data URL
-router.post('/image', auth, admin, upload.single('image'), (req, res) => {
+// Helper: upload a buffer to Cloudinary and return secure URL
+const uploadToCloudinary = (buffer, mimetype) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: 'aloweda-products', resource_type: 'image' },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      }
+    );
+    uploadStream.end(buffer);
+  });
+};
+
+// POST /api/upload/image — single image
+router.post('/image', auth, admin, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
-    const base64 = req.file.buffer.toString('base64');
-    const imageUrl = `data:${req.file.mimetype};base64,${base64}`;
+
+    let imageUrl;
+
+    if (cloudinary) {
+      // Upload to Cloudinary — returns a persistent CDN URL
+      imageUrl = await uploadToCloudinary(req.file.buffer, req.file.mimetype);
+    } else {
+      // Fallback: base64 data URL (works but large — set up Cloudinary for production)
+      const base64 = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${base64}`;
+    }
+
     res.json({ success: true, message: 'Image uploaded successfully', imageUrl });
   } catch (error) {
     console.error('Upload error:', error);
@@ -37,16 +76,26 @@ router.post('/image', auth, admin, upload.single('image'), (req, res) => {
   }
 });
 
-// POST /api/upload/images — multiple images, returns array of base64 data URLs
-router.post('/images', auth, admin, upload.array('images', 10), (req, res) => {
+// POST /api/upload/images — multiple images
+router.post('/images', auth, admin, upload.array('images', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ success: false, message: 'No files uploaded' });
     }
-    const imageUrls = req.files.map(file => {
-      const base64 = file.buffer.toString('base64');
-      return `data:${file.mimetype};base64,${base64}`;
-    });
+
+    let imageUrls;
+
+    if (cloudinary) {
+      imageUrls = await Promise.all(
+        req.files.map(file => uploadToCloudinary(file.buffer, file.mimetype))
+      );
+    } else {
+      imageUrls = req.files.map(file => {
+        const base64 = file.buffer.toString('base64');
+        return `data:${file.mimetype};base64,${base64}`;
+      });
+    }
+
     res.json({ success: true, message: 'Images uploaded successfully', imageUrls });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to upload images', error: error.message });
