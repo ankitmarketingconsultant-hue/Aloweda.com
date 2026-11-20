@@ -51,22 +51,24 @@ const AddProduct = () => {
       // Upload image first if provided
       let imageUrl = '';
       if (imageFile) {
-        const formData = new FormData();
-        formData.append('image', imageFile);
+        const uploadFormData = new FormData();
+        uploadFormData.append('image', imageFile);
         
-        const uploadResponse = await fetch(`${API_URL}/api/upload`, {
+        const uploadResponse = await fetch(`${API_URL}/api/upload/image`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
           },
-          body: formData
+          body: uploadFormData
         });
         
         const uploadData = await uploadResponse.json();
-        if (uploadResponse.ok) {
-          imageUrl = uploadData.imageUrl;
+        if (uploadResponse.ok && uploadData.imageUrl) {
+          imageUrl = uploadData.imageUrl.startsWith('http')
+            ? uploadData.imageUrl
+            : `${API_URL}${uploadData.imageUrl}`;
         } else {
-          throw new Error('Image upload failed');
+          throw new Error('Image upload failed: ' + (uploadData.message || ''));
         }
       }
       
@@ -82,8 +84,8 @@ const AddProduct = () => {
           price: parseFloat(formData.price),
           mrp: parseFloat(formData.mrp),
           stock: parseInt(formData.stock),
-          description: formData.description,
-          image: imageUrl || formData.image,
+          description: formData.description || formData.name,
+          images: imageUrl ? [imageUrl] : [],
           isActive: true
         })
       });
