@@ -844,13 +844,13 @@ function AppContent() {
         {/* Hair Care Route */}
         <Route 
           path="/haircare" 
-          element={<HairCarePage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} />} 
+          element={<HairCarePage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
 
         {/* Lip Care Route */}
         <Route 
           path="/lipcare" 
-          element={<LipCarePage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} />} 
+          element={<LipCarePage onNavigate={handleNavigate} onLoginClick={() => setShowLogin(true)} products={products} />} 
         />
 
         {/* Best Sellers Route */}

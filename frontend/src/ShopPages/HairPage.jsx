@@ -8,7 +8,7 @@ import { handleNavigation } from '../utils/navigation'
 import useSEO from '../utils/useSEO'
 import './HairCare.css'
 
-const products = [
+const hardcodedProducts = [
   { 
     id: 16, 
     img: HairCareImg, 
@@ -19,7 +19,7 @@ const products = [
   },
 ]
 
-export default function HairCarePage({ onNavigate, searchQuery, onLoginClick }) {
+export default function HairCarePage({ onNavigate, searchQuery, onLoginClick, products: productsProp }) {
   useSEO({
     title: 'Hair Care Products | Redensyl Hair Serum | Aloweda',
     description: 'Shop Aloweda\'s Total Hair Therapy Serum with Redensyl 5%, Anagain 5%, Rice Water & Biotin. Reduces hair fall, boosts growth & thickness.',
@@ -27,6 +27,17 @@ export default function HairCarePage({ onNavigate, searchQuery, onLoginClick }) 
   })
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery || '')
   const [hoveredProduct, setHoveredProduct] = useState(null)
+
+  // Use live DB products filtered to haircare, fall back to hardcoded
+  const products = useMemo(() => {
+    if (productsProp && productsProp.length > 0) {
+      return productsProp.filter(p => {
+        const cat = (p.category || '').toLowerCase()
+        return cat === 'haircare' || cat === 'hair care' || cat === 'hair serum' || cat === 'hair'
+      })
+    }
+    return hardcodedProducts
+  }, [productsProp])
 
   // Search filter logic
   const filteredProducts = useMemo(() => {
@@ -101,7 +112,7 @@ export default function HairCarePage({ onNavigate, searchQuery, onLoginClick }) 
               onMouseLeave={() => setHoveredProduct(null)}
             >
               <div className="sp-card__img-wrap">
-                <img src={p.img} alt={p.name} className="sp-card__img" loading="lazy" decoding="async" />
+                <img src={p.images?.[0] || p.img || HairCareImg} alt={p.name} className="sp-card__img" loading="lazy" decoding="async" />
               </div>
               <div className="sp-card__body">
                 <p className="sp-card__category">{p.category}</p>
