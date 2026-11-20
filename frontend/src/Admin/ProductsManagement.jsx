@@ -238,6 +238,30 @@ const ProductsManagement = () => {
     }
   };
 
+  // ── Delete product ─────────────────────────────────────────────────────
+  const handleDeleteProduct = async (product) => {
+    if (!confirm(`⚠️ Delete "${product.name}" permanently? This cannot be undone.`)) return;
+    try {
+      setUpdating(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/admin/products/${product._id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setProducts(products.filter(p => p._id !== product._id));
+        alert('✅ Product deleted successfully!');
+      } else {
+        alert(data.message || 'Failed to delete product');
+      }
+    } catch (err) {
+      alert('Error deleting product: ' + err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   // ── Stock toggle ────────────────────────────────────────────────────────
   const handleToggleStock = async (product) => {
     const newStockValue = (product.stock || 0) > 0 ? 0 : 100;
@@ -418,9 +442,28 @@ const ProductsManagement = () => {
                     </div>
                   </td>
                   <td>
-                    <button className="edit-btn" onClick={() => openEditModal(product)}>
-                      ✏️ Edit
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button className="edit-btn" onClick={() => openEditModal(product)}>
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product)}
+                        disabled={updating}
+                        style={{
+                          padding: '8px 14px',
+                          background: '#ef4444',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          opacity: updating ? 0.6 : 1,
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

@@ -37,6 +37,20 @@ router.get('/products/public', async (req, res) => {
 // PROTECTED ENDPOINTS - Auth + Admin Required
 // ============================================
 
+// Delete product
+router.delete('/products/:id', auth, admin, async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    res.json({ success: true, message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete product' });
+  }
+});
+
 // Create new product
 router.post('/products', auth, admin, async (req, res) => {
   try {
