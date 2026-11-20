@@ -111,14 +111,22 @@ class InvoiceGenerator {
     this.doc.fontSize(24).font('Helvetica-Bold').fillColor('#000')
       .text('Aloweda', this.L, startY);
 
-    // Address lines below name
+    // Address lines + GSTIN below name
     this.doc.fontSize(9).font('Helvetica').fillColor('#000')
       .text('A 107 Oman Topaz Agara, Sarjapur Road', this.L, startY + 30)
-      .text('Bengaluru KA 560102', this.L, startY + 42)
-      .text('India', this.L, startY + 54);
+      .text('Bengaluru KA 560102',                   this.L, startY + 42)
+      .text('India',                                  this.L, startY + 54)
+      .text('GSTIN: 29AASCA9455G1ZZ',                this.L, startY + 66);
+
+    // Buyer name
+    const buyerName = order.customerInfo?.name || '';
+    if (buyerName) {
+      this.doc.fontSize(9).font('Helvetica').fillColor('#000')
+        .text(`Bill To: ${buyerName}`, this.L, startY + 30, { align: 'right', width: this.W })
+    }
 
     // Move cursor well below address before divider
-    this.doc.y = startY + 75;
+    this.doc.y = startY + 85;
   }
 
   // ── Items table ──
