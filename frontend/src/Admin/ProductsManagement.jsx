@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './ProductsManagement.css';
 
 const CATEGORIES = [
-  { value: 'all',      label: 'All' },
-  { value: 'cream',    label: 'Cream' },
-  { value: 'serum',    label: 'Serum' },
-  { value: 'oil',      label: 'Oil' },
-  { value: 'facewash', label: 'Face Wash' },
-  { value: 'haircare', label: 'Hair Care' },
-  { value: 'lipcare',  label: 'Lip Care' },
-  { value: 'combo',    label: 'Combo' },
-  { value: 'tattoo',   label: '🖊 Tattoo Care' },
+  { value: 'all',          label: 'All' },
+  { value: 'cream',        label: 'Cream' },
+  { value: 'serum',        label: 'Serum' },
+  { value: 'oil',          label: 'Oil' },
+  { value: 'facewash',     label: 'Face Wash' },
+  { value: 'moisturiser',  label: 'Moisturiser' },
+  { value: 'haircare',     label: 'Hair Care' },
+  { value: 'lipcare',      label: 'Lip Care' },
+  { value: 'combo',        label: 'Combo / Rituals' },
+  { value: 'tattoo',       label: '🖊 Tattoo Care' },
 ];
 
 const emptyEdit = { name: '', category: 'cream', price: '', mrp: '', stock: '', description: '', ingredients: '', howToUse: '', shippingReturns: '', images: '', frontendId: '' };
@@ -519,9 +520,10 @@ const ProductsManagement = () => {
                   <option value="serum">Serum</option>
                   <option value="oil">Oil</option>
                   <option value="facewash">Face Wash</option>
+                  <option value="moisturiser">Moisturiser</option>
                   <option value="haircare">Hair Care</option>
                   <option value="lipcare">Lip Care</option>
-                  <option value="combo">Combo</option>
+                  <option value="combo">Combo / Skincare Rituals</option>
                   <option value="tattoo">Tattoo Care</option>
                 </select>
               </div>

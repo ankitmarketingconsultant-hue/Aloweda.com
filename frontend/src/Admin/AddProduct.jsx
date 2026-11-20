@@ -163,9 +163,10 @@ const AddProduct = () => {
               <option value="serum">Serum</option>
               <option value="oil">Oil</option>
               <option value="facewash">Face Wash</option>
+              <option value="moisturiser">Moisturiser</option>
               <option value="haircare">Hair Care</option>
               <option value="lipcare">Lip Care</option>
-              <option value="combo">Combo</option>
+              <option value="combo">Combo / Skincare Rituals</option>
               <option value="tattoo">Tattoo Care</option>
             </select>
           </div>
