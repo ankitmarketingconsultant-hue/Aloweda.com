@@ -48,28 +48,27 @@ const AddProduct = () => {
     try {
       const token = localStorage.getItem('token');
       
-      // Upload image if provided — skip gracefully on failure (Vercel filesystem is read-only)
+      // Upload image if provided
       let imageUrl = '';
       if (imageFile) {
-        try {
-          const uploadFormData = new FormData();
-          uploadFormData.append('image', imageFile);
-          
-          const uploadResponse = await fetch(`${API_URL}/api/upload/image`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
-            body: uploadFormData
-          });
-          
-          const uploadData = await uploadResponse.json();
-          if (uploadResponse.ok && uploadData.imageUrl) {
-            imageUrl = uploadData.imageUrl.startsWith('http')
-              ? uploadData.imageUrl
-              : `${API_URL}${uploadData.imageUrl}`;
-          }
-          // If upload fails, continue without image — product still gets created
-        } catch (uploadErr) {
-          console.warn('Image upload failed (non-critical):', uploadErr.message);
+        const uploadFormData = new FormData();
+        uploadFormData.append('image', imageFile);
+        
+        const uploadResponse = await fetch(`${API_URL}/api/upload/image`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: uploadFormData
+        });
+        
+        const uploadData = await uploadResponse.json();
+        if (uploadResponse.ok && uploadData.imageUrl) {
+          imageUrl = uploadData.imageUrl.startsWith('http')
+            ? uploadData.imageUrl
+            : `${API_URL}${uploadData.imageUrl}`;
+        } else {
+          setError('Image upload failed: ' + (uploadData.message || 'Please try again'));
+          setLoading(false);
+          return;
         }
       }
       
