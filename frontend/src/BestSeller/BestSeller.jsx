@@ -79,7 +79,7 @@ export default function BestSellerPage({ onNavigate, onLoginClick, cartCount, pr
 
   return (
     <div className="bestseller-page">
-      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} cartCount={cartCount} />
+      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} cartCount={cartCount} products={productsProp} />
 
       {/* Best Sellers Heading */}
       <div 

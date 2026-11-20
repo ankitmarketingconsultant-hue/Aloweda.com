@@ -48,7 +48,7 @@ const ALL_SEARCH_PRODUCTS = [
   { id:21, img:WinterCombo, name:'Winter Combo : The Day Cream 50 Gram + The Night Cream 50 Gram + Lip Butter 15 Gram', category: 'Combo', keywords: 'winter combo day cream night cream lip butter routine spf hyaluronic acid retinol niacinamide hydration winter care', price:'Rs. 699.00' },
 ]
 
-export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
+export default function Navbar({ onNavigate, cartCount = 0, onLoginClick, products: productsProp }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [shopOpen, setShopOpen] = useState(false)
@@ -142,16 +142,29 @@ export default function Navbar({ onNavigate, cartCount = 0, onLoginClick }) {
   useEffect(() => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
-      const filtered = ALL_SEARCH_PRODUCTS.filter(product => 
-        product.name.toLowerCase().includes(query) || 
-        product.category.toLowerCase().includes(query) ||
-        product.keywords.toLowerCase().includes(query)
+      // Merge hardcoded + DB-only products for search
+      const dbOnlyProducts = (productsProp || [])
+        .filter(p => p._dbId && !ALL_SEARCH_PRODUCTS.find(h => h.id === p.id))
+        .map(p => ({
+          id: p.id,
+          img: p.images?.[0] || p.img || '',
+          name: p.name || '',
+          category: p.category || '',
+          keywords: p.keywords || p.description || '',
+          price: p.price || '',
+          _dbId: p._dbId,
+        }))
+      const allProducts = [...ALL_SEARCH_PRODUCTS, ...dbOnlyProducts]
+      const filtered = allProducts.filter(product => 
+        (product.name || '').toLowerCase().includes(query) || 
+        (product.category || '').toLowerCase().includes(query) ||
+        (product.keywords || '').toLowerCase().includes(query)
       )
       setSearchResults(filtered)
     } else {
       setSearchResults([])
     }
-  }, [searchQuery])
+  }, [searchQuery, productsProp])
 
   // Close dropdown when clicking outside
   useEffect(() => {

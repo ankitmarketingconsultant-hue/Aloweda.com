@@ -107,7 +107,7 @@ export default function SkinCarePage({ onNavigate, searchQuery, categoryFilter, 
 
   return (
     <div className="shop-page">
-      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} />
+      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} products={productsProp} />
 
       {/* Big page heading — reference style */}
       <div className="shop-page__hero">

@@ -65,7 +65,7 @@ export default function LipCarePage({ onNavigate, searchQuery, onLoginClick, pro
   }
   return (
     <div className="shop-page">
-      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} />
+      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} products={productsProp} />
 
       <div className="shop-page__hero">
         <h1 className="shop-page__hero-title">Lip Care</h1>

@@ -704,7 +704,7 @@ export default function HomePage({ onNavigate, onLoginClick, cartCount, onAddToC
   })
   return (
     <div className="page">
-      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} cartCount={cartCount} />
+      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} cartCount={cartCount} products={allProducts} />
       <main>
         <HeroSlider onNavigate={onNavigate} />
         <MarqueeStrip />

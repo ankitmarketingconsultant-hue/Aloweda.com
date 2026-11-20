@@ -150,7 +150,7 @@ export default function AllProductsPage({ onNavigate, searchQuery, onLoginClick,
 
   return (
     <div className="shop-page all-products-page">
-      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} />
+      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} products={productsProp} />
 
       {/* Simple Page Header */}
       <div className="all-products-header">

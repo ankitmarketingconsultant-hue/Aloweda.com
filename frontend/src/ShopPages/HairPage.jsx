@@ -55,7 +55,7 @@ export default function HairCarePage({ onNavigate, searchQuery, onLoginClick, pr
   }
   return (
     <div className="shop-page">
-      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} />
+      <Navbar onNavigate={onNavigate} onLoginClick={onLoginClick} products={productsProp} />
 
       <div className="shop-page__hero">
         <h1 className="shop-page__hero-title">Hair Care</h1>
