@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './Login.css'
 import AlowedaLogo from '../assets/AlowedaLogo.png'
 import { authAPI, storage } from '../utils/api'
+import { getUTM, clearUTM } from '../utils/utmTracker'
 
 export default function Login({ onNavigate, onClose, onLoginSuccess }) {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -126,7 +127,8 @@ export default function Login({ onNavigate, onClose, onLoginSuccess }) {
           throw new Error('Password must be at least 6 characters')
         }
 
-        response = await authAPI.signup(formData.name, formData.email, formData.password)
+        response = await authAPI.signup(formData.name, formData.email, formData.password, getUTM())
+        clearUTM() // clear after successful signup
         setSuccess('Account created successfully! Logging you in...')
       } else {
         // Login

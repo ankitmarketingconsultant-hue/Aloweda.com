@@ -45,10 +45,10 @@ async function apiCall(endpoint, options = {}) {
 // Auth API functions
 export const authAPI = {
   // Sign up new user
-  signup: async (name, email, password) => {
+  signup: async (name, email, password, utmData = {}) => {
     return apiCall('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, ...utmData }),
     });
   },
 

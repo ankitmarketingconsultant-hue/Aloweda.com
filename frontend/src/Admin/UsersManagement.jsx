@@ -230,6 +230,7 @@ const UsersManagement = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Role</th>
+                <th>Source</th>
                 <th>Signup Date</th>
                 <th>Last Login</th>
                 <th>Login Count</th>
@@ -252,6 +253,26 @@ const UsersManagement = () => {
                   <td>
                     <span className={`role-badge ${user.role}`}>
                       {user.role === 'admin' ? '👑 Admin' : '👤 User'}
+                    </span>
+                  </td>
+                  <td>
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      padding: '3px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
+                      background: user.signupSource?.includes('Facebook') ? '#1877f215' :
+                                  user.signupSource?.includes('Instagram') ? '#e1306c15' :
+                                  user.signupSource?.includes('Google') ? '#4285f415' :
+                                  user.signupSource?.includes('Direct') ? '#6b728015' : '#10b98115',
+                      color: user.signupSource?.includes('Facebook') ? '#1877f2' :
+                             user.signupSource?.includes('Instagram') ? '#e1306c' :
+                             user.signupSource?.includes('Google') ? '#4285f4' :
+                             user.signupSource?.includes('Direct') ? '#6b7280' : '#10b981',
+                    }}>
+                      {user.signupSource?.includes('Facebook') ? '📘' :
+                       user.signupSource?.includes('Instagram') ? '📸' :
+                       user.signupSource?.includes('Google') ? '🔍' :
+                       user.signupSource?.includes('WhatsApp') ? '💬' : '🌐'}
+                      {' '}{user.signupSource || 'Direct'}
                     </span>
                   </td>
                   <td>{formatDateShort(user.signupDate)}</td>

@@ -69,7 +69,16 @@ const userSchema = new mongoose.Schema({
   signupDate: {
     type: Date,
     default: Date.now
-  }
+  },
+  // UTM / Traffic Source Tracking
+  utmSource: { type: String, trim: true },       // facebook, instagram, google
+  utmMedium: { type: String, trim: true },       // cpc, social, email
+  utmCampaign: { type: String, trim: true },     // campaign name
+  utmContent: { type: String, trim: true },      // ad variant
+  utmTerm: { type: String, trim: true },         // keyword
+  referrer: { type: String, trim: true },        // full referrer URL
+  landingPage: { type: String, trim: true },     // first page they visited
+  signupSource: { type: String, trim: true },    // e.g. "Facebook Ad", "Direct", "Google"
 }, {
   timestamps: true
 });

@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom'
 import './App.css'
+import { captureUTM } from './utils/utmTracker'
 
 // Eagerly loaded — always visible on first paint jo 
 import HomePage from './Component/HomePage'
@@ -538,6 +539,9 @@ function AppContent() {
   const navigate = useNavigate()
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+  // Capture UTM params on first load
+  useEffect(() => { captureUTM() }, [])
 
   // Fetch products from database and merge with hardcoded data
   useEffect(() => {

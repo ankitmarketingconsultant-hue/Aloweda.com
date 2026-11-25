@@ -121,6 +121,37 @@ router.post('/signup', async (req, res) => {
     if (phone) userData.phone = phone;
     if (role && (role === 'admin' || role === 'user')) userData.role = role;
 
+    // UTM / Traffic source tracking
+    const { utmSource, utmMedium, utmCampaign, utmContent, utmTerm, referrer, landingPage } = req.body;
+    if (utmSource)   userData.utmSource   = utmSource;
+    if (utmMedium)   userData.utmMedium   = utmMedium;
+    if (utmCampaign) userData.utmCampaign = utmCampaign;
+    if (utmContent)  userData.utmContent  = utmContent;
+    if (utmTerm)     userData.utmTerm     = utmTerm;
+    if (referrer)    userData.referrer    = referrer;
+    if (landingPage) userData.landingPage = landingPage;
+
+    // Derive a human-readable signupSource
+    if (utmSource) {
+      const src = utmSource.toLowerCase();
+      if (src.includes('facebook') || src.includes('fb'))        userData.signupSource = 'Facebook Ad';
+      else if (src.includes('instagram') || src.includes('ig'))  userData.signupSource = 'Instagram Ad';
+      else if (src.includes('google'))                           userData.signupSource = 'Google Ad';
+      else if (src.includes('whatsapp'))                         userData.signupSource = 'WhatsApp';
+      else if (src.includes('email'))                            userData.signupSource = 'Email Campaign';
+      else                                                       userData.signupSource = utmSource;
+    } else if (referrer) {
+      const ref = referrer.toLowerCase();
+      if (ref.includes('facebook.com') || ref.includes('fb.com'))    userData.signupSource = 'Facebook';
+      else if (ref.includes('instagram.com'))                         userData.signupSource = 'Instagram';
+      else if (ref.includes('google.com'))                            userData.signupSource = 'Google';
+      else if (ref.includes('youtube.com'))                           userData.signupSource = 'YouTube';
+      else if (ref.includes('whatsapp'))                              userData.signupSource = 'WhatsApp';
+      else                                                            userData.signupSource = 'Referral';
+    } else {
+      userData.signupSource = 'Direct';
+    }
+
     const user = await User.create(userData);
 
     console.log('User created successfully:', user._id);

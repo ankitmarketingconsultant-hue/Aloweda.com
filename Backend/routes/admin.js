@@ -633,7 +633,14 @@ router.get('/users/analytics', auth, admin, async (req, res) => {
       lastLogin: u.lastLogin,
       loginCount: u.loginCount || 0,
       loginHistory: u.loginHistory || [],
-      recentLogins: (u.loginHistory || []).slice(-5).reverse() // Last 5 logins
+      recentLogins: (u.loginHistory || []).slice(-5).reverse(), // Last 5 logins
+      // UTM / Traffic source
+      signupSource: u.signupSource || 'Direct',
+      utmSource:    u.utmSource   || '',
+      utmMedium:    u.utmMedium   || '',
+      utmCampaign:  u.utmCampaign || '',
+      referrer:     u.referrer    || '',
+      landingPage:  u.landingPage || '',
     }));
     
     res.json({
