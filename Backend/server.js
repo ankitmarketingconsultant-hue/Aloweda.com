@@ -19,6 +19,7 @@ const contentRoutes = require('./routes/content');
 const uploadRoutes = require('./routes/upload');
 const metaCapiTestRoutes = require('./routes/meta-capi-test');
 const metaInsightsRoutes = require('./routes/meta-insights');
+const siteAnalyticsRoutes = require('./routes/site-analytics');
 const consultationRoutes     = require('./routes/consultation');
 const calendlyWebhookRoutes  = require('./routes/calendly-webhook');
 const protect = require('./middleware/auth');
@@ -132,6 +133,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/meta-capi-test', metaCapiTestRoutes);
 app.use('/api/meta-insights', metaInsightsRoutes);
+app.use('/api/site-analytics', siteAnalyticsRoutes);
 app.use('/api/consultation', consultationRoutes);
 app.use('/api/calendly-webhook', calendlyWebhookRoutes);
 

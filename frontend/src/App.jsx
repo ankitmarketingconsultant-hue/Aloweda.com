@@ -3,6 +3,36 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useSear
 import './App.css'
 import { captureUTM } from './utils/utmTracker'
 
+// ── Page view tracker ─────────────────────────────────────────────────
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+const getOrCreateSessionId = () => {
+  let sid = sessionStorage.getItem('aloweda_sid')
+  if (!sid) {
+    sid = Math.random().toString(36).slice(2) + Date.now().toString(36)
+    sessionStorage.setItem('aloweda_sid', sid)
+  }
+  return sid
+}
+
+const trackPageView = (page) => {
+  try {
+    const utm = JSON.parse(localStorage.getItem('aloweda_utm') || '{}')
+    fetch(`${API_BASE}/api/site-analytics/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        page,
+        referrer:    document.referrer || '',
+        utmSource:   utm.utmSource   || '',
+        utmMedium:   utm.utmMedium   || '',
+        utmCampaign: utm.utmCampaign || '',
+        sessionId:   getOrCreateSessionId(),
+      }),
+    }).catch(() => {}) // silent fail
+  } catch (_) {}
+}
+
 // Eagerly loaded — always visible on first paint jo 
 import HomePage from './Component/HomePage'
 import PageTransition from './Component/PageTransition'
@@ -522,6 +552,12 @@ function AppContent() {
   const [showLogin, setShowLogin] = useState(false)
   const [products, setProducts] = useState(ALL_PRODUCTS) // Dynamic products with stock
   const [productsReady, setProductsReady] = useState(false) // true once DB fetch completes
+  const location = useLocation ? useLocation() : { pathname: '/' }
+
+  // Track page view on every route change
+  useEffect(() => {
+    trackPageView(location.pathname)
+  }, [location.pathname])
   
   // Initialize cart from localStorage or empty array
   const [cart, setCart] = useState(() => {
